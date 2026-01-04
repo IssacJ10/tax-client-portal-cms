@@ -12,12 +12,22 @@ describe('User Schema Security', () => {
     test('Enforces strict regex on firstName and lastName', () => {
         const schemaContent = fs.readFileSync(schemaPath, 'utf8');
         const schema = JSON.parse(schemaContent);
-        // Note: The regex string in JSON has double backslash, but here we expect the parsed string
-        // In JSON file: "^[a-zA-Z \\-']+$" (where \ is escaped)
-        // Parsed in JS: "^[a-zA-Z \-']+$"
-        const strictRegex = "^[a-zA-Z \\-']+$";
+        const regexStr = "^[a-zA-Z \\-']+$";
+        const strictRegex = new RegExp(regexStr);
 
-        expect(schema.attributes.firstName.regex).toBe(strictRegex);
-        expect(schema.attributes.lastName.regex).toBe(strictRegex);
+        expect(schema.attributes.firstName.regex).toBe(regexStr);
+        expect(schema.attributes.lastName.regex).toBe(regexStr);
+
+        // Functional Verification
+        const validNames = ["John", "Jane Doe", "O'Reilly", "Jean-Luc", "Sarah James"];
+        const invalidNames = ["John123", "John!", "John<script>", "SELECT *", "admin@example", ""];
+
+        validNames.forEach(name => {
+            expect(strictRegex.test(name)).toBe(true);
+        });
+
+        invalidNames.forEach(name => {
+            expect(strictRegex.test(name)).toBe(false);
+        });
     });
 });
