@@ -27,6 +27,9 @@ export default {
    * run jobs, or perform some special logic.
    */
   async bootstrap({ strapi }) {
+    console.log('[[BOOTSTRAP]] JJElevate Admin starting...');
+
+    // 1. LIFECYCLE HOOKS
     strapi.db.lifecycles.subscribe({
       models: ['plugin::users-permissions.user'],
       async beforeCreate(event) {
@@ -54,7 +57,7 @@ export default {
       },
     });
 
-    // Ensure email confirmation is DISABLED so users can login immediately
+    // 2. DISABLE EMAIL CONFIRMATION
     const pluginStore = strapi.store({
       type: 'plugin',
       name: 'users-permissions',
@@ -73,7 +76,7 @@ export default {
       strapi.log.info('Email confirmation disabled via bootstrap (using Welcome Email instead).');
     }
 
-    // Grant 'updateMe' permission to Authenticated role
+    // 3. GRANT PERMISSIONS
     const authenticatedRole = await strapi
       .query('plugin::users-permissions.role')
       .findOne({ where: { type: 'authenticated' } });
@@ -97,5 +100,7 @@ export default {
         strapi.log.info('Granted updateMe permission to Authenticated role.');
       }
     }
+
+
   },
 };

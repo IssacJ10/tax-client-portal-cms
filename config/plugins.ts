@@ -4,6 +4,20 @@ export default () => ({
             register: {
                 allowedFields: ['firstName', 'lastName'],
             },
+            ratelimit: {
+                interval: 60000,
+                max: 100
+            },
+            providers: {
+                google: {
+                    enabled: true,
+                    icon: 'google',
+                    key: process.env.GOOGLE_CLIENT_ID,
+                    secret: process.env.GOOGLE_CLIENT_SECRET,
+                    callback: `${process.env.PUBLIC_URL || 'http://localhost:1337'}/api/connect/google/callback`,
+                    scope: ['email', 'profile'],
+                },
+            },
         },
     },
     email: {
