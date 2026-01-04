@@ -63,15 +63,18 @@ export default (config, { strapi }) => {
                     });
                 }
 
-                // 3. Issue JWT
+                // 3. Issue JWT (Access Token)
                 const jwtService = strapi.plugin('users-permissions').service('jwt');
                 const jwt = jwtService.issue({ id: user.id });
 
-                strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Redirecting to frontend with JWT.`);
+                // 4. Issue Manual Refresh Token (7 Days)
+                const refreshToken = jwtService.issue({ id: user.id, type: 'refresh', version: user.tokenVersion || 1 }, { expiresIn: '7d' });
 
-                // 4. Force Redirect to Frontend
+                strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Redirecting to frontend with JWT & Refresh Token.`);
+
+                // 5. Force Redirect to Frontend
                 ctx.status = 302;
-                ctx.redirect(`http://localhost:3000/connect/google/redirect?jwt=${jwt}`);
+                ctx.redirect(`http://localhost:3000/connect/google/redirect?jwt=${jwt}&refresh=${refreshToken}`);
 
                 return;
 

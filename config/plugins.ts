@@ -8,6 +8,31 @@ export default () => ({
                 interval: 60000,
                 max: 100
             },
+            jwt: {
+                expiresIn: '1h',
+            },
+            email: {
+                config: {
+                    provider: 'nodemailer',
+                    providerOptions: {
+                        host: process.env.SMTP_HOST || 'localhost',
+                        port: parseInt(process.env.SMTP_PORT || '1025'),
+                        ignoreTLS: true,
+                    },
+                    settings: {
+                        defaultFrom: 'no-reply@jjelevatetest.com',
+                        defaultReplyTo: 'contact@jjelevatetest.com',
+                    },
+                },
+            },
+            'users-permissions': {
+                config: {
+                    jwt: {
+                        expiresIn: '1h',
+                    },
+                    jwtSecret: process.env.JWT_SECRET || 'test-secret',
+                }
+            },
             providers: {
                 google: {
                     enabled: true,

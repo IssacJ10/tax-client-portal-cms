@@ -101,6 +101,30 @@ export default {
       }
     }
 
+    // Helper to grant permissions
+    const grantPermission = async (roleName, action) => {
+      const role = await strapi
+        .query('plugin::users-permissions.role')
+        .findOne({ where: { type: roleName } });
+
+      if (role) {
+        const existing = await strapi.query('plugin::users-permissions.permission').findOne({
+          where: { action, role: role.id },
+        });
+        if (!existing) {
+          await strapi.query('plugin::users-permissions.permission').create({
+            data: { action, role: role.id },
+          });
+          strapi.log.info(`Granted ${action} permission to ${roleName} role.`);
+        }
+      }
+    };
+
+    // Grant Permissions
+    await grantPermission('authenticated', 'plugin::users-permissions.user.updateMe');
+    await grantPermission('authenticated', 'api::token.logout.logout');
+    await grantPermission('public', 'api::token.token.refresh');
+
 
   },
 };

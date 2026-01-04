@@ -77,6 +77,10 @@
         "isActive": {
             "type": "boolean",
             "default": true
+        },
+        "tokenVersion": {
+            "type": "integer",
+            "default": 1
         }
     }
 }

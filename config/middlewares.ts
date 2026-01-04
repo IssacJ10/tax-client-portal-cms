@@ -17,4 +17,5 @@ export default [
   'strapi::favicon',
   'strapi::public',
   'global::google-auth-fix', // Custom Google Auth Interceptor
+  'global::local-auth-refresh', // Custom Local Auth Refresh
 ];
