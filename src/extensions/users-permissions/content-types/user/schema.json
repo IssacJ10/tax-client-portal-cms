@@ -73,6 +73,10 @@
         "lastName": {
             "type": "string",
             "regex": "^[a-zA-Z \\-']+$"
+        },
+        "isActive": {
+            "type": "boolean",
+            "default": true
         }
     }
 }

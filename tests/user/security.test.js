@@ -30,4 +30,13 @@ describe('User Schema Security', () => {
             expect(strictRegex.test(name)).toBe(false);
         });
     });
+
+    test('isActive field exists and defaults to true', () => {
+        const schemaContent = fs.readFileSync(schemaPath, 'utf8');
+        const schema = JSON.parse(schemaContent);
+
+        expect(schema.attributes.isActive).toBeDefined();
+        expect(schema.attributes.isActive.type).toBe('boolean');
+        expect(schema.attributes.isActive.default).toBe(true);
+    });
 });
