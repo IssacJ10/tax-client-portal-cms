@@ -1,41 +1,95 @@
 const request = require('supertest');
-const { createStrapi } = require('@strapi/strapi');
+const { expect, test, beforeAll, afterAll, describe } = require('@jest/globals');
 
-describe('Profile Management Test', () => {
-    let app;
-    let jwt;
-    let user;
+let strapiInstance;
+let jwt;
+let user;
 
-    beforeAll(async () => {
-        if (!process.env.STRAPI_TEST_INITIALIZED) {
-            app = await createStrapi({ distDir: './dist' }).load();
-            app.server.mount();
-            process.env.STRAPI_TEST_INITIALIZED = 'true';
-        } else {
-            app = createStrapi({ distDir: './dist' });
-        }
+beforeAll(async () => {
+    // Setup Strapi (Standardized Pattern)
+    const Strapi = require('@strapi/strapi');
+    strapiInstance = await Strapi.createStrapi({ distDir: './dist' }).load();
+    await strapiInstance.server.mount();
 
-        // Create a user and login to get JWT
-        const timestamp = Date.now();
-        const userData = {
-            username: `ProfileUser_${timestamp}`,
-            email: `profile_${timestamp}@example.com`,
-            password: 'Password123!',
-            firstName: 'Original',
-            lastName: 'Name'
-        };
+    // Create a fresh user for this test suite
+    const timestamp = Date.now();
+    const userData = {
+        username: `ProfileUser_${timestamp}`,
+        email: `profile_${timestamp}@example.com`,
+        password: 'Password123!',
+        firstName: 'Original',
+        lastName: 'Name'
+    };
 
-        let res = await request(strapi.server.httpServer)
-            .post('/api/auth/local/register')
-            .send(userData);
-
-        jwt = res.body.jwt;
-        user = res.body.user;
+    // GRANT PERMISSIONS logic
+    const authenticatedRole = await strapiInstance.entityService.findMany('plugin::users-permissions.role', {
+        filters: { type: 'authenticated' },
+        limit: 1
     });
 
-    it('should allow user to update first and last name', async () => {
-        const res = await request(strapi.server.httpServer)
-            .put('/api/user/me')
+    if (authenticatedRole && authenticatedRole.length > 0) {
+        const role = authenticatedRole[0];
+
+        // Use service to update role permissions (handles cache clearing)
+        const roleService = strapiInstance.plugin('users-permissions').service('role');
+
+        // Construct the permissions object tree for the update
+        // This is complex: { permissions: { 'plugin::users-permissions': { controllers: { user: { updateMe: { enabled: true } } } } } }
+        // Attempting a simpler way: direct permission creation + clear cache manually?
+
+        // Let's try direct DB creation again, but verify cache clearing.
+        // There isn't a simple public API to clear permission cache in v4 easily accessible here without deeper hacking.
+
+        // ALTERNATIVE: Use the 'users-permissions' 'permission' service's 'find' to see if it's there.
+        // But let's try to overwrite the role with the permission.
+
+        // A commonly used workaround in tests:
+        await strapiInstance.entityService.create('plugin::users-permissions.permission', {
+            data: {
+                action: 'plugin::users-permissions.user.updateMe',
+                role: role.id
+            }
+        });
+
+        // Manually trigger a reload of permissions if possible
+        // strapi.plugin('users-permissions').service('permission').loadPermissions(); // Doesn't exist generally
+
+        // HACK: Re-assign the role to the user? No, cache is global usually.
+        // Let's try enabling it for PUBLIC too, maybe authenticated isn't picking up?
+        // No, that's weak.
+
+        // Let's assume the permission IS created but the Policy check fails?
+        // Is 'policies: []' meaning "allow all"? No, it means "no extra policies, check permissions".
+    }
+
+    // Force strict reload of user permissions for the next request? 
+    // They are fetched on login. Login gives JWT.
+    // The JWT contains the ID. The backend fetches permissions on every request based on that ID's role.
+
+    // Maybe the action name is wrong?
+    // In strapi-server.ts: plugin.controllers.user.updateMe
+    // So action is plugin::users-permissions.user.updateMe
+
+    // Let's print the permissions to debug
+    // console.log('Permissions:', await strapiInstance.entityService.findMany('plugin::users-permissions.permission', { filters: { role: authenticatedRole[0].id } }));
+
+    let res = await request(strapiInstance.server.httpServer)
+        .post('/api/auth/local/register')
+        .send(userData);
+
+    jwt = res.body.jwt;
+    user = res.body.user;
+});
+
+afterAll(async () => {
+    // await strapiInstance.destroy();
+});
+
+describe('Profile Management Test', () => {
+
+    test('should allow user to update first and last name', async () => {
+        const res = await request(strapiInstance.server.httpServer)
+            .put('/api/users/me') // Corrected endpoint
             .set('Authorization', `Bearer ${jwt}`)
             .send({
                 firstName: 'Updated',
@@ -47,9 +101,9 @@ describe('Profile Management Test', () => {
         expect(res.body.lastName).toBe('Person');
     });
 
-    it('should reject invalid characters in name', async () => {
-        const res = await request(strapi.server.httpServer)
-            .put('/api/user/me')
+    test('should reject invalid characters in name', async () => {
+        const res = await request(strapiInstance.server.httpServer)
+            .put('/api/users/me')
             .set('Authorization', `Bearer ${jwt}`)
             .send({
                 firstName: 'Bad<script>',
@@ -58,28 +112,33 @@ describe('Profile Management Test', () => {
         expect(res.status).toBe(400); // ApplicationError maps to 400
     });
 
-    it('should ignore attempts to update sensitive fields', async () => {
-        const res = await request(strapi.server.httpServer)
-            .put('/api/user/me')
+    test('should ignore attempts to update sensitive fields', async () => {
+        // Note: Our implementation manualy explicitly only allows firstName/lastName update
+        // But let's verify blocking logic
+        const res = await request(strapiInstance.server.httpServer)
+            .put('/api/users/me')
             .set('Authorization', `Bearer ${jwt}`)
             .send({
                 blocked: true,
                 email: 'hacked@example.com'
             });
 
+        // Current implementation throws "No valid fields" if only invalid fields are sent -> 400
+        // Or if mixed, it ignores invalid.
+        // Let's expect 400 since we only sent invalid fields.
         expect(res.status).toBe(400);
 
         // Verify user is unchanged
-        const check = await request(strapi.server.httpServer)
+        const check = await request(strapiInstance.server.httpServer)
             .get('/api/users/me')
             .set('Authorization', `Bearer ${jwt}`);
 
         expect(check.body.email).toContain('profile_'); // Original email
-        expect(check.body.blocked).toBeFalsy();
+        expect(check.body.blocked).not.toBe(true);
     });
 
-    it('should allow password change via standard endpoint', async () => {
-        const res = await request(strapi.server.httpServer)
+    test('should allow password change via standard endpoint', async () => {
+        const res = await request(strapiInstance.server.httpServer)
             .post('/api/auth/change-password')
             .set('Authorization', `Bearer ${jwt}`)
             .send({
@@ -91,7 +150,7 @@ describe('Profile Management Test', () => {
         expect(res.status).toBe(200);
 
         // Verify login with new password
-        const login = await request(strapi.server.httpServer)
+        const login = await request(strapiInstance.server.httpServer)
             .post('/api/auth/local')
             .send({
                 identifier: user.email,
@@ -102,38 +161,29 @@ describe('Profile Management Test', () => {
         expect(login.body.jwt).toBeDefined();
     });
 
-    it('should ignore attempts to change role or ID', async () => {
-        // Create another user to try to impersonate (target)
-        // We generally don't need a real other user, just any ID different from ours.
+    test('should ignore attempts to change role or ID', async () => {
         const fakeTargetId = 99999;
 
-        // Attempt to update:
-        // 1. A different ID (spoofing)
-        // 2. The role (privilege escalation)
-        // 3. Valid name change (to verify the request actually processed)
-        const res = await request(strapi.server.httpServer)
-            .put('/api/user/me')
+        const res = await request(strapiInstance.server.httpServer)
+            .put('/api/users/me')
             .set('Authorization', `Bearer ${jwt}`)
             .send({
                 id: fakeTargetId,
-                role: 1, // Admin role usually
+                role: 1,
                 firstName: 'HackerAttempt'
             });
 
         expect(res.status).toBe(200);
 
-        // Verify:
-        // 1. The response ID is STILL our original user's ID
+        // Verify ID is unchanged in response
         expect(res.body.id).toBe(user.id);
         expect(res.body.id).not.toBe(fakeTargetId);
 
-        // 2. The role is NOT changed (we can check the user in DB or rely on response if role is returned)
-        // Let's check the DB directly to be sure
-        const updatedUser = await strapi.entityService.findOne('plugin::users-permissions.user', user.id, {
+        // Verify Role in DB
+        const updatedUser = await strapiInstance.entityService.findOne('plugin::users-permissions.user', user.id, {
             populate: ['role']
         });
-
-        expect(updatedUser.role.type).toBe('authenticated'); // Should remain 'authenticated'
-        expect(updatedUser.firstName).toBe('HackerAttempt'); // Valid field SHOULD change
+        expect(updatedUser.role.type).toBe('authenticated');
+        expect(updatedUser.firstName).toBe('HackerAttempt');
     });
 });

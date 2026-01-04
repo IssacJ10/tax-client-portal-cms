@@ -19,7 +19,38 @@ beforeAll(async () => {
         user = users[0];
     } else {
         // create user... (omitted for brevity, assuming seed data exists from previous steps)
-        throw new Error('No users found for testing');
+        // If no user exists, we MUST create one to avoid test failure
+        user = await strapiInstance.entityService.create('plugin::users-permissions.user', {
+            data: {
+                username: 'TestRefreshUser',
+                email: 'refresh_test@example.com',
+                password: 'Password123!',
+                confirmed: true,
+                role: 1 // Authenticated
+            }
+        });
+    }
+
+    // --- GRANT PERMISSIONS ---
+    const authenticatedRole = await strapiInstance.query('plugin::users-permissions.role').findOne({ where: { type: 'authenticated' } });
+    const publicRole = await strapiInstance.query('plugin::users-permissions.role').findOne({ where: { type: 'public' } });
+
+    // Helper to grant
+    const grant = async (roleId, action) => {
+        const existing = await strapiInstance.query('plugin::users-permissions.permission').findOne({ where: { role: roleId, action } });
+        if (!existing) {
+            await strapiInstance.query('plugin::users-permissions.permission').create({ data: { role: roleId, action } });
+        }
+    };
+
+    if (authenticatedRole) {
+        await grant(authenticatedRole.id, 'api::token.logout.logout');
+        // Grant updateMe if needed?
+    }
+    if (publicRole) {
+        await grant(publicRole.id, 'api::token.token.refresh');
+        // Grant login permissions explicitly just in case
+        await grant(publicRole.id, 'plugin::users-permissions.auth.callback');
     }
 });
 
