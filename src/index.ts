@@ -123,8 +123,111 @@ export default {
     // Grant Permissions
     await grantPermission('authenticated', 'plugin::users-permissions.user.updateMe');
     await grantPermission('authenticated', 'api::token.logout.logout');
+    await grantPermission('authenticated', 'api::tax-year.tax-year.find');
+    await grantPermission('authenticated', 'api::tax-year.tax-year.findOne');
+    await grantPermission('authenticated', 'api::filing.filing.create');
+    await grantPermission('authenticated', 'api::filing.filing.find');
+    await grantPermission('authenticated', 'api::filing.filing.findOne');
+    await grantPermission('authenticated', 'api::filing.filing.update');
     await grantPermission('public', 'api::token.token.refresh');
 
+
+    // 4. SEED FILING QUESTIONS (2024)
+    const filingQuestions2024 = {
+      "title": "{year} Income Tax Return Personal Information Sheet",
+      "pages": [
+        {
+          "title": "Personal Information",
+          "id": "personal",
+          "fields": [
+            { "name": "personalInfo.email", "label": "Email", "type": "email", "required": true },
+            { "name": "personalInfo.firstName", "label": "Given Name (First Name)", "type": "text", "required": true },
+            { "name": "personalInfo.middleName", "label": "Middle Name", "type": "text", "required": false },
+            { "name": "personalInfo.lastName", "label": "Surname (Last Name)", "type": "text", "required": true },
+            { "name": "personalInfo.sin", "label": "SIN Number", "type": "text", "required": false },
+            { "name": "personalInfo.isFirstTimeFiler", "label": "Are you filing an Income Tax Return with the CRA for the first time?", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.dateOfBirth", "label": "Date of birth", "type": "date", "required": false },
+            { "name": "personalInfo.maritalStatus", "label": "Marital Status", "type": "select", "options": ["Single", "Married", "Common-law", "Separated", "Divorced", "Widowed"], "required": false },
+            { "name": "personalInfo.maritalStatusChanged", "label": "Did your Marital Status change in {year}?", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.maritalStatusChangeDate", "label": "Date of Marital status change", "type": "date", "required": false },
+            { "name": "personalInfo.emailConfirmation", "label": "Email (Confirmation)", "type": "email", "required": false },
+            { "name": "personalInfo.phoneNumber", "label": "Phone number", "type": "tel", "required": false },
+            { "name": "personalInfo.currentAddress", "label": "Current Address", "type": "text", "required": true },
+            { "name": "personalInfo.city", "label": "City", "type": "text", "required": true },
+            { "name": "personalInfo.postalCode", "label": "Postal Code", "type": "text", "required": false },
+            { "name": "personalInfo.province", "label": "Select a Province or Territory", "type": "select", "options": ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"], "required": true },
+            { "name": "personalInfo.employmentStatus", "label": "Employment Status", "type": "radio", "options": ["Employed", "Self-Employed", "Student", "Retired", "Unemployed"], "required": false },
+            { "name": "personalInfo.employmentDetails", "label": "Specify the details", "type": "text", "required": false },
+            { "name": "personalInfo.currentStatus", "label": "Current status", "type": "text", "required": false },
+            { "name": "personalInfo.previousAddress", "label": "Previous Address (If moved in {year})", "type": "text", "required": false },
+            { "name": "personalInfo.movedForWork", "label": "Did you move for Work/Studies more than 40kms?", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.arrivalDateCanada", "label": "If you came to Canada in {year}, please specify the date of your arrival", "type": "date", "required": false },
+            { "name": "personalInfo.workedOutsideCanada", "label": "If you arrived in Canada in {year}, did you work (in person or remotely) in any country besides Canada?", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.amountOutsideCanada", "label": "Enter Amount (in CAD)", "type": "number", "required": false },
+            { "name": "personalInfo.directDepositInfo", "label": "Direct Deposit Information", "type": "text", "required": false },
+            { "name": "personalInfo.taxSlips", "label": "Select The Tax Slips That Are Available To You in {year}", "type": "checkbox", "options": ["T4", "T5", "T3", "T2202", "T4A", "T4E", "T5007", "T4RSP/RIF", "T4A-OAS/CPP"], "required": false },
+            // { "name": "personalInfo.uploadedSlips", "label": "Upload All Available Slips Above", "type": "file", "required": false }, // Skip file for now in wizard config
+            { "name": "personalInfo.medicalExpenses", "label": "Medical Expenses", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.donations", "label": "Donations", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.rrsp", "label": "RRSP", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.workFromHome", "label": "Work from Home", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "personalInfo.documentAvailability", "label": "Do you have any of the following", "type": "checkbox", "options": ["T4 - Employment Income", "T5 - Investment Income", "T3 - Trust Income", "T2202 - Tuition", "Rent/Property Tax Receipts", "Medical Receipts", "Donation Receipts"], "required": true }
+          ]
+        },
+        {
+          "title": "Spouse Details",
+          "id": "spouse",
+          "fields": [
+            { "name": "spouse.residencyStatus", "label": "Canadian Residency Status Of Spouse", "type": "radio", "options": ["Resident", "Non-Resident"], "required": true },
+            { "name": "spouse.firstName", "label": "Given Name (first name)", "type": "text", "required": true },
+            { "name": "spouse.middleName", "label": "Middle Name", "type": "text", "required": false },
+            { "name": "spouse.lastName", "label": "Surname (last name)", "type": "text", "required": true },
+            { "name": "spouse.sin", "label": "SIN Number", "type": "text", "required": false },
+            { "name": "spouse.dateOfBirth", "label": "Date of Birth", "type": "date", "required": true },
+            { "name": "spouse.phoneNumber", "label": "Phone number", "type": "tel", "required": false },
+            { "name": "spouse.incomeOutsideCanada", "label": "Did your spouse earn any income from outside of Canada?", "type": "radio", "options": ["Yes", "No"], "required": false },
+            { "name": "spouse.netIncome", "label": "Net Income", "type": "number", "required": true }
+          ]
+        },
+        {
+          "title": "Dependents Details",
+          "id": "dependents",
+          "fields": [
+            { "name": "dependents.0.firstName", "label": "Given Name (first name)", "type": "text", "required": true },
+            { "name": "dependents.0.middleName", "label": "Middle Name", "type": "text", "required": false },
+            { "name": "dependents.0.lastName", "label": "Surname (last name)", "type": "text", "required": true },
+            { "name": "dependents.0.dateOfBirth", "label": "Date of Birth", "type": "date", "required": true },
+            { "name": "dependents.0.sin", "label": "SIN", "type": "text", "required": false },
+            { "name": "dependents.0.relationship", "label": "Relationship", "type": "text", "required": true }
+          ]
+        }
+      ]
+    };
+
+    const taxYear2024 = await strapi.db.query('api::tax-year.tax-year').findOne({
+      where: { year: '2024' },
+    });
+
+    if (taxYear2024) {
+      await strapi.db.query('api::tax-year.tax-year').update({
+        where: { id: taxYear2024.id },
+        data: { filingQuestions: filingQuestions2024 },
+      });
+      strapi.log.info('Seeded Filing Questions for Tax Year 2024.');
+    }
+
+    // Seed 2025 as well for development defaults
+    const taxYear2025 = await strapi.db.query('api::tax-year.tax-year').findOne({
+      where: { year: '2025' },
+    });
+
+    if (taxYear2025) {
+      await strapi.db.query('api::tax-year.tax-year').update({
+        where: { id: taxYear2025.id },
+        data: { filingQuestions: filingQuestions2024 }, // Using same questions for POC
+      });
+      strapi.log.info('Seeded Filing Questions for Tax Year 2025.');
+    }
 
   },
 };

@@ -82,6 +82,38 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         return this.transformResponse(sanitizedEntity);
     },
 
+    async update(ctx) {
+        const user = ctx.state.user;
+        if (!user) return ctx.unauthorized();
+
+        const { id } = ctx.params;
+
+        // @ts-ignore
+        const entity: any = await strapi.entityService.findOne('api::filing.filing', id, {
+            populate: ['user']
+        });
+
+        if (!entity || entity.user?.id !== user.id) {
+            return ctx.notFound(); // Or unauthorized, but notFound is safer to avoid enumeration
+        }
+
+        const { data } = ctx.request.body;
+
+        // Prevent changing taxYear or user
+        if (data.user || data.taxYear) {
+            delete data.user;
+            delete data.taxYear;
+        }
+
+        // @ts-ignore
+        const updated = await strapi.entityService.update('api::filing.filing', id, {
+            data
+        });
+
+        const sanitized = await this.sanitizeOutput(updated, ctx);
+        return this.transformResponse(sanitized);
+    },
+
     async startFiling(ctx) {
         const user = ctx.state.user;
         if (!user) return ctx.unauthorized();

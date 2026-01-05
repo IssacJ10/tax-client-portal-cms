@@ -37,6 +37,9 @@
         "instructions": {
             "type": "richtext"
         },
+        "filingQuestions": {
+            "type": "json"
+        },
         "filings": {
             "type": "relation",
             "relation": "oneToMany",

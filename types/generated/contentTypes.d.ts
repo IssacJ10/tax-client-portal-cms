@@ -674,6 +674,7 @@ export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     filingDeadline: Schema.Attribute.Date;
+    filingQuestions: Schema.Attribute.JSON;
     filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
     instructions: Schema.Attribute.RichText;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
