@@ -81,6 +81,12 @@
         "tokenVersion": {
             "type": "integer",
             "default": 1
+        },
+        "filings": {
+            "type": "relation",
+            "relation": "oneToMany",
+            "target": "api::filing.filing",
+            "mappedBy": "user"
         }
     }
 }

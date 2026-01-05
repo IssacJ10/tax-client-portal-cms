@@ -563,6 +563,63 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
+  collectionName: 'filings';
+  info: {
+    description: 'User tax filings';
+    displayName: 'Filing';
+    pluralName: 'filings';
+    singularName: 'filing';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    confirmationNumber: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    estimatedRefund: Schema.Attribute.Decimal;
+    filingData: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::filing.filing'
+    > &
+      Schema.Attribute.Private;
+    progress: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<
+      [
+        'Not Started',
+        'In Progress',
+        'Review Pending',
+        'Submitted',
+        'Approved',
+        'Rejected',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Not Started'>;
+    taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    uploadedDocuments: Schema.Attribute.Media<'files' | 'images', true>;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -592,6 +649,48 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
+  collectionName: 'tax_years';
+  info: {
+    description: 'Configure tax seasons';
+    displayName: 'Tax Year';
+    pluralName: 'tax-years';
+    singularName: 'tax-year';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      mainField: 'year';
+      visible: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    filingDeadline: Schema.Attribute.Date;
+    filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
+    instructions: Schema.Attribute.RichText;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isCurrent: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tax-year.tax-year'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    year: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
   };
 }
 
@@ -1064,6 +1163,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
     firstName: Schema.Attribute.String;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     lastName: Schema.Attribute.String;
@@ -1113,7 +1213,9 @@ declare module '@strapi/strapi' {
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
+      'api::filing.filing': ApiFilingFiling;
       'api::global.global': ApiGlobalGlobal;
+      'api::tax-year.tax-year': ApiTaxYearTaxYear;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
