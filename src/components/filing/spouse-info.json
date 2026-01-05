@@ -1,0 +1,47 @@
+{
+    "collectionName": "components_filing_spouse_infos",
+    "info": {
+        "displayName": "Spouse Info",
+        "icon": "user",
+        "description": "Details about the spouse"
+    },
+    "options": {},
+    "attributes": {
+        "firstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "middleName": {
+            "type": "string"
+        },
+        "sin": {
+            "type": "string",
+            "private": true
+        },
+        "birthDate": {
+            "type": "date"
+        },
+        "netIncome": {
+            "type": "decimal"
+        },
+        "residencyStatus": {
+            "type": "enumeration",
+            "enum": [
+                "Resident",
+                "Non-Resident"
+            ]
+        },
+        "incomeOutsideCanada": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "phoneNumber": {
+            "type": "string"
+        }
+    }
+}

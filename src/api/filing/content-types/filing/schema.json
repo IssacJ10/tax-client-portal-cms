@@ -29,7 +29,7 @@
             "enum": [
                 "Not Started",
                 "In Progress",
-                "Review Pending",
+                "Under Review",
                 "Submitted",
                 "Approved",
                 "Rejected"
@@ -59,6 +59,141 @@
                 "files",
                 "images"
             ]
+        },
+        "firstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "email": {
+            "type": "email"
+        },
+        "phoneNumber": {
+            "type": "string"
+        },
+        "sin": {
+            "type": "string",
+            "private": true
+        },
+        "birthDate": {
+            "type": "date"
+        },
+        "maritalStatus": {
+            "type": "enumeration",
+            "enum": [
+                "Single",
+                "Married",
+                "Common-law",
+                "Separated",
+                "Divorced",
+                "Widowed"
+            ]
+        },
+        "province": {
+            "type": "string"
+        },
+        "city": {
+            "type": "string"
+        },
+        "middleName": {
+            "type": "string"
+        },
+        "isFirstTimeFiler": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "maritalStatusChanged": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "maritalStatusChangeDate": {
+            "type": "date"
+        },
+        "currentAddress": {
+            "type": "text"
+        },
+        "previousAddress": {
+            "type": "text"
+        },
+        "postalCode": {
+            "type": "string"
+        },
+        "employmentStatus": {
+            "type": "string"
+        },
+        "employmentDetails": {
+            "type": "text"
+        },
+        "currentStatus": {
+            "type": "string"
+        },
+        "movedForWork": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "arrivalDateCanada": {
+            "type": "date"
+        },
+        "workedOutsideCanada": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "amountOutsideCanada": {
+            "type": "decimal"
+        },
+        "directDepositInfo": {
+            "type": "text"
+        },
+        "medicalExpenses": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "donations": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "rrsp": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "workFromHome": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "spouse": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.spouse-info"
+        },
+        "dependents": {
+            "type": "component",
+            "repeatable": true,
+            "component": "filing.dependent-info"
         }
     }
 }

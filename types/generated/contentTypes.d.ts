@@ -575,18 +575,44 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    amountOutsideCanada: Schema.Attribute.Decimal;
+    arrivalDateCanada: Schema.Attribute.Date;
+    birthDate: Schema.Attribute.Date;
+    city: Schema.Attribute.String;
     confirmationNumber: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    currentAddress: Schema.Attribute.Text;
+    currentStatus: Schema.Attribute.String;
+    dependents: Schema.Attribute.Component<'filing.dependent-info', true>;
+    directDepositInfo: Schema.Attribute.Text;
+    donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    email: Schema.Attribute.Email;
+    employmentDetails: Schema.Attribute.Text;
+    employmentStatus: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
     filingData: Schema.Attribute.JSON;
+    firstName: Schema.Attribute.String;
+    isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::filing.filing'
     > &
       Schema.Attribute.Private;
+    maritalStatus: Schema.Attribute.Enumeration<
+      ['Single', 'Married', 'Common-law', 'Separated', 'Divorced', 'Widowed']
+    >;
+    maritalStatusChanged: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    maritalStatusChangeDate: Schema.Attribute.Date;
+    medicalExpenses: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    middleName: Schema.Attribute.String;
+    movedForWork: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    phoneNumber: Schema.Attribute.String;
+    postalCode: Schema.Attribute.String;
+    previousAddress: Schema.Attribute.Text;
     progress: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -596,12 +622,16 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<0>;
+    province: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    sin: Schema.Attribute.String & Schema.Attribute.Private;
+    spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
     status: Schema.Attribute.Enumeration<
       [
         'Not Started',
         'In Progress',
-        'Review Pending',
+        'Under Review',
         'Submitted',
         'Approved',
         'Rejected',
@@ -617,6 +647,8 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    workedOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    workFromHome: Schema.Attribute.Enumeration<['Yes', 'No']>;
   };
 }
 

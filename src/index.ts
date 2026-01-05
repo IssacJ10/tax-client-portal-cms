@@ -129,6 +129,7 @@ export default {
     await grantPermission('authenticated', 'api::filing.filing.find');
     await grantPermission('authenticated', 'api::filing.filing.findOne');
     await grantPermission('authenticated', 'api::filing.filing.update');
+    await grantPermission('authenticated', 'plugin::upload.content-api.upload'); // Fix 403 on Upload
     await grantPermission('public', 'api::token.token.refresh');
 
 

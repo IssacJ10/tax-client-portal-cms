@@ -1,5 +1,42 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface FilingDependentInfo extends Struct.ComponentSchema {
+  collectionName: 'components_filing_dependent_infos';
+  info: {
+    description: 'Details about dependents';
+    displayName: 'Dependent Info';
+    icon: 'users';
+  };
+  attributes: {
+    birthDate: Schema.Attribute.Date;
+    firstName: Schema.Attribute.String;
+    lastName: Schema.Attribute.String;
+    middleName: Schema.Attribute.String;
+    relationship: Schema.Attribute.String;
+    sin: Schema.Attribute.String & Schema.Attribute.Private;
+  };
+}
+
+export interface FilingSpouseInfo extends Struct.ComponentSchema {
+  collectionName: 'components_filing_spouse_infos';
+  info: {
+    description: 'Details about the spouse';
+    displayName: 'Spouse Info';
+    icon: 'user';
+  };
+  attributes: {
+    birthDate: Schema.Attribute.Date;
+    firstName: Schema.Attribute.String;
+    incomeOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    lastName: Schema.Attribute.String;
+    middleName: Schema.Attribute.String;
+    netIncome: Schema.Attribute.Decimal;
+    phoneNumber: Schema.Attribute.String;
+    residencyStatus: Schema.Attribute.Enumeration<['Resident', 'Non-Resident']>;
+    sin: Schema.Attribute.String & Schema.Attribute.Private;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -65,6 +102,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'filing.dependent-info': FilingDependentInfo;
+      'filing.spouse-info': FilingSpouseInfo;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;
