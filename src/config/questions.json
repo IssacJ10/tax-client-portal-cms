@@ -227,7 +227,7 @@
                     "required": true
                 },
                 {
-                    "name": "personalInfo.employerDetails",
+                    "name": "personalInfo.employmentDetails",
                     "label": "If you selected 'Employed', please provide details of your employer",
                     "type": "text",
                     "required": false
