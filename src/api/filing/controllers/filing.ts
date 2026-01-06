@@ -116,8 +116,13 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             progress: updated.progress
         });
 
-        // Return directly - sanitizeOutput was stripping important fields like status, confirmationNumber, progress
-        return this.transformResponse(updated);
+        // Return in Strapi API format without transformResponse (which strips fields)
+        return {
+            data: {
+                id: updated.id,
+                attributes: updated
+            }
+        };
     },
 
     async startFiling(ctx) {
