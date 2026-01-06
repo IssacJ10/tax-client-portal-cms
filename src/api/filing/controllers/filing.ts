@@ -105,31 +105,51 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
-        console.log('[CONTROLLER DEBUG] Data being sent to db.query.update:', {
+        console.log('[CONTROLLER DEBUG] Forcing SQL update with:', {
             status: data.status,
             confirmationNumber: data.confirmationNumber,
-            progress: data.progress,
-            allKeys: Object.keys(data)
+            progress: data.progress
         });
 
-        // Use direct database query instead of entityService
+        // Use raw SQL to bypass all Strapi layers that are refusing to save these fields
+        // @ts-ignore
+        await strapi.db.connection.raw(`
+            UPDATE filings 
+            SET 
+                status = ?,
+                confirmation_number = ?,
+                progress = ?,
+                updated_at = NOW()
+            WHERE id = ?
+        `, [data.status || null, data.confirmationNumber || null, data.progress || null, id]);
+
+        // Still update other fields via db.query
         // @ts-ignore
         const updated = await strapi.db.query('api::filing.filing').update({
             where: { id },
             data
         });
 
-        console.log('[CONTROLLER DEBUG] Updated entity from database:', {
-            status: updated.status,
-            confirmationNumber: updated.confirmationNumber,
-            progress: updated.progress
-        });
+        // Verify the update worked by reading back from database
+        // @ts-ignore
+        const verified = await strapi.db.connection.raw(`
+            SELECT id, status, confirmation_number as "confirmationNumber", progress 
+            FROM filings 
+            WHERE id = ?
+        `, [id]);
 
-        // Return in Strapi API format
+        console.log('[CONTROLLER DEBUG] Verified from database:', verified.rows[0]);
+
+        // Return in Strapi API format with verified values
         return {
             data: {
                 id: updated.id,
-                attributes: updated
+                attributes: {
+                    ...updated,
+                    status: verified.rows[0].status,
+                    confirmationNumber: verified.rows[0].confirmationNumber,
+                    progress: verified.rows[0].progress
+                }
             }
         };
     },
