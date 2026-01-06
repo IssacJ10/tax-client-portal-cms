@@ -105,12 +105,19 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
+        console.log('[CONTROLLER DEBUG] Data being sent to entityService.update:', {
+            status: data.status,
+            confirmationNumber: data.confirmationNumber,
+            progress: data.progress,
+            allKeys: Object.keys(data)
+        });
+
         // @ts-ignore
         const updated = await strapi.entityService.update('api::filing.filing', id, {
             data
         });
 
-        console.log('[CONTROLLER DEBUG] Updated entity:', {
+        console.log('[CONTROLLER DEBUG] Updated entity returned:', {
             status: updated.status,
             confirmationNumber: updated.confirmationNumber,
             progress: updated.progress
