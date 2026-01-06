@@ -110,7 +110,13 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             data
         });
 
-        // Return directly - sanitizeOutput was stripping important fields like status, confirm ationNumber, progress
+        console.log('[CONTROLLER DEBUG] Updated entity:', {
+            status: updated.status,
+            confirmationNumber: updated.confirmationNumber,
+            progress: updated.progress
+        });
+
+        // Return directly - sanitizeOutput was stripping important fields like status, confirmationNumber, progress
         return this.transformResponse(updated);
     },
 
