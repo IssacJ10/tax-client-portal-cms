@@ -275,6 +275,117 @@
             "order": 60
         },
         {
+            "id": "q_residency_status",
+            "type": "select",
+            "label": "Canadian Residency Status",
+            "name": "personalInfo.residencyStatus",
+            "options": [
+                {
+                    "label": "Citizen",
+                    "value": "CITIZEN"
+                },
+                {
+                    "label": "Permanent Resident",
+                    "value": "PERMANENT_RESIDENT"
+                },
+                {
+                    "label": "Work Permit",
+                    "value": "WORK_PERMIT"
+                },
+                {
+                    "label": "Refugee",
+                    "value": "REFUGEE"
+                },
+                {
+                    "label": "Student",
+                    "value": "STUDENT"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "financial_other",
+            "order": 10
+        },
+        {
+            "id": "q_moved_in_year",
+            "type": "radio",
+            "label": "Did you move in {year}?",
+            "name": "personalInfo.movedInYear",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "financial_other",
+            "order": 20
+        },
+        {
+            "id": "q_previous_address",
+            "type": "text",
+            "label": "Previous Address (If moved in {year})",
+            "name": "personalInfo.previousAddress",
+            "validation": {
+                "required": false
+            },
+            "step": "financial_other",
+            "order": 30
+        },
+        {
+            "id": "q_arrival_date",
+            "type": "date",
+            "label": "If you came to Canada in {year}, Please specify the date of your arrival",
+            "name": "personalInfo.arrivalDate",
+            "validation": {
+                "required": false
+            },
+            "step": "financial_other",
+            "order": 40
+        },
+        {
+            "id": "q_worked_outside_canada",
+            "type": "radio",
+            "label": "If you arrived in Canada in {year}, did you work (in person or remotely) in any country besides Canada?",
+            "name": "personalInfo.workedOutsideCanada",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "financial_other",
+            "order": 50
+        },
+        {
+            "id": "q_amount_outside_canada",
+            "type": "number",
+            "label": "Enter Amount (in CAD)",
+            "name": "personalInfo.amountOutsideCanada",
+            "validation": {
+                "required": false
+            },
+            "step": "financial_other",
+            "order": 60
+        },
+        {
+            "id": "q_direct_deposit",
+            "type": "radio",
+            "label": "Complete this session if you would like Canada Revenue Agency (CRA) to deposit any amounts payable to you directly into your bank account.",
+            "name": "personalInfo.directDeposit",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "financial_other",
+            "order": 70
+        },
+        {
             "id": "q_family_members",
             "type": "select",
             "label": "Do you have a spouse or dependents to claim on your tax return?",
@@ -302,6 +413,108 @@
             },
             "step": "family_status",
             "order": 10
+        },
+        {
+            "id": "q_spouse_repeater",
+            "type": "repeater",
+            "label": "Spouse Information",
+            "name": "spouse",
+            "step": "spouse",
+            "order": 10,
+            "config": {
+                "addButtonLabel": "Add Spouse Details",
+                "removeButtonLabel": "Remove Spouse",
+                "maxItems": 1,
+                "isSingle": true,
+                "emptyMessage": "Click below to add your spouse's information"
+            },
+            "fields": [
+                {
+                    "id": "q_spouse_residency_status",
+                    "type": "radio",
+                    "label": "Canadian Residency Status Of Spouse",
+                    "name": "residencyStatus",
+                    "options": [
+                        {
+                            "label": "Resident",
+                            "value": "RESIDENT"
+                        },
+                        {
+                            "label": "Non-Resident",
+                            "value": "NON_RESIDENT"
+                        }
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_first_name",
+                    "type": "text",
+                    "label": "Given Name (Spouse)",
+                    "name": "firstName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_middle_name",
+                    "type": "text",
+                    "label": "Middle Name (Spouse)",
+                    "name": "middleName",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "q_spouse_last_name",
+                    "type": "text",
+                    "label": "Surname (Spouse)",
+                    "name": "lastName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_dob",
+                    "type": "date",
+                    "label": "Date of Birth (Spouse)",
+                    "name": "dateOfBirth",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_net_income",
+                    "type": "number",
+                    "label": "Net Income (Spouse)",
+                    "name": "netIncome",
+                    "validation": {
+                        "required": false
+                    }
+                }
+            ],
+            "conditional": {
+                "operator": "or",
+                "conditions": [
+                    {
+                        "parentQuestionId": "personalInfo.maritalStatus",
+                        "operator": "in",
+                        "values": [
+                            "MARRIED",
+                            "COMMON_LAW"
+                        ]
+                    },
+                    {
+                        "parentQuestionId": "personalInfo.hasFamilyMembers",
+                        "operator": "in",
+                        "values": [
+                            "SPOUSE",
+                            "BOTH"
+                        ]
+                    }
+                ]
+            }
         },
         {
             "id": "q_dependents_count",
@@ -338,6 +551,122 @@
                     "BOTH"
                 ]
             }
+        },
+        {
+            "id": "q_dependents_repeater",
+            "type": "repeater",
+            "label": "Dependent",
+            "name": "dependents",
+            "step": "dependents",
+            "order": 20,
+            "config": {
+                "addButtonLabel": "Add Another Dependent",
+                "removeButtonLabel": "Remove",
+                "minItems": 0,
+                "maxItems": 10,
+                "countField": "personalInfo.dependentsCount",
+                "emptyMessage": "No dependents added yet. Click below to add."
+            },
+            "fields": [
+                {
+                    "id": "q_dep_first_name",
+                    "type": "text",
+                    "label": "Given Name (first name)",
+                    "name": "firstName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_middle_name",
+                    "type": "text",
+                    "label": "Middle Name",
+                    "name": "middleName",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "q_dep_last_name",
+                    "type": "text",
+                    "label": "Surname (last name)",
+                    "name": "lastName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_sin",
+                    "type": "text",
+                    "label": "SIN Number",
+                    "name": "sin",
+                    "placeholder": "XXX-XXX-XXX",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "q_dep_dob",
+                    "type": "date",
+                    "label": "Date of Birth",
+                    "name": "dateOfBirth",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_relationship",
+                    "type": "select",
+                    "label": "Relationship",
+                    "name": "relationship",
+                    "options": [
+                        {
+                            "label": "Son",
+                            "value": "SON"
+                        },
+                        {
+                            "label": "Daughter",
+                            "value": "DAUGHTER"
+                        },
+                        {
+                            "label": "Foster Son",
+                            "value": "FOSTER_SON"
+                        },
+                        {
+                            "label": "Foster Daughter",
+                            "value": "FOSTER_DAUGHTER"
+                        },
+                        {
+                            "label": "Other",
+                            "value": "OTHER"
+                        }
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_disability",
+                    "type": "radio",
+                    "label": "Does this dependent have a disability?",
+                    "name": "hasDisability",
+                    "options": [
+                        "Yes",
+                        "No"
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                }
+            ],
+            "conditional": {
+                "parentQuestionId": "personalInfo.hasFamilyMembers",
+                "operator": "in",
+                "values": [
+                    "DEPENDENTS",
+                    "BOTH"
+                ]
+            }
         }
     ],
     "steps": [
@@ -354,16 +683,22 @@
             "order": 20
         },
         {
+            "id": "financial_other",
+            "title": "Additional Information",
+            "description": "Please provide employment and residency details.",
+            "order": 30
+        },
+        {
             "id": "family_status",
             "title": "Family Status",
             "description": "Please indicate if you are filing for a spouse or dependents.",
-            "order": 30
+            "order": 40
         },
         {
             "id": "spouse",
             "title": "Spouse Information",
             "description": "Please provide details about your spouse.",
-            "order": 40,
+            "order": 50,
             "conditional": {
                 "anyQuestionVisible": true
             }
@@ -372,7 +707,7 @@
             "id": "dependents",
             "title": "Dependents",
             "description": "Please provide details for your dependents.",
-            "order": 50,
+            "order": 60,
             "conditional": {
                 "anyQuestionVisible": true
             }
