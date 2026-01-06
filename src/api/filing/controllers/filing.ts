@@ -77,7 +77,26 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             populate: ['user', 'taxYear']
         });
 
-        if (!entity || (!isAdmin && entity.user?.id !== user.id)) {
+        console.log('[FINDONE DEBUG] Entity user:', {
+            entityUserId: entity?.user?.id,
+            entityUserDocumentId: entity?.user?.documentId,
+            entityUser: entity?.user,
+            currentUserId: user.id,
+            isAdmin
+        });
+
+        // Handle both numeric ID and documentId comparison
+        const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
+        const userMatches = entityUserId === user.id || entityUserId === user.documentId;
+
+        if (!entity || (!isAdmin && !userMatches)) {
+            console.log('[FINDONE DEBUG] Access denied:', {
+                hasEntity: !!entity,
+                isAdmin,
+                userMatches,
+                entityUserId,
+                currentUserId: user.id
+            });
             return ctx.notFound();
         }
 
@@ -98,7 +117,11 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             populate: ['user']
         });
 
-        if (!entity || (!isAdmin && entity.user?.id !== user.id)) {
+        // Handle both numeric ID and documentId comparison
+        const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
+        const userMatches = entityUserId === user.id || entityUserId === user.documentId;
+
+        if (!entity || (!isAdmin && !userMatches)) {
             return ctx.notFound();
         }
 
