@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 const { createStrapi } = require('@strapi/strapi');
 
 async function grantPermissions() {
@@ -6,42 +6,49 @@ async function grantPermissions() {
     const strapi = await createStrapi({ distDir: './dist' }).load();
 
     try {
-        console.log('Finding Authenticated Role...');
-        const authenticatedRole = await strapi.entityService.findMany('plugin::users-permissions.role', {
-            filters: { type: 'authenticated' }
+        console.log('Finding Roles to update...');
+        // Use Document Service
+        const roles = await strapi.documents('plugin::users-permissions.role').findMany({
+            filters: {
+                type: {
+                    $in: ['authenticated', 'admin_role']
+                }
+            }
         });
 
-        if (!authenticatedRole || authenticatedRole.length === 0) {
-            throw new Error('Authenticated role not found');
+        if (!roles || roles.length === 0) {
+            throw new Error('No target roles found');
         }
 
-        const roleId = authenticatedRole[0].id;
         const permissionsToEnable = [
             'api::tax-year.tax-year.find',
             'api::tax-year.tax-year.findOne',
             'api::filing.filing.find',
             'api::filing.filing.findOne',
             'api::filing.filing.create',
-            // Ensure User can update their own profile if needed (already enabled likely)
+            'api::filing.filing.update',
             'plugin::users-permissions.user.me',
-            'plugin::users-permissions.user.find'
+            'plugin::users-permissions.user.find',
+            'plugin::users-permissions.user.findOne'
         ];
 
-        console.log(`Granting permissions to Role ${roleId}...`);
-
-        for (const action of permissionsToEnable) {
-            // Check if permission exists
-            const existing = await strapi.entityService.findMany('plugin::users-permissions.permission', {
-                filters: { action, role: roleId }
-            });
-
-            if (existing.length === 0) {
-                await strapi.entityService.create('plugin::users-permissions.permission', {
-                    data: { action, role: roleId }
+        for (const role of roles) {
+            console.log(`Granting permissions to Role: ${role.name} (type: ${role.type}, id: ${role.id})...`);
+            for (const action of permissionsToEnable) {
+                // Check if permission exists using Document Service if available or DB query (permissions are often technical)
+                // For simplicity and compatibility with technical tables, db.query is often very stable in scripts
+                const existing = await strapi.db.query('plugin::users-permissions.permission').findOne({
+                    where: { action, role: role.id }
                 });
-                console.log(`+ Granted: ${action}`);
-            } else {
-                console.log(`= Already exists: ${action}`);
+
+                if (!existing) {
+                    await strapi.db.query('plugin::users-permissions.permission').create({
+                        data: { action, role: role.id }
+                    });
+                    console.log(`  + Granted: ${action}`);
+                } else {
+                    console.log(`  = Already exists: ${action}`);
+                }
             }
         }
 

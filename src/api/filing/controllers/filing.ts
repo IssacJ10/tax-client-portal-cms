@@ -16,26 +16,24 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
 
         // Check if filing already exists
         if (requestData.taxYear) {
-            // @ts-ignore
-            const existing = await strapi.entityService.findMany('api::filing.filing', {
+            // Use Document Service findMany
+            const existing = await strapi.documents('api::filing.filing').findMany({
                 filters: {
                     user: user.id,
                     taxYear: requestData.taxYear
                 }
             });
-            // @ts-ignore
             if (existing && existing.length > 0) {
                 return ctx.badRequest('A filing already exists for this tax year');
             }
         }
 
-        // Use EntityService to bypass HTTP sanitization of 'user' field
-        // @ts-ignore
-        const newFiling = await strapi.entityService.create('api::filing.filing', {
+        // Use Document Service create
+        const newFiling = await strapi.documents('api::filing.filing').create({
             data: {
                 ...requestData,
                 user: user.id,
-                publishedAt: new Date() // Publish immediately
+                status: 'published' // Strapi v5 published status
             }
         });
 
@@ -48,13 +46,16 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         const user = ctx.state.user;
         if (!user) return ctx.unauthorized();
 
-        // Use EntityService for strict control
+        // Check if user is Admin
+        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
+
+        // Use Core Service find for pagination (since Document Service findMany/findPage differ in v5 internal)
         // @ts-ignore
-        const { results, pagination } = await strapi.entityService.findPage('api::filing.filing', {
+        const { results, pagination } = await strapi.service('api::filing.filing').find({
             ...ctx.query,
             filters: {
                 ...(ctx.query.filters as any || {}),
-                user: user.id
+                ...(isAdmin ? {} : { user: user.id })
             },
             populate: ['taxYear']
         });
@@ -68,13 +69,15 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         if (!user) return ctx.unauthorized();
 
         const { id } = ctx.params;
+        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
 
-        // @ts-ignore
-        const entity: any = await strapi.entityService.findOne('api::filing.filing', id, {
+        // Use Document Service findOne with documentId
+        const entity: any = await strapi.documents('api::filing.filing').findOne({
+            documentId: id,
             populate: ['user', 'taxYear']
         });
 
-        if (!entity || entity.user?.id !== user.id) {
+        if (!entity || (!isAdmin && entity.user?.id !== user.id)) {
             return ctx.notFound();
         }
 
@@ -87,14 +90,16 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         if (!user) return ctx.unauthorized();
 
         const { id } = ctx.params;
+        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
 
-        // @ts-ignore
-        const entity: any = await strapi.entityService.findOne('api::filing.filing', id, {
+        // Use Document Service findOne
+        const entity: any = await strapi.documents('api::filing.filing').findOne({
+            documentId: id,
             populate: ['user']
         });
 
-        if (!entity || entity.user?.id !== user.id) {
-            return ctx.notFound(); // Or unauthorized, but notFound is safer to avoid enumeration
+        if (!entity || (!isAdmin && entity.user?.id !== user.id)) {
+            return ctx.notFound();
         }
 
         const { data } = ctx.request.body;
@@ -105,8 +110,9 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
-        // @ts-ignore
-        const updated = await strapi.entityService.update('api::filing.filing', id, {
+        // Use Document Service update with documentId
+        const updated = await strapi.documents('api::filing.filing').update({
+            documentId: id,
             data
         });
 

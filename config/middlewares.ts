@@ -6,7 +6,7 @@ export default [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      origin: ['http://localhost:3000', 'http://localhost:1337'],
+      origin: ['http://localhost:3000', 'http://localhost:1337', 'http://localhost:3001'],
       headers: '*',
     },
   },
