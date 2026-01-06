@@ -105,29 +105,18 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
-        // Check actual column names in database
-        // @ts-ignore
-        const schemaCheck = await strapi.db.connection.raw(`
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'filings' 
-            AND column_name IN ('status', 'confirmation_number', 'progress')
-            ORDER BY column_name
-        `);
-        console.log('[CONTROLLER DEBUG] Available columns:', schemaCheck.rows);
-
         console.log('[CONTROLLER DEBUG] Forcing SQL update with:', {
             status: data.status,
             confirmationNumber: data.confirmationNumber,
             progress: data.progress
         });
 
-        // Use raw SQL to bypass all Strapi layers that are refusing to save these fields
+        // Use raw SQL - actual column name is current_status NOT status!
         // @ts-ignore
         await strapi.db.connection.raw(`
             UPDATE filings 
             SET 
-                status = ?,
+                current_status = ?,
                 confirmation_number = ?,
                 progress = ?,
                 updated_at = NOW()
@@ -141,10 +130,10 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             data
         });
 
-        // Verify the update worked by reading back from database
+        // Verify the update worked - read from current_status column
         // @ts-ignore
         const verified = await strapi.db.connection.raw(`
-            SELECT id, status, confirmation_number as "confirmationNumber", progress 
+            SELECT id, current_status as status, confirmation_number as "confirmationNumber", progress 
             FROM filings 
             WHERE id = ?
         `, [id]);
