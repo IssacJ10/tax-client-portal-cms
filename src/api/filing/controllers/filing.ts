@@ -111,7 +111,17 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             progress: data.progress
         });
 
-        // Use raw SQL - write to status column (not current_status!)
+        // First update OTHER fields via entityService (for Strapi's internal tracking)
+        // @ts-ignore
+        await strapi.entityService.update('api::filing.filing', id, {
+            data: {
+                status: data.status,
+                confirmationNumber: data.confirmationNumber,
+                progress: data.progress
+            }
+        });
+
+        // Then update ALL fields including status via raw SQL to ensure database persistence
         // @ts-ignore
         await strapi.db.connection.raw(`
             UPDATE filings 
@@ -123,33 +133,28 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             WHERE id = ?
         `, [data.status || null, data.confirmationNumber || null, data.progress || null, id]);
 
-        // Still update other fields via db.query
+        // Update remaining fields
         // @ts-ignore
         const updated = await strapi.db.query('api::filing.filing').update({
             where: { id },
             data
         });
 
-        // Verify the update worked - read from status column
+        // Verify and read back via entityService (so Strapi's cache is correct)
         // @ts-ignore
-        const verified = await strapi.db.connection.raw(`
-            SELECT id, status, confirmation_number as "confirmationNumber", progress 
-            FROM filings 
-            WHERE id = ?
-        `, [id]);
+        const verified = await strapi.entityService.findOne('api::filing.filing', id);
 
-        console.log('[CONTROLLER DEBUG] Verified from database:', verified.rows[0]);
+        console.log('[CONTROLLER DEBUG] Verified from entityService:', {
+            status: verified.status,
+            confirmationNumber: verified.confirmationNumber,
+            progress: verified.progress
+        });
 
-        // Return in Strapi API format with verified values
+        // Return in Strapi API format
         return {
             data: {
-                id: updated.id,
-                attributes: {
-                    ...updated,
-                    status: verified.rows[0].status,
-                    confirmationNumber: verified.rows[0].confirmationNumber,
-                    progress: verified.rows[0].progress
-                }
+                id: verified.id,
+                attributes: verified
             }
         };
     },
