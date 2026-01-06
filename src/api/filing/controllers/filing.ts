@@ -106,32 +106,32 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         }
 
         console.log('[CONTROLLER DEBUG] Forcing SQL update with:', {
-            status: data.status,
+            filingStatus: data.filingStatus,
             confirmationNumber: data.confirmationNumber,
             progress: data.progress
         });
 
-        // First update OTHER fields via entityService (for Strapi's internal tracking)
+        // First update via entityService (for Strapi's internal tracking)
         // @ts-ignore
         await strapi.entityService.update('api::filing.filing', id, {
             data: {
-                status: data.status,
+                filingStatus: data.filingStatus,
                 confirmationNumber: data.confirmationNumber,
                 progress: data.progress
             }
         });
 
-        // Then update ALL fields including status via raw SQL to ensure database persistence
+        // Then update ALL fields including filingStatus via raw SQL to ensure database persistence
         // @ts-ignore
         await strapi.db.connection.raw(`
             UPDATE filings 
             SET 
-                status = ?,
+                filing_status = ?,
                 confirmation_number = ?,
                 progress = ?,
                 updated_at = NOW()
             WHERE id = ?
-        `, [data.status || null, data.confirmationNumber || null, data.progress || null, id]);
+        `, [data.filingStatus || null, data.confirmationNumber || null, data.progress || null, id]);
 
         // Update remaining fields
         // @ts-ignore
@@ -145,7 +145,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         const verified = await strapi.entityService.findOne('api::filing.filing', id);
 
         console.log('[CONTROLLER DEBUG] Verified from entityService:', {
-            status: verified.status,
+            filingStatus: verified.filingStatus,
             confirmationNumber: verified.confirmationNumber,
             progress: verified.progress
         });

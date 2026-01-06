@@ -593,6 +593,17 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     employmentStatus: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
     filingData: Schema.Attribute.JSON;
+    filingStatus: Schema.Attribute.Enumeration<
+      [
+        'Not Started',
+        'In Progress',
+        'Under Review',
+        'Submitted',
+        'Approved',
+        'Rejected',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Not Started'>;
     firstName: Schema.Attribute.String;
     isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
@@ -627,17 +638,6 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
-    status: Schema.Attribute.Enumeration<
-      [
-        'Not Started',
-        'In Progress',
-        'Under Review',
-        'Submitted',
-        'Approved',
-        'Rejected',
-      ]
-    > &
-      Schema.Attribute.DefaultTo<'Not Started'>;
     taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
