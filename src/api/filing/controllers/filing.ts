@@ -110,8 +110,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             data
         });
 
-        const sanitized = await this.sanitizeOutput(updated, ctx);
-        return this.transformResponse(sanitized);
+        // Return directly - sanitizeOutput was stripping important fields like status, confirm ationNumber, progress
+        return this.transformResponse(updated);
     },
 
     async startFiling(ctx) {
