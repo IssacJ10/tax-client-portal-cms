@@ -354,7 +354,7 @@
                             "name": "sin",
                             "label": "SIN",
                             "type": "text",
-                            "required": false
+                            "required": true
                         },
                         {
                             "name": "relationship",
@@ -453,6 +453,12 @@
                         "Any Other Employment Expenses",
                         "Child Care Receipts"
                     ],
+                    "required": false
+                },
+                {
+                    "name": "personalInfo.uploadedFiles",
+                    "label": "Upload All Available Slips Above",
+                    "type": "file",
                     "required": false
                 }
             ]
