@@ -111,12 +111,12 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             progress: data.progress
         });
 
-        // Use raw SQL - actual column name is current_status NOT status!
+        // Use raw SQL - write to status column (not current_status!)
         // @ts-ignore
         await strapi.db.connection.raw(`
             UPDATE filings 
             SET 
-                current_status = ?,
+                status = ?,
                 confirmation_number = ?,
                 progress = ?,
                 updated_at = NOW()
@@ -130,10 +130,10 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             data
         });
 
-        // Verify the update worked - read from current_status column
+        // Verify the update worked - read from status column
         // @ts-ignore
         const verified = await strapi.db.connection.raw(`
-            SELECT id, current_status as status, confirmation_number as "confirmationNumber", progress 
+            SELECT id, status, confirmation_number as "confirmationNumber", progress 
             FROM filings 
             WHERE id = ?
         `, [id]);

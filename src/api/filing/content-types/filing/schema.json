@@ -34,8 +34,7 @@
                 "Approved",
                 "Rejected"
             ],
-            "default": "Not Started",
-            "columnName": "current_status"
+            "default": "Not Started"
         },
         "filingData": {
             "type": "json"
