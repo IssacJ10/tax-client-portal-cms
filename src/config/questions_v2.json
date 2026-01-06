@@ -713,6 +713,12 @@
             }
         },
         {
+            "id": "doc_selection",
+            "title": "Document Selection & Upload",
+            "description": "Please select and upload the documents you have available.",
+            "order": 65
+        },
+        {
             "id": "review",
             "title": "Review Your Information",
             "description": "Please review all the information you've provided before submitting.",
@@ -720,3 +726,4 @@
         }
     ]
 }
+```
