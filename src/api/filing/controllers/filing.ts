@@ -105,6 +105,17 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
+        // Check actual column names in database
+        // @ts-ignore
+        const schemaCheck = await strapi.db.connection.raw(`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'filings' 
+            AND column_name IN ('status', 'confirmation_number', 'progress')
+            ORDER BY column_name
+        `);
+        console.log('[CONTROLLER DEBUG] Available columns:', schemaCheck.rows);
+
         console.log('[CONTROLLER DEBUG] Forcing SQL update with:', {
             status: data.status,
             confirmationNumber: data.confirmationNumber,
