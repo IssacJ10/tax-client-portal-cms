@@ -424,7 +424,7 @@
                         "4",
                         "5"
                     ],
-                    "required": true
+                    "required": false
                 },
                 {
                     "name": "dependents.list",
