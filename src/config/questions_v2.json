@@ -667,6 +667,94 @@
                     "BOTH"
                 ]
             }
+        },
+        {
+            "id": "q_rrsp",
+            "type": "radio",
+            "label": "Did you buy registered retirement savings plan (RRSP) in {year}?",
+            "name": "personalInfo.rrsp",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": false
+            },
+            "step": "doc_selection",
+            "order": 10
+        },
+        {
+            "id": "q_work_from_home",
+            "type": "radio",
+            "label": "Do you work from home?",
+            "name": "personalInfo.workFromHome",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": false
+            },
+            "step": "doc_selection",
+            "order": 20
+        },
+        {
+            "id": "q_tax_slips",
+            "type": "checkbox",
+            "label": "Select The Tax Slips That Available To You in {year}",
+            "name": "personalInfo.taxSlips",
+            "options": [
+                "T2202 – Tuition and education credits",
+                "T4 -Employment income",
+                "T4A -Self-employment, pension, or other income",
+                "T4E -Employment Insurance (EI) benefits",
+                "T4A(P) – Canada Pension Plan (CPP) benefits",
+                "T5 – Investment income (interest, dividends)",
+                "T4RSP – RRSP withdrawals",
+                "RC62 – Universal Child Care Benefit (if applicable)",
+                "T3 – Income from trusts or mutual funds",
+                "T5007 – Social assistance or worker's compensation benefits",
+                "T5013 – Partnership income",
+                "Business or rental income (financial statements, invoices, receipts)",
+                "T4A(OAS) – Old Age Security (OAS) benefits",
+                "Disability Tax credit T2201",
+                "No Income"
+            ],
+            "validation": {
+                "required": false
+            },
+            "step": "doc_selection",
+            "order": 30
+        },
+        {
+            "id": "q_additional_docs",
+            "type": "checkbox",
+            "label": "Please E-mail me, if any of the following documents are available",
+            "name": "personalInfo.additionalDocs",
+            "options": [
+                "Rental Income",
+                "Investment or Capital Gain/Loss",
+                "Foreign Income & Assets",
+                "Property Tax/Rent Receipts",
+                "Any Other Employment Expenses",
+                "Child Care Receipts"
+            ],
+            "validation": {
+                "required": false
+            },
+            "step": "doc_selection",
+            "order": 40
+        },
+        {
+            "id": "q_file_upload",
+            "type": "file",
+            "label": "Upload All Available Slips Above",
+            "name": "personalInfo.uploadedFiles",
+            "validation": {
+                "required": false
+            },
+            "step": "doc_selection",
+            "order": 50
         }
     ],
     "steps": [
