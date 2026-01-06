@@ -603,7 +603,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     maritalStatus: Schema.Attribute.Enumeration<
-      ['Single', 'Married', 'Common-law', 'Separated', 'Divorced', 'Widowed']
+      ['SINGLE', 'MARRIED', 'COMMON_LAW', 'SEPARATED', 'DIVORCED', 'WIDOWED']
     >;
     maritalStatusChanged: Schema.Attribute.Enumeration<['Yes', 'No']>;
     maritalStatusChangeDate: Schema.Attribute.Date;

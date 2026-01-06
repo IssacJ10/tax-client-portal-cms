@@ -82,12 +82,12 @@
         "maritalStatus": {
             "type": "enumeration",
             "enum": [
-                "Single",
-                "Married",
-                "Common-law",
-                "Separated",
-                "Divorced",
-                "Widowed"
+                "SINGLE",
+                "MARRIED",
+                "COMMON_LAW",
+                "SEPARATED",
+                "DIVORCED",
+                "WIDOWED"
             ]
         },
         "province": {

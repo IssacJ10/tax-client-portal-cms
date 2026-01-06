@@ -51,12 +51,30 @@
                     "label": "Marital Status",
                     "type": "select",
                     "options": [
-                        "Married",
-                        "Single",
-                        "Common-law",
-                        "Separated",
-                        "Divorced",
-                        "Widowed"
+                        {
+                            "label": "Married",
+                            "value": "MARRIED"
+                        },
+                        {
+                            "label": "Single",
+                            "value": "SINGLE"
+                        },
+                        {
+                            "label": "Common-law",
+                            "value": "COMMON_LAW"
+                        },
+                        {
+                            "label": "Separated",
+                            "value": "SEPARATED"
+                        },
+                        {
+                            "label": "Divorced",
+                            "value": "DIVORCED"
+                        },
+                        {
+                            "label": "Widowed",
+                            "value": "WIDOWED"
+                        }
                     ],
                     "required": true
                 },
@@ -118,19 +136,58 @@
                     "label": "Select a Province or Territory",
                     "type": "select",
                     "options": [
-                        "Alberta",
-                        "British Columbia",
-                        "Manitoba",
-                        "New Brunswick",
-                        "Newfoundland and Labrador",
-                        "Nova Scotia",
-                        "Ontario",
-                        "Prince Edward Island",
-                        "Quebec",
-                        "Saskatchewan",
-                        "Northwest Territories",
-                        "Nunavut",
-                        "Yukon"
+                        {
+                            "label": "Alberta",
+                            "value": "AB"
+                        },
+                        {
+                            "label": "British Columbia",
+                            "value": "BC"
+                        },
+                        {
+                            "label": "Manitoba",
+                            "value": "MB"
+                        },
+                        {
+                            "label": "New Brunswick",
+                            "value": "NB"
+                        },
+                        {
+                            "label": "Newfoundland and Labrador",
+                            "value": "NL"
+                        },
+                        {
+                            "label": "Nova Scotia",
+                            "value": "NS"
+                        },
+                        {
+                            "label": "Ontario",
+                            "value": "ON"
+                        },
+                        {
+                            "label": "Prince Edward Island",
+                            "value": "PE"
+                        },
+                        {
+                            "label": "Quebec",
+                            "value": "QC"
+                        },
+                        {
+                            "label": "Saskatchewan",
+                            "value": "SK"
+                        },
+                        {
+                            "label": "Northwest Territories",
+                            "value": "NT"
+                        },
+                        {
+                            "label": "Nunavut",
+                            "value": "NU"
+                        },
+                        {
+                            "label": "Yukon",
+                            "value": "YT"
+                        }
                     ],
                     "required": true
                 }
@@ -146,11 +203,26 @@
                     "label": "Employment Status",
                     "type": "select",
                     "options": [
-                        "Employed (Full-time/Part-time)",
-                        "Self-employed",
-                        "Temporary/Contract Work",
-                        "Corporation",
-                        "Unemplyeed"
+                        {
+                            "label": "Employed (Full-time/Part-time)",
+                            "value": "EMPLOYED"
+                        },
+                        {
+                            "label": "Self-employed",
+                            "value": "SELF_EMPLOYED"
+                        },
+                        {
+                            "label": "Temporary/Contract Work",
+                            "value": "CONTRACT"
+                        },
+                        {
+                            "label": "Corporation",
+                            "value": "CORPORATION"
+                        },
+                        {
+                            "label": "Unemployed",
+                            "value": "UNEMPLOYED"
+                        }
                     ],
                     "required": true
                 },
@@ -165,11 +237,26 @@
                     "label": "Canadian Residency Status",
                     "type": "select",
                     "options": [
-                        "Citizen",
-                        "Permanent Resident",
-                        "Work Permit",
-                        "Refugee",
-                        "Student"
+                        {
+                            "label": "Citizen",
+                            "value": "CITIZEN"
+                        },
+                        {
+                            "label": "Permanent Resident",
+                            "value": "PERMANENT_RESIDENT"
+                        },
+                        {
+                            "label": "Work Permit",
+                            "value": "WORK_PERMIT"
+                        },
+                        {
+                            "label": "Refugee",
+                            "value": "REFUGEE"
+                        },
+                        {
+                            "label": "Student",
+                            "value": "STUDENT"
+                        }
                     ],
                     "required": true
                 },
@@ -233,10 +320,22 @@
                     "label": "Do you have any of the following",
                     "type": "radio",
                     "options": [
-                        "Spouse (Even Outside Canada)",
-                        "Dependents",
-                        "Both",
-                        "None"
+                        {
+                            "label": "Spouse (Even Outside Canada)",
+                            "value": "SPOUSE"
+                        },
+                        {
+                            "label": "Dependents",
+                            "value": "DEPENDENTS"
+                        },
+                        {
+                            "label": "Both",
+                            "value": "BOTH"
+                        },
+                        {
+                            "label": "None",
+                            "value": "NONE"
+                        }
                     ],
                     "required": true
                 }
@@ -249,8 +348,8 @@
             "conditionalOn": {
                 "field": "personalInfo.hasFamilyMembers",
                 "values": [
-                    "Spouse (Even Outside Canada)",
-                    "Both"
+                    "SPOUSE",
+                    "BOTH"
                 ]
             },
             "fields": [
@@ -259,8 +358,14 @@
                     "label": "Canadian Residency Status Of Spouse",
                     "type": "radio",
                     "options": [
-                        "Resident",
-                        "Non-Resident"
+                        {
+                            "label": "Resident",
+                            "value": "RESIDENT"
+                        },
+                        {
+                            "label": "Non-Resident",
+                            "value": "NON_RESIDENT"
+                        }
                     ],
                     "required": true
                 },
@@ -303,8 +408,8 @@
             "conditionalOn": {
                 "field": "personalInfo.hasFamilyMembers",
                 "values": [
-                    "Dependents",
-                    "Both"
+                    "DEPENDENTS",
+                    "BOTH"
                 ]
             },
             "fields": [

@@ -29,8 +29,8 @@
         "residencyStatus": {
             "type": "enumeration",
             "enum": [
-                "Resident",
-                "Non-Resident"
+                "RESIDENT",
+                "NON_RESIDENT"
             ]
         },
         "incomeOutsideCanada": {

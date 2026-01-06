@@ -32,7 +32,7 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
     phoneNumber: Schema.Attribute.String;
-    residencyStatus: Schema.Attribute.Enumeration<['Resident', 'Non-Resident']>;
+    residencyStatus: Schema.Attribute.Enumeration<['RESIDENT', 'NON_RESIDENT']>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
   };
 }
