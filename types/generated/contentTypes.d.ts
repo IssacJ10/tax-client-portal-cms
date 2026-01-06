@@ -586,6 +586,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     currentAddress: Schema.Attribute.Text;
     currentStatus: Schema.Attribute.String;
     dependents: Schema.Attribute.Component<'filing.dependent-info', true>;
+    dependentsCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     directDepositInfo: Schema.Attribute.Text;
     donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
     email: Schema.Attribute.Email;
@@ -605,6 +606,9 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.DefaultTo<'Not Started'>;
     firstName: Schema.Attribute.String;
+    hasFamilyMembers: Schema.Attribute.Enumeration<
+      ['SPOUSE', 'DEPENDENTS', 'BOTH', 'NONE']
+    >;
     isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;

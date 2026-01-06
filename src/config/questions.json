@@ -414,7 +414,7 @@
             },
             "fields": [
                 {
-                    "name": "dependents.count",
+                    "name": "personalInfo.dependentsCount",
                     "label": "Number of dependents",
                     "type": "select",
                     "options": [
@@ -429,7 +429,7 @@
                 {
                     "name": "dependents.list",
                     "type": "repeater",
-                    "countField": "dependents.count",
+                    "countField": "personalInfo.dependentsCount",
                     "fields": [
                         {
                             "name": "firstName",

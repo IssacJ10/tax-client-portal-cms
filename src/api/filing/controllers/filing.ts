@@ -177,6 +177,20 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             keys: Object.keys(data)
         });
 
+        // SMART WIZARD SYNC:
+        // Extract top-level fields from filingData if they exist, to ensure Schema columns are populated
+        if (data.filingData && data.filingData.personalInfo) {
+            // Sync Dependents Count
+            // Note: In questions.json we renamed it to personalInfo.dependentsCount
+            if (data.filingData.personalInfo.dependentsCount) {
+                data.dependentsCount = parseInt(data.filingData.personalInfo.dependentsCount);
+            }
+            // Sync Family Members Enum
+            if (data.filingData.personalInfo.hasFamilyMembers) {
+                data.hasFamilyMembers = data.filingData.personalInfo.hasFamilyMembers;
+            }
+        }
+
         // Use Document Service update with documentId
         // This handles components, JSON fields, and regular fields correctly in Strapi v5
         const updated = await strapi.documents('api::filing.filing').update({

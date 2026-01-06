@@ -1,199 +1,212 @@
 {
-  "kind": "collectionType",
-  "collectionName": "filings",
-  "info": {
-    "singularName": "filing",
-    "pluralName": "filings",
-    "displayName": "Filing",
-    "description": "User tax filings"
-  },
-  "options": {
-    "draftAndPublish": false
-  },
-  "pluginOptions": {},
-  "attributes": {
-    "user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "filings"
+    "kind": "collectionType",
+    "collectionName": "filings",
+    "info": {
+        "singularName": "filing",
+        "pluralName": "filings",
+        "displayName": "Filing",
+        "description": "User tax filings"
     },
-    "taxYear": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::tax-year.tax-year",
-      "inversedBy": "filings"
+    "options": {
+        "draftAndPublish": false
     },
-    "filingStatus": {
-      "type": "enumeration",
-      "default": "Not Started",
-      "enum": [
-        "Not Started",
-        "In Progress",
-        "Under Review",
-        "Submitted",
-        "Approved",
-        "Rejected"
-      ]
-    },
-    "filingData": {
-      "type": "json"
-    },
-    "progress": {
-      "type": "integer",
-      "default": 0,
-      "min": 0,
-      "max": 100
-    },
-    "confirmationNumber": {
-      "type": "string"
-    },
-    "estimatedRefund": {
-      "type": "decimal"
-    },
-    "uploadedDocuments": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": [
-        "files",
-        "images"
-      ]
-    },
-    "firstName": {
-      "type": "string"
-    },
-    "lastName": {
-      "type": "string"
-    },
-    "email": {
-      "type": "email"
-    },
-    "phoneNumber": {
-      "type": "string"
-    },
-    "sin": {
-      "type": "string",
-      "private": true
-    },
-    "birthDate": {
-      "type": "date"
-    },
-    "maritalStatus": {
-      "type": "enumeration",
-      "enum": [
-        "SINGLE",
-        "MARRIED",
-        "COMMON_LAW",
-        "SEPARATED",
-        "DIVORCED",
-        "WIDOWED"
-      ]
-    },
-    "province": {
-      "type": "string"
-    },
-    "city": {
-      "type": "string"
-    },
-    "middleName": {
-      "type": "string"
-    },
-    "isFirstTimeFiler": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "maritalStatusChanged": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "maritalStatusChangeDate": {
-      "type": "date"
-    },
-    "currentAddress": {
-      "type": "text"
-    },
-    "previousAddress": {
-      "type": "text"
-    },
-    "postalCode": {
-      "type": "string"
-    },
-    "employmentStatus": {
-      "type": "string"
-    },
-    "employmentDetails": {
-      "type": "text"
-    },
-    "currentStatus": {
-      "type": "string"
-    },
-    "movedForWork": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "arrivalDateCanada": {
-      "type": "date"
-    },
-    "workedOutsideCanada": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "amountOutsideCanada": {
-      "type": "decimal"
-    },
-    "directDepositInfo": {
-      "type": "text"
-    },
-    "medicalExpenses": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "donations": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "rrsp": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "workFromHome": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "spouse": {
-      "type": "component",
-      "component": "filing.spouse-info",
-      "repeatable": false
-    },
-    "dependents": {
-      "type": "component",
-      "component": "filing.dependent-info",
-      "repeatable": true
+    "pluginOptions": {},
+    "attributes": {
+        "user": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user",
+            "inversedBy": "filings"
+        },
+        "taxYear": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::tax-year.tax-year",
+            "inversedBy": "filings"
+        },
+        "filingStatus": {
+            "type": "enumeration",
+            "default": "Not Started",
+            "enum": [
+                "Not Started",
+                "In Progress",
+                "Under Review",
+                "Submitted",
+                "Approved",
+                "Rejected"
+            ]
+        },
+        "filingData": {
+            "type": "json"
+        },
+        "progress": {
+            "type": "integer",
+            "default": 0,
+            "min": 0,
+            "max": 100
+        },
+        "confirmationNumber": {
+            "type": "string"
+        },
+        "estimatedRefund": {
+            "type": "decimal"
+        },
+        "uploadedDocuments": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": [
+                "files",
+                "images"
+            ]
+        },
+        "firstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "email": {
+            "type": "email"
+        },
+        "phoneNumber": {
+            "type": "string"
+        },
+        "sin": {
+            "type": "string",
+            "private": true
+        },
+        "birthDate": {
+            "type": "date"
+        },
+        "maritalStatus": {
+            "type": "enumeration",
+            "enum": [
+                "SINGLE",
+                "MARRIED",
+                "COMMON_LAW",
+                "SEPARATED",
+                "DIVORCED",
+                "WIDOWED"
+            ]
+        },
+        "province": {
+            "type": "string"
+        },
+        "city": {
+            "type": "string"
+        },
+        "middleName": {
+            "type": "string"
+        },
+        "isFirstTimeFiler": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "maritalStatusChanged": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "maritalStatusChangeDate": {
+            "type": "date"
+        },
+        "currentAddress": {
+            "type": "text"
+        },
+        "previousAddress": {
+            "type": "text"
+        },
+        "postalCode": {
+            "type": "string"
+        },
+        "employmentStatus": {
+            "type": "string"
+        },
+        "employmentDetails": {
+            "type": "text"
+        },
+        "currentStatus": {
+            "type": "string"
+        },
+        "movedForWork": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "arrivalDateCanada": {
+            "type": "date"
+        },
+        "workedOutsideCanada": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "amountOutsideCanada": {
+            "type": "decimal"
+        },
+        "directDepositInfo": {
+            "type": "text"
+        },
+        "medicalExpenses": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "donations": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "rrsp": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "workFromHome": {
+            "type": "enumeration",
+            "enum": [
+                "Yes",
+                "No"
+            ]
+        },
+        "dependentsCount": {
+            "type": "integer",
+            "default": 0
+        },
+        "hasFamilyMembers": {
+            "type": "enumeration",
+            "enum": [
+                "SPOUSE",
+                "DEPENDENTS",
+                "BOTH",
+                "NONE"
+            ]
+        },
+        "spouse": {
+            "type": "component",
+            "component": "filing.spouse-info",
+            "repeatable": false
+        },
+        "dependents": {
+            "type": "component",
+            "component": "filing.dependent-info",
+            "repeatable": true
+        }
     }
-  }
 }
