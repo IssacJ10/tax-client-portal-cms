@@ -130,11 +130,28 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         const { id } = ctx.params;
         const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
 
-        // Use Document Service findOne
-        const entity: any = await strapi.documents('api::filing.filing').findOne({
-            documentId: id,
+        // Try to find by ID first (numeric), then by documentId (UUID)
+        let entity: any;
+
+        // First try: use findMany with ID filter
+        const results = await strapi.documents('api::filing.filing').findMany({
+            filters: { id: id },
             populate: ['user']
         });
+
+        if (results && results.length > 0) {
+            entity = results[0];
+        } else {
+            // Second try: use findOne with documentId
+            try {
+                entity = await strapi.documents('api::filing.filing').findOne({
+                    documentId: id,
+                    populate: ['user']
+                });
+            } catch (e) {
+                console.log('[UPDATE DEBUG] DocumentId lookup failed:', e.message);
+            }
+        }
 
         // Handle both numeric ID and documentId comparison
         const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
