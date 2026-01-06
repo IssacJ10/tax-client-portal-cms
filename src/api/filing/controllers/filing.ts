@@ -168,49 +168,33 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.user;
             delete data.taxYear;
         }
-        console.log('[CONTROLLER DEBUG] Forcing SQL update with:', {
+
+        console.log('[CONTROLLER DEBUG] Updating filing via Document Service:', {
+            id,
+            documentId: entity.documentId,
             filingStatus: data.filingStatus,
-            confirmationNumber: data.confirmationNumber,
-            progress: data.progress
+            hasFilingData: !!data.filingData,
+            keys: Object.keys(data)
         });
 
-        // First update via entityService (for Strapi's internal tracking)
-        // @ts-ignore
-        await strapi.entityService.update('api::filing.filing', id, {
-            data: {
-                filingStatus: data.filingStatus,
-                confirmationNumber: data.confirmationNumber,
-                progress: data.progress
-            }
-        });
-
-        // Then update ALL fields including filingStatus via raw SQL to ensure database persistence
-        // @ts-ignore
-        await strapi.db.connection.raw(`
-            UPDATE filings 
-            SET 
-                filing_status = ?,
-                confirmation_number = ?,
-                progress = ?,
-                updated_at = NOW()
-            WHERE id = ?
-        `, [data.filingStatus || null, data.confirmationNumber || null, data.progress || null, id]);
-
-        // Update remaining fields
-        // @ts-ignore
         // Use Document Service update with documentId
+        // This handles components, JSON fields, and regular fields correctly in Strapi v5
         const updated = await strapi.documents('api::filing.filing').update({
-            documentId: id,
+            documentId: entity.documentId,
             data
         });
-        // Verify and read back via entityService (so Strapi's cache is correct)
-        // @ts-ignore
-        const verified = await strapi.entityService.findOne('api::filing.filing', id);
 
-        console.log('[CONTROLLER DEBUG] Verified from entityService:', {
-            filingStatus: verified.filingStatus,
-            confirmationNumber: verified.confirmationNumber,
-            progress: verified.progress
+        // Verify and read back via document service
+        const verified: any = await strapi.documents('api::filing.filing').findOne({
+            documentId: entity.documentId,
+            populate: ['user', 'taxYear']
+        });
+
+        console.log('[CONTROLLER DEBUG] Verified update:', {
+            filingStatus: verified?.filingStatus,
+            confirmationNumber: verified?.confirmationNumber,
+            progress: verified?.progress,
+            hasFilingData: !!verified?.filingData
         });
 
         // Return in Strapi API format
