@@ -1,0 +1,381 @@
+{
+    "header": {
+        "title": "{year} Income Tax Return",
+        "description": "Complete your tax return filing with our guided wizard",
+        "showProgress": true
+    },
+    "questions": [
+        {
+            "id": "q_first_name",
+            "type": "text",
+            "label": "Given Name (First Name)",
+            "name": "personalInfo.firstName",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 10
+        },
+        {
+            "id": "q_middle_name",
+            "type": "text",
+            "label": "Middle Name",
+            "name": "personalInfo.middleName",
+            "validation": {
+                "required": false
+            },
+            "step": "personal_identity",
+            "order": 20
+        },
+        {
+            "id": "q_last_name",
+            "type": "text",
+            "label": "Surname (Last Name)",
+            "name": "personalInfo.lastName",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 30
+        },
+        {
+            "id": "q_sin",
+            "type": "text",
+            "label": "SIN Number",
+            "name": "personalInfo.sin",
+            "placeholder": "XXX-XXX-XXX",
+            "validation": {
+                "required": true,
+                "pattern": "^\\d{3}-\\d{3}-\\d{3}$"
+            },
+            "step": "personal_identity",
+            "order": 40
+        },
+        {
+            "id": "q_dob",
+            "type": "date",
+            "label": "Date of birth",
+            "name": "personalInfo.dateOfBirth",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 50
+        },
+        {
+            "id": "q_first_time_filer",
+            "type": "radio",
+            "label": "Are you filing an Income Tax Return with the CRA for the first time?",
+            "name": "personalInfo.isFirstTimeFiler",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 60
+        },
+        {
+            "id": "q_marital_status",
+            "type": "select",
+            "label": "Marital Status",
+            "name": "personalInfo.maritalStatus",
+            "options": [
+                {
+                    "label": "Married",
+                    "value": "MARRIED"
+                },
+                {
+                    "label": "Single",
+                    "value": "SINGLE"
+                },
+                {
+                    "label": "Common-law",
+                    "value": "COMMON_LAW"
+                },
+                {
+                    "label": "Separated",
+                    "value": "SEPARATED"
+                },
+                {
+                    "label": "Divorced",
+                    "value": "DIVORCED"
+                },
+                {
+                    "label": "Widowed",
+                    "value": "WIDOWED"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 70
+        },
+        {
+            "id": "q_marital_status_changed",
+            "type": "radio",
+            "label": "Did your Marital Status changed in {year}",
+            "name": "personalInfo.maritalStatusChanged",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 80
+        },
+        {
+            "id": "q_marital_status_change_date",
+            "type": "date",
+            "label": "Date of Martial status change",
+            "name": "personalInfo.maritalStatusChangeDate",
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.maritalStatusChanged",
+                        "operator": "equals",
+                        "value": "Yes"
+                    }
+                }
+            },
+            "step": "personal_identity",
+            "order": 90,
+            "conditional": {
+                "parentQuestionId": "personalInfo.maritalStatusChanged",
+                "operator": "equals",
+                "value": "Yes"
+            }
+        },
+        {
+            "id": "q_email",
+            "type": "email",
+            "label": "Email",
+            "name": "personalInfo.email",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_contact",
+            "order": 10
+        },
+        {
+            "id": "q_phone",
+            "type": "tel",
+            "label": "Phone number",
+            "name": "personalInfo.phoneNumber",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_contact",
+            "order": 20
+        },
+        {
+            "id": "q_address",
+            "type": "text",
+            "label": "Current Address",
+            "name": "personalInfo.currentAddress",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_contact",
+            "order": 30
+        },
+        {
+            "id": "q_city",
+            "type": "text",
+            "label": "City",
+            "name": "personalInfo.city",
+            "validation": {
+                "required": true
+            },
+            "step": "personal_contact",
+            "order": 40
+        },
+        {
+            "id": "q_postal_code",
+            "type": "text",
+            "label": "Postal Code",
+            "name": "personalInfo.postalCode",
+            "placeholder": "A1A 1A1",
+            "validation": {
+                "required": true,
+                "pattern": "^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$"
+            },
+            "step": "personal_contact",
+            "order": 50
+        },
+        {
+            "id": "q_province",
+            "type": "select",
+            "label": "Select a Province or Territory",
+            "name": "personalInfo.province",
+            "options": [
+                {
+                    "label": "Alberta",
+                    "value": "AB"
+                },
+                {
+                    "label": "British Columbia",
+                    "value": "BC"
+                },
+                {
+                    "label": "Manitoba",
+                    "value": "MB"
+                },
+                {
+                    "label": "New Brunswick",
+                    "value": "NB"
+                },
+                {
+                    "label": "Newfoundland and Labrador",
+                    "value": "NL"
+                },
+                {
+                    "label": "Northwest Territories",
+                    "value": "NT"
+                },
+                {
+                    "label": "Nova Scotia",
+                    "value": "NS"
+                },
+                {
+                    "label": "Nunavut",
+                    "value": "NU"
+                },
+                {
+                    "label": "Ontario",
+                    "value": "ON"
+                },
+                {
+                    "label": "Prince Edward Island",
+                    "value": "PE"
+                },
+                {
+                    "label": "Quebec",
+                    "value": "QC"
+                },
+                {
+                    "label": "Saskatchewan",
+                    "value": "SK"
+                },
+                {
+                    "label": "Yukon",
+                    "value": "YT"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "personal_contact",
+            "order": 60
+        },
+        {
+            "id": "q_family_members",
+            "type": "select",
+            "label": "Do you have a spouse or dependents to claim on your tax return?",
+            "name": "personalInfo.hasFamilyMembers",
+            "options": [
+                {
+                    "label": "Spouse Only",
+                    "value": "SPOUSE"
+                },
+                {
+                    "label": "Dependents Only",
+                    "value": "DEPENDENTS"
+                },
+                {
+                    "label": "Both Spouse and Dependents",
+                    "value": "BOTH"
+                },
+                {
+                    "label": "None",
+                    "value": "NONE"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "family_status",
+            "order": 10
+        },
+        {
+            "id": "q_dependents_count",
+            "type": "select",
+            "label": "Number of dependents",
+            "name": "personalInfo.dependentsCount",
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.hasFamilyMembers",
+                        "operator": "in",
+                        "values": [
+                            "DEPENDENTS",
+                            "BOTH"
+                        ]
+                    }
+                }
+            },
+            "step": "dependents",
+            "order": 10,
+            "conditional": {
+                "parentQuestionId": "personalInfo.hasFamilyMembers",
+                "operator": "in",
+                "values": [
+                    "DEPENDENTS",
+                    "BOTH"
+                ]
+            }
+        }
+    ],
+    "steps": [
+        {
+            "id": "personal_identity",
+            "title": "Personal Identity",
+            "description": "Please provide your personal identity details.",
+            "order": 10
+        },
+        {
+            "id": "personal_contact",
+            "title": "Contact Information",
+            "description": "Please provide your contact details.",
+            "order": 20
+        },
+        {
+            "id": "family_status",
+            "title": "Family Status",
+            "description": "Please indicate if you are filing for a spouse or dependents.",
+            "order": 30
+        },
+        {
+            "id": "spouse",
+            "title": "Spouse Information",
+            "description": "Please provide details about your spouse.",
+            "order": 40,
+            "conditional": {
+                "anyQuestionVisible": true
+            }
+        },
+        {
+            "id": "dependents",
+            "title": "Dependents",
+            "description": "Please provide details for your dependents.",
+            "order": 50,
+            "conditional": {
+                "anyQuestionVisible": true
+            }
+        }
+    ]
+}
