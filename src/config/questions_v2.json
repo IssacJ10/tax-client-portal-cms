@@ -812,5 +812,157 @@
             "description": "Please review all the information you've provided before submitting.",
             "order": 70
         }
-    ]
+    ],
+    "review": {
+        "title": "Review Your {year} Tax Return",
+        "description": "Please verify all information is correct before submitting",
+        "sections": [
+            {
+                "id": "identity",
+                "title": "Personal Identity",
+                "fields": [
+                    "personalInfo.firstName",
+                    "personalInfo.middleName",
+                    "personalInfo.lastName",
+                    "personalInfo.sin",
+                    "personalInfo.dateOfBirth",
+                    "personalInfo.isFirstTimeFiler",
+                    "personalInfo.maritalStatus"
+                ],
+                "editStepId": "personal_identity",
+                "format": {
+                    "personalInfo.dateOfBirth": "date",
+                    "personalInfo.sin": "masked",
+                    "personalInfo.isFirstTimeFiler": "boolean"
+                }
+            },
+            {
+                "id": "contact",
+                "title": "Contact Information",
+                "fields": [
+                    "personalInfo.email",
+                    "personalInfo.phoneNumber",
+                    "personalInfo.currentAddress",
+                    "personalInfo.city",
+                    "personalInfo.province",
+                    "personalInfo.postalCode"
+                ],
+                "editStepId": "personal_contact"
+            },
+            {
+                "id": "additional",
+                "title": "Additional Details",
+                "fields": [
+                    "personalInfo.residencyStatus",
+                    "personalInfo.movedInYear",
+                    "personalInfo.previousAddress",
+                    "personalInfo.arrivalDate",
+                    "personalInfo.workedOutsideCanada",
+                    "personalInfo.amountOutsideCanada",
+                    "personalInfo.directDeposit"
+                ],
+                "editStepId": "financial_other",
+                "format": {
+                    "personalInfo.arrivalDate": "date",
+                    "personalInfo.amountOutsideCanada": "currency",
+                    "personalInfo.movedInYear": "boolean",
+                    "personalInfo.workedOutsideCanada": "boolean",
+                    "personalInfo.directDeposit": "boolean"
+                }
+            },
+            {
+                "id": "spouse",
+                "title": "Spouse Information",
+                "dataPath": "spouse",
+                "isRepeater": true,
+                "fields": [
+                    "residencyStatus",
+                    "firstName",
+                    "middleName",
+                    "lastName",
+                    "dateOfBirth",
+                    "netIncome"
+                ],
+                "editStepId": "spouse",
+                "format": {
+                    "dateOfBirth": "date",
+                    "netIncome": "currency"
+                },
+                "conditional": {
+                    "operator": "or",
+                    "conditions": [
+                        {
+                            "parentQuestionId": "personalInfo.maritalStatus",
+                            "operator": "in",
+                            "values": [
+                                "MARRIED",
+                                "COMMON_LAW"
+                            ]
+                        },
+                        {
+                            "parentQuestionId": "personalInfo.hasFamilyMembers",
+                            "operator": "in",
+                            "values": [
+                                "SPOUSE",
+                                "BOTH"
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "dependents",
+                "title": "Dependents",
+                "dataPath": "dependents",
+                "isRepeater": true,
+                "fields": [
+                    "firstName",
+                    "middleName",
+                    "lastName",
+                    "sin",
+                    "dateOfBirth",
+                    "relationship",
+                    "hasDisability"
+                ],
+                "editStepId": "dependents",
+                "format": {
+                    "dateOfBirth": "date",
+                    "sin": "masked",
+                    "hasDisability": "boolean"
+                },
+                "conditional": {
+                    "parentQuestionId": "personalInfo.hasFamilyMembers",
+                    "operator": "in",
+                    "values": [
+                        "DEPENDENTS",
+                        "BOTH"
+                    ]
+                }
+            },
+            {
+                "id": "documents",
+                "title": "Tax Documents & Uploads",
+                "fields": [
+                    "personalInfo.rrsp",
+                    "personalInfo.workFromHome",
+                    "personalInfo.taxSlips",
+                    "personalInfo.additionalDocs",
+                    "personalInfo.uploadedFiles"
+                ],
+                "editStepId": "doc_selection",
+                "format": {
+                    "personalInfo.rrsp": "boolean",
+                    "personalInfo.workFromHome": "boolean",
+                    "personalInfo.taxSlips": "list",
+                    "personalInfo.additionalDocs": "list",
+                    "personalInfo.uploadedFiles": "files"
+                }
+            }
+        ],
+        "submitButton": {
+            "label": "Submit {year} Tax Return",
+            "confirmMessage": "Are you sure you want to submit? You won't be able to edit after submission.",
+            "successMessage": "Tax return submitted successfully!"
+        }
+    }
 }
