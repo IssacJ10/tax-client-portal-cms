@@ -134,10 +134,10 @@ export default {
 
 
     // 4. SEED FILING QUESTIONS (2024/2025)
-    // Now loading from the Single Source of Truth in src/config/questions.json
-    // to avoid hardcoded values or ghost data overwriting the DB.
+    // Now loading from the V2 format in src/config/questions_v2.json
+    // This is the new question-based format with proper conditional logic support
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const filingQuestions = require('./config/questions.json');
+    const filingQuestions = require('./config/questions_v2.json');
 
 
     const taxYear2024 = await strapi.db.query('api::tax-year.tax-year').findOne({
