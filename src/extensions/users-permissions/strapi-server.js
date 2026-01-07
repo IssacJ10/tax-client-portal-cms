@@ -1,5 +1,5 @@
 module.exports = (plugin) => {
-    // 1. Extend the User Controller
+    // 1. Extend the User Controller with consent action
     plugin.controllers.user.confirmConsent = async (ctx) => {
         const user = ctx.state.user;
 
@@ -8,8 +8,7 @@ module.exports = (plugin) => {
         }
 
         try {
-            // Use the entity service to securely update the user
-            // We explicitly only update the consent fields
+            // Update only consent fields
             const updatedUser = await strapi.entityService.update(
                 'plugin::users-permissions.user',
                 user.id,
@@ -21,24 +20,26 @@ module.exports = (plugin) => {
                 }
             );
 
-            // Return the sanitized user
-            ctx.body = await strapi
+            // Sanitize and return
+            const sanitizedUser = await strapi
                 .plugin('users-permissions')
                 .service('user')
                 .sanitizeOutput(updatedUser, ctx);
+
+            return sanitizedUser;
         } catch (err) {
-            ctx.body = err;
+            return ctx.badRequest(err.message);
         }
     };
 
-    // 2. Add the Custom Route
+    // 2. Add custom route using correct v5 format
     plugin.routes['content-api'].routes.push({
         method: 'POST',
-        path: '/users/consent',
+        path: '/user/consent',
         handler: 'user.confirmConsent',
         config: {
-            prefix: '',
             policies: [],
+            middlewares: [],
         },
     });
 
