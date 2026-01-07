@@ -14,17 +14,33 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
 
         const requestData = ctx.request.body.data || {};
 
-        // Check if filing already exists
+        // Check if filing already exists for this specific combination
         if (requestData.taxYear) {
-            // Use Document Service findMany
+            const filters: any = {
+                user: user.id,
+                taxYear: requestData.taxYear,
+                filingType: requestData.filingType || 'PERSONAL'
+            };
+
+            // For PERSONAL returns: one per user per year
+            // For CORPORATE/TRUST: check entity name to allow multiple entities
+            if (requestData.filingType !== 'PERSONAL' && requestData.entityName) {
+                filters.entityName = requestData.entityName;
+            }
+
             const existing = await strapi.documents('api::filing.filing').findMany({
-                filters: {
-                    user: user.id,
-                    taxYear: requestData.taxYear
-                }
+                filters
             });
+
             if (existing && existing.length > 0) {
-                return ctx.badRequest('A filing already exists for this tax year');
+                const filingType = requestData.filingType || 'PERSONAL';
+                const typeLabel = filingType.toLowerCase();
+
+                if (filingType === 'PERSONAL') {
+                    return ctx.badRequest(`A ${typeLabel} return already exists for this tax year`);
+                } else {
+                    return ctx.badRequest(`A ${typeLabel} return for "${requestData.entityName}" already exists for this tax year`);
+                }
             }
         }
 
