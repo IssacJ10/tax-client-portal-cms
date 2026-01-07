@@ -174,5 +174,44 @@ export default {
             console.error('Dashboard getTaxYears error:', err);
             ctx.throw(500, 'Failed to fetch tax years');
         }
+    },
+
+    /**
+     * POST /dashboard/consent
+     * Record user consent to terms
+     */
+    async confirmConsent(ctx) {
+        try {
+            const user = ctx.state.user;
+            if (!user) {
+                return ctx.unauthorized('You must be logged in to confirm consent.');
+            }
+
+            // Update the user's consent status
+            const updatedUser = await strapi.entityService.update(
+                'plugin::users-permissions.user',
+                user.id,
+                {
+                    data: {
+                        hasConsentedToTerms: true,
+                        consentDate: new Date().toISOString(),
+                    },
+                }
+            );
+
+            // Sanitize the user output
+            const sanitizedUser = await strapi
+                .plugin('users-permissions')
+                .service('user')
+                .sanitizeOutput(updatedUser, ctx);
+
+            ctx.body = {
+                success: true,
+                user: sanitizedUser,
+            };
+        } catch (err) {
+            console.error('Dashboard confirmConsent error:', err);
+            ctx.throw(500, 'Failed to record consent');
+        }
     }
 };

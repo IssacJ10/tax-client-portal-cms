@@ -36,5 +36,14 @@ module.exports = {
                 middlewares: [],
             },
         },
+        {
+            method: 'POST',
+            path: '/dashboard/consent',
+            handler: 'dashboard.confirmConsent',
+            config: {
+                policies: [], // No consent policy - this IS the consent endpoint!
+                middlewares: [],
+            },
+        },
     ],
 };
