@@ -1,12 +1,8 @@
 /**
- * Seed data for Tax Tips
- * Run with: node scripts/seed-tax-tips.js
+ * SIMPLE MANUAL SEED - Just copy-paste these into Strapi UI
+ * Go to Content Manager → Tax tips → Create new entry
+ * Copy each tip below and paste values into the form
  */
-
-const axios = require('axios');
-
-const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
-const ADMIN_JWT = process.env.STRAPI_ADMIN_JWT || '8f91ca246441574864aa5457f3d3863d16182d31b2abfb4e25830ec6fc045fce4c431e94fda5dc6a409181224911b6749086132c181f88efe10608c49d7efe96caf3991b3c8a72d62842692891aae5ac5a44c37309ab96b2eedf741a9555ebae5ff66471de548b327dbd71bdca81e858bcf1ad5e32bc4b83ef398e530c9b586d'; // Get from Strapi admin settings
 
 const sampleTips = [
     {
@@ -65,44 +61,19 @@ const sampleTips = [
     }
 ];
 
-async function seedTaxTips() {
-    console.log('🌱 Seeding Tax Tips...\n');
+console.log('📋 COPY-PASTE THESE INTO STRAPI UI:\n');
+console.log('Go to: http://localhost:1337/admin/content-manager/collection-types/api::tax-tip.tax-tip\n');
+console.log('Click "Create new entry" for each tip below:\n');
 
-    if (!ADMIN_JWT) {
-        console.error('❌ Error: STRAPI_ADMIN_JWT not set.');
-        console.log('Please set your admin JWT token as an environment variable:');
-        console.log('export STRAPI_ADMIN_JWT="your-jwt-token-here"');
-        console.log('\nYou can get your JWT from: Settings → API Tokens → Create new token\n');
-        process.exit(1);
-    }
+sampleTips.forEach((tip, index) => {
+    console.log(`\n========== TIP #${index + 1} ==========`);
+    console.log(`Title: ${tip.title}`);
+    console.log(`Description: ${tip.description}`);
+    console.log(`Icon: ${tip.icon}`);
+    console.log(`Category: ${tip.category}`);
+    console.log(`External Link: ${tip.externalLink || '(leave empty)'}`);
+    console.log(`Is Active: ✓ (check the box)`);
+    console.log(`Display Order: ${tip.displayOrder}`);
+});
 
-    try {
-        for (const tip of sampleTips) {
-            console.log(`📝 Creating: "${tip.title}"...`);
-
-            const response = await axios.post(
-                `${STRAPI_URL}/content-manager/collection-types/api::tax-tip.tax-tip`,
-                tip,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${ADMIN_JWT}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            console.log(`✅ Created tip #${response.data.id}\n`);
-        }
-
-        console.log('🎉 Successfully seeded all tax tips!');
-        console.log(`\nTotal tips created: ${sampleTips.length}`);
-    } catch (error) {
-        console.error('❌ Error seeding tax tips:', error.response?.data?.error?.message || error.message);
-        if (error.response?.data) {
-            console.error('Full error:', JSON.stringify(error.response.data, null, 2));
-        }
-        process.exit(1);
-    }
-}
-
-seedTaxTips();
+console.log('\n\n✅ After adding all 6 tips, they will appear on your dashboard!');
