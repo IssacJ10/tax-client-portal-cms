@@ -751,7 +751,7 @@
             "label": "Upload All Available Slips Above",
             "name": "personalInfo.uploadedFiles",
             "validation": {
-                "required": false
+                "required": true
             },
             "step": "doc_selection",
             "order": 50
