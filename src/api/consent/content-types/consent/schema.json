@@ -1,0 +1,15 @@
+{
+    "kind": "singleType",
+    "collectionName": "consents",
+    "info": {
+        "singularName": "consent",
+        "pluralName": "consents",
+        "displayName": "Consent",
+        "description": "Consent API placeholder (uses custom routes only)"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {}
+}
