@@ -5,7 +5,7 @@ module.exports = {
             path: '/dashboard/filings',
             handler: 'dashboard.find',
             config: {
-                policies: [],
+                policies: ['global::has-consented'],
                 middlewares: [],
             },
         },
@@ -14,7 +14,7 @@ module.exports = {
             path: '/dashboard/filings/:id',
             handler: 'dashboard.findOne',
             config: {
-                policies: [],
+                policies: ['global::has-consented'],
                 middlewares: [],
             },
         },
