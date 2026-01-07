@@ -187,31 +187,26 @@ export default {
                 return ctx.unauthorized('You must be logged in to confirm consent.');
             }
 
-            // Update the user's consent status
-            const updatedUser = await strapi.entityService.update(
-                'plugin::users-permissions.user',
-                user.id,
-                {
-                    data: {
-                        hasConsentedToTerms: true,
-                        consentDate: new Date().toISOString(),
-                    },
-                }
-            );
+            console.log('[CONSENT] Attempting to update user:', user.id);
 
-            // Sanitize the user output
-            const sanitizedUser = await strapi
-                .plugin('users-permissions')
-                .service('user')
-                .sanitizeOutput(updatedUser, ctx);
+            // Update the user's consent status using Document Service (Strapi v5)
+            const updatedUser = await strapi.documents('plugin::users-permissions.user').update({
+                documentId: user.documentId || user.id.toString(),
+                data: {
+                    hasConsentedToTerms: true,
+                    consentDate: new Date().toISOString(),
+                },
+            });
+
+            console.log('[CONSENT] User updated successfully:', updatedUser?.id);
 
             ctx.body = {
                 success: true,
-                user: sanitizedUser,
+                message: 'Consent recorded successfully',
             };
         } catch (err) {
-            console.error('Dashboard confirmConsent error:', err);
-            ctx.throw(500, 'Failed to record consent');
+            console.error('[CONSENT ERROR]', err.message, err.stack);
+            ctx.throw(500, `Failed to record consent: ${err.message}`);
         }
     }
 };
