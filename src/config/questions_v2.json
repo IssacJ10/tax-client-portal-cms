@@ -88,12 +88,12 @@
                     "value": "MARRIED"
                 },
                 {
-                    "label": "Single",
-                    "value": "SINGLE"
-                },
-                {
                     "label": "Common-law",
                     "value": "COMMON_LAW"
+                },
+                {
+                    "label": "Single",
+                    "value": "SINGLE"
                 },
                 {
                     "label": "Separated",
@@ -117,7 +117,7 @@
         {
             "id": "q_marital_status_changed",
             "type": "radio",
-            "label": "Did your Marital Status changed in {year}",
+            "label": "Did your Marital Status change in {year}?",
             "name": "personalInfo.maritalStatusChanged",
             "options": [
                 "Yes",
@@ -132,7 +132,7 @@
         {
             "id": "q_marital_status_change_date",
             "type": "date",
-            "label": "Date of Martial status change",
+            "label": "Date of Marital status change",
             "name": "personalInfo.maritalStatusChangeDate",
             "validation": {
                 "required": false,
@@ -148,6 +148,278 @@
             "order": 90,
             "conditional": {
                 "parentQuestionId": "personalInfo.maritalStatusChanged",
+                "operator": "equals",
+                "value": "Yes"
+            }
+        },
+        {
+            "id": "q_has_dependents",
+            "type": "radio",
+            "label": "Do you have any children or dependents to claim?",
+            "name": "personalInfo.hasDependents",
+            "options": [
+                "Yes",
+                "No"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "personal_identity",
+            "order": 100
+        },
+        {
+            "id": "q_spouse_repeater",
+            "type": "repeater",
+            "label": "Spouse Information",
+            "name": "spouse",
+            "step": "spouse",
+            "order": 10,
+            "config": {
+                "addButtonLabel": "Add Spouse Details",
+                "removeButtonLabel": "Remove Spouse",
+                "maxItems": 1,
+                "isSingle": true,
+                "emptyMessage": "Click below to add your spouse's information"
+            },
+            "fields": [
+                {
+                    "id": "q_spouse_residency_status",
+                    "type": "radio",
+                    "label": "Canadian Residency Status Of Spouse",
+                    "name": "residencyStatus",
+                    "validation": {
+                        "required": true
+                    },
+                    "options": [
+                        {
+                            "label": "Resident",
+                            "value": "RESIDENT"
+                        },
+                        {
+                            "label": "Non-Resident",
+                            "value": "NON_RESIDENT"
+                        }
+                    ]
+                },
+                {
+                    "id": "q_spouse_first_name",
+                    "type": "text",
+                    "label": "Given Name (Spouse)",
+                    "name": "firstName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_middle_name",
+                    "type": "text",
+                    "label": "Middle Name (Spouse)",
+                    "name": "middleName",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "q_spouse_last_name",
+                    "type": "text",
+                    "label": "Surname (Spouse)",
+                    "name": "lastName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_dob",
+                    "type": "date",
+                    "label": "Date of Birth (Spouse)",
+                    "name": "dateOfBirth",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_spouse_sin",
+                    "type": "text",
+                    "label": "SIN Number (Spouse)",
+                    "name": "sin",
+                    "placeholder": "XXX-XXX-XXX",
+                    "validation": {
+                        "required": true,
+                        "pattern": "^\\d{3}-\\d{3}-\\d{3}$"
+                    }
+                },
+                {
+                    "id": "q_spouse_net_income",
+                    "type": "number",
+                    "label": "Net Income (Spouse) - Line 23600",
+                    "name": "netIncome",
+                    "validation": {
+                        "required": true
+                    }
+                }
+            ],
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.maritalStatus",
+                        "operator": "in",
+                        "values": [
+                            "MARRIED",
+                            "COMMON_LAW"
+                        ]
+                    }
+                }
+            },
+            "conditional": {
+                "parentQuestionId": "personalInfo.maritalStatus",
+                "operator": "in",
+                "values": [
+                    "MARRIED",
+                    "COMMON_LAW"
+                ]
+            }
+        },
+        {
+            "id": "q_dependents_count",
+            "type": "select",
+            "label": "How many dependents are you claiming?",
+            "name": "personalInfo.dependentsCount",
+            "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.hasDependents",
+                        "operator": "equals",
+                        "value": "Yes"
+                    }
+                }
+            },
+            "step": "dependents",
+            "order": 10,
+            "conditional": {
+                "parentQuestionId": "personalInfo.hasDependents",
+                "operator": "equals",
+                "value": "Yes"
+            }
+        },
+        {
+            "id": "q_dependents_repeater",
+            "type": "repeater",
+            "label": "Dependent Details",
+            "name": "dependents",
+            "step": "dependents",
+            "order": 20,
+            "config": {
+                "addButtonLabel": "Add Dependent",
+                "removeButtonLabel": "Remove",
+                "minItems": 0,
+                "maxItems": 10,
+                "countField": "personalInfo.dependentsCount",
+                "emptyMessage": "Please add your dependent information below."
+            },
+            "fields": [
+                {
+                    "id": "q_dep_first_name",
+                    "type": "text",
+                    "label": "Given Name",
+                    "name": "firstName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_last_name",
+                    "type": "text",
+                    "label": "Surname",
+                    "name": "lastName",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_dob",
+                    "type": "date",
+                    "label": "Date of Birth",
+                    "name": "dateOfBirth",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_sin",
+                    "type": "text",
+                    "label": "SIN Number",
+                    "name": "sin",
+                    "placeholder": "XXX-XXX-XXX",
+                    "validation": {
+                        "required": false
+                    }
+                },
+                {
+                    "id": "q_dep_relationship",
+                    "type": "select",
+                    "label": "Relationship",
+                    "name": "relationship",
+                    "options": [
+                        {
+                            "label": "Son",
+                            "value": "SON"
+                        },
+                        {
+                            "label": "Daughter",
+                            "value": "DAUGHTER"
+                        },
+                        {
+                            "label": "Foster Child",
+                            "value": "FOSTER_CHILD"
+                        },
+                        {
+                            "label": "Grandchild",
+                            "value": "GRANDCHILD"
+                        },
+                        {
+                            "label": "Other",
+                            "value": "OTHER"
+                        }
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "id": "q_dep_disability",
+                    "type": "radio",
+                    "label": "Does this dependent have a disability?",
+                    "name": "hasDisability",
+                    "options": [
+                        "Yes",
+                        "No"
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                }
+            ],
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.hasDependents",
+                        "operator": "equals",
+                        "value": "Yes"
+                    }
+                }
+            },
+            "conditional": {
+                "parentQuestionId": "personalInfo.hasDependents",
                 "operator": "equals",
                 "value": "Yes"
             }
@@ -308,6 +580,62 @@
             "order": 10
         },
         {
+            "id": "q_employment_status",
+            "type": "select",
+            "label": "Employment Status",
+            "name": "personalInfo.employmentStatus",
+            "options": [
+                {
+                    "label": "Employed (Full-time/Part-time)",
+                    "value": "EMPLOYED"
+                },
+                {
+                    "label": "Self-employed",
+                    "value": "SELF_EMPLOYED"
+                },
+                {
+                    "label": "Temporary/Contract Work",
+                    "value": "CONTRACT"
+                },
+                {
+                    "label": "Corporation",
+                    "value": "CORPORATION"
+                },
+                {
+                    "label": "Unemployed",
+                    "value": "UNEMPLOYED"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "financial_other",
+            "order": 12
+        },
+        {
+            "id": "q_employment_details",
+            "type": "text",
+            "label": "If you selected 'Employed', please provide details of your employer",
+            "name": "personalInfo.employmentDetails",
+            "validation": {
+                "required": false,
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "personalInfo.employmentStatus",
+                        "operator": "equals",
+                        "value": "EMPLOYED"
+                    }
+                }
+            },
+            "step": "financial_other",
+            "order": 13,
+            "conditional": {
+                "parentQuestionId": "personalInfo.employmentStatus",
+                "operator": "equals",
+                "value": "EMPLOYED"
+            }
+        },
+        {
             "id": "q_moved_in_year",
             "type": "radio",
             "label": "Did you move in {year}?",
@@ -386,287 +714,34 @@
             "order": 70
         },
         {
-            "id": "q_family_members",
-            "type": "select",
-            "label": "Do you have a spouse or dependents to claim on your tax return?",
-            "name": "personalInfo.hasFamilyMembers",
+            "id": "q_medical_expenses",
+            "type": "radio",
+            "label": "Did you pay for any health/medical/prescribed medication/dental work expenses not covered by insurance?",
+            "name": "personalInfo.medicalExpenses",
             "options": [
-                {
-                    "label": "Spouse Only",
-                    "value": "SPOUSE"
-                },
-                {
-                    "label": "Dependents Only",
-                    "value": "DEPENDENTS"
-                },
-                {
-                    "label": "Both Spouse and Dependents",
-                    "value": "BOTH"
-                },
-                {
-                    "label": "None",
-                    "value": "NONE"
-                }
+                "Yes",
+                "No"
             ],
             "validation": {
-                "required": true
+                "required": false
             },
-            "step": "family_status",
-            "order": 10
+            "step": "doc_selection",
+            "order": 5
         },
         {
-            "id": "q_spouse_repeater",
-            "type": "repeater",
-            "label": "Spouse Information",
-            "name": "spouse",
-            "step": "spouse",
-            "order": 10,
-            "config": {
-                "addButtonLabel": "Add Spouse Details",
-                "removeButtonLabel": "Remove Spouse",
-                "maxItems": 1,
-                "isSingle": true,
-                "emptyMessage": "Click below to add your spouse's information"
-            },
-            "fields": [
-                {
-                    "id": "q_spouse_residency_status",
-                    "type": "radio",
-                    "label": "Canadian Residency Status Of Spouse",
-                    "name": "residencyStatus",
-                    "options": [
-                        {
-                            "label": "Resident",
-                            "value": "RESIDENT"
-                        },
-                        {
-                            "label": "Non-Resident",
-                            "value": "NON_RESIDENT"
-                        }
-                    ],
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_spouse_first_name",
-                    "type": "text",
-                    "label": "Given Name (Spouse)",
-                    "name": "firstName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_spouse_middle_name",
-                    "type": "text",
-                    "label": "Middle Name (Spouse)",
-                    "name": "middleName",
-                    "validation": {
-                        "required": false
-                    }
-                },
-                {
-                    "id": "q_spouse_last_name",
-                    "type": "text",
-                    "label": "Surname (Spouse)",
-                    "name": "lastName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_spouse_dob",
-                    "type": "date",
-                    "label": "Date of Birth (Spouse)",
-                    "name": "dateOfBirth",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_spouse_net_income",
-                    "type": "number",
-                    "label": "Net Income (Spouse)",
-                    "name": "netIncome",
-                    "validation": {
-                        "required": false
-                    }
-                }
-            ],
-            "conditional": {
-                "operator": "or",
-                "conditions": [
-                    {
-                        "parentQuestionId": "personalInfo.maritalStatus",
-                        "operator": "in",
-                        "values": [
-                            "MARRIED",
-                            "COMMON_LAW"
-                        ]
-                    },
-                    {
-                        "parentQuestionId": "personalInfo.hasFamilyMembers",
-                        "operator": "in",
-                        "values": [
-                            "SPOUSE",
-                            "BOTH"
-                        ]
-                    }
-                ]
-            }
-        },
-        {
-            "id": "q_dependents_count",
-            "type": "select",
-            "label": "Number of dependents",
-            "name": "personalInfo.dependentsCount",
+            "id": "q_donations",
+            "type": "radio",
+            "label": "Did you make any donations to a charitable organization in {year}?",
+            "name": "personalInfo.donations",
             "options": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
+                "Yes",
+                "No"
             ],
             "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.hasFamilyMembers",
-                        "operator": "in",
-                        "values": [
-                            "DEPENDENTS",
-                            "BOTH"
-                        ]
-                    }
-                }
+                "required": false
             },
-            "step": "dependents",
-            "order": 10,
-            "conditional": {
-                "parentQuestionId": "personalInfo.hasFamilyMembers",
-                "operator": "in",
-                "values": [
-                    "DEPENDENTS",
-                    "BOTH"
-                ]
-            }
-        },
-        {
-            "id": "q_dependents_repeater",
-            "type": "repeater",
-            "label": "Dependent",
-            "name": "dependents",
-            "step": "dependents",
-            "order": 20,
-            "config": {
-                "addButtonLabel": "Add Another Dependent",
-                "removeButtonLabel": "Remove",
-                "minItems": 0,
-                "maxItems": 10,
-                "countField": "personalInfo.dependentsCount",
-                "emptyMessage": "No dependents added yet. Click below to add."
-            },
-            "fields": [
-                {
-                    "id": "q_dep_first_name",
-                    "type": "text",
-                    "label": "Given Name (first name)",
-                    "name": "firstName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_middle_name",
-                    "type": "text",
-                    "label": "Middle Name",
-                    "name": "middleName",
-                    "validation": {
-                        "required": false
-                    }
-                },
-                {
-                    "id": "q_dep_last_name",
-                    "type": "text",
-                    "label": "Surname (last name)",
-                    "name": "lastName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_sin",
-                    "type": "text",
-                    "label": "SIN Number",
-                    "name": "sin",
-                    "placeholder": "XXX-XXX-XXX",
-                    "validation": {
-                        "required": false
-                    }
-                },
-                {
-                    "id": "q_dep_dob",
-                    "type": "date",
-                    "label": "Date of Birth",
-                    "name": "dateOfBirth",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_relationship",
-                    "type": "select",
-                    "label": "Relationship",
-                    "name": "relationship",
-                    "options": [
-                        {
-                            "label": "Son",
-                            "value": "SON"
-                        },
-                        {
-                            "label": "Daughter",
-                            "value": "DAUGHTER"
-                        },
-                        {
-                            "label": "Foster Son",
-                            "value": "FOSTER_SON"
-                        },
-                        {
-                            "label": "Foster Daughter",
-                            "value": "FOSTER_DAUGHTER"
-                        },
-                        {
-                            "label": "Other",
-                            "value": "OTHER"
-                        }
-                    ],
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_disability",
-                    "type": "radio",
-                    "label": "Does this dependent have a disability?",
-                    "name": "hasDisability",
-                    "options": [
-                        "Yes",
-                        "No"
-                    ],
-                    "validation": {
-                        "required": true
-                    }
-                }
-            ],
-            "conditional": {
-                "parentQuestionId": "personalInfo.hasFamilyMembers",
-                "operator": "in",
-                "values": [
-                    "DEPENDENTS",
-                    "BOTH"
-                ]
-            }
+            "step": "doc_selection",
+            "order": 6
         },
         {
             "id": "q_rrsp",
@@ -765,28 +840,10 @@
             "order": 10
         },
         {
-            "id": "personal_contact",
-            "title": "Contact Information",
-            "description": "Please provide your contact details.",
-            "order": 20
-        },
-        {
-            "id": "financial_other",
-            "title": "Additional Information",
-            "description": "Please provide employment and residency details.",
-            "order": 30
-        },
-        {
-            "id": "family_status",
-            "title": "Family Status",
-            "description": "Please indicate if you are filing for a spouse or dependents.",
-            "order": 40
-        },
-        {
             "id": "spouse",
             "title": "Spouse Information",
             "description": "Please provide details about your spouse.",
-            "order": 50,
+            "order": 15,
             "conditional": {
                 "anyQuestionVisible": true
             }
@@ -795,22 +852,34 @@
             "id": "dependents",
             "title": "Dependents",
             "description": "Please provide details for your dependents.",
-            "order": 60,
+            "order": 20,
             "conditional": {
                 "anyQuestionVisible": true
             }
         },
         {
+            "id": "personal_contact",
+            "title": "Contact Information",
+            "description": "Please provide your contact details.",
+            "order": 30
+        },
+        {
+            "id": "financial_other",
+            "title": "Additional Information",
+            "description": "Please provide employment and residency details.",
+            "order": 40
+        },
+        {
             "id": "doc_selection",
             "title": "Document Selection & Upload",
             "description": "Please select and upload the documents you have available.",
-            "order": 65
+            "order": 50
         },
         {
             "id": "review",
             "title": "Review Your Information",
             "description": "Please review all the information you've provided before submitting.",
-            "order": 70
+            "order": 60
         }
     ],
     "review": {
@@ -837,6 +906,60 @@
                 }
             },
             {
+                "id": "spouse",
+                "title": "Spouse Information",
+                "dataPath": "spouse",
+                "isRepeater": true,
+                "fields": [
+                    "residencyStatus",
+                    "firstName",
+                    "middleName",
+                    "lastName",
+                    "dateOfBirth",
+                    "sin",
+                    "netIncome"
+                ],
+                "editStepId": "spouse",
+                "format": {
+                    "dateOfBirth": "date",
+                    "netIncome": "currency",
+                    "sin": "masked"
+                },
+                "conditional": {
+                    "parentQuestionId": "personalInfo.maritalStatus",
+                    "operator": "in",
+                    "values": [
+                        "MARRIED",
+                        "COMMON_LAW"
+                    ]
+                }
+            },
+            {
+                "id": "dependents",
+                "title": "Dependents",
+                "dataPath": "dependents",
+                "isRepeater": true,
+                "fields": [
+                    "firstName",
+                    "lastName",
+                    "dateOfBirth",
+                    "sin",
+                    "relationship",
+                    "hasDisability"
+                ],
+                "editStepId": "dependents",
+                "format": {
+                    "dateOfBirth": "date",
+                    "sin": "masked",
+                    "hasDisability": "boolean"
+                },
+                "conditional": {
+                    "parentQuestionId": "personalInfo.hasDependents",
+                    "operator": "equals",
+                    "value": "Yes"
+                }
+            },
+            {
                 "id": "contact",
                 "title": "Contact Information",
                 "fields": [
@@ -854,6 +977,8 @@
                 "title": "Additional Details",
                 "fields": [
                     "personalInfo.residencyStatus",
+                    "personalInfo.employmentStatus",
+                    "personalInfo.employmentDetails",
                     "personalInfo.movedInYear",
                     "personalInfo.previousAddress",
                     "personalInfo.arrivalDate",
@@ -871,78 +996,11 @@
                 }
             },
             {
-                "id": "spouse",
-                "title": "Spouse Information",
-                "dataPath": "spouse",
-                "isRepeater": true,
-                "fields": [
-                    "residencyStatus",
-                    "firstName",
-                    "middleName",
-                    "lastName",
-                    "dateOfBirth",
-                    "netIncome"
-                ],
-                "editStepId": "spouse",
-                "format": {
-                    "dateOfBirth": "date",
-                    "netIncome": "currency"
-                },
-                "conditional": {
-                    "operator": "or",
-                    "conditions": [
-                        {
-                            "parentQuestionId": "personalInfo.maritalStatus",
-                            "operator": "in",
-                            "values": [
-                                "MARRIED",
-                                "COMMON_LAW"
-                            ]
-                        },
-                        {
-                            "parentQuestionId": "personalInfo.hasFamilyMembers",
-                            "operator": "in",
-                            "values": [
-                                "SPOUSE",
-                                "BOTH"
-                            ]
-                        }
-                    ]
-                }
-            },
-            {
-                "id": "dependents",
-                "title": "Dependents",
-                "dataPath": "dependents",
-                "isRepeater": true,
-                "fields": [
-                    "firstName",
-                    "middleName",
-                    "lastName",
-                    "sin",
-                    "dateOfBirth",
-                    "relationship",
-                    "hasDisability"
-                ],
-                "editStepId": "dependents",
-                "format": {
-                    "dateOfBirth": "date",
-                    "sin": "masked",
-                    "hasDisability": "boolean"
-                },
-                "conditional": {
-                    "parentQuestionId": "personalInfo.hasFamilyMembers",
-                    "operator": "in",
-                    "values": [
-                        "DEPENDENTS",
-                        "BOTH"
-                    ]
-                }
-            },
-            {
                 "id": "documents",
                 "title": "Tax Documents & Uploads",
                 "fields": [
+                    "personalInfo.medicalExpenses",
+                    "personalInfo.donations",
                     "personalInfo.rrsp",
                     "personalInfo.workFromHome",
                     "personalInfo.taxSlips",
@@ -951,6 +1009,8 @@
                 ],
                 "editStepId": "doc_selection",
                 "format": {
+                    "personalInfo.medicalExpenses": "boolean",
+                    "personalInfo.donations": "boolean",
                     "personalInfo.rrsp": "boolean",
                     "personalInfo.workFromHome": "boolean",
                     "personalInfo.taxSlips": "list",
