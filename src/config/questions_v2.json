@@ -2846,6 +2846,18 @@
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
+        },
+        {
+            "id": "q_additional_docs",
+            "type": "file",
+            "label": "Additional Documents",
+            "name": "documents.other",
+            "helpText": "Upload any other documents relevant to your return that haven't been uploaded yet (e.g., CRA correspondence, custody arrangements, etc.)",
+            "validation": {
+                "required": false
+            },
+            "step": "documents",
+            "order": 10
         }
     ],
     "pricing": {
@@ -2944,5 +2956,111 @@
                 }
             }
         ]
+    },
+    "review": {
+        "title": "Review Your Filing",
+        "description": "Please verify all details before proceeding to payment.",
+        "sections": [
+            {
+                "id": "personal_info",
+                "title": "Personal Information",
+                "fields": [
+                    "personalInfo.firstName",
+                    "personalInfo.lastName",
+                    "personalInfo.sin",
+                    "personalInfo.dateOfBirth",
+                    "personalInfo.maritalStatus"
+                ],
+                "editStepId": "personal_identity"
+            },
+            {
+                "id": "contact_info",
+                "title": "Contact Details",
+                "fields": [
+                    "personalInfo.email",
+                    "personalInfo.phone",
+                    "personalInfo.address.street",
+                    "personalInfo.address.city"
+                ],
+                "editStepId": "personal_contact"
+            },
+            {
+                "id": "spouse_info",
+                "title": "Spouse / Common-law Partner",
+                "conditional": {
+                    "parentQuestionId": "maritalStatus.status",
+                    "operator": "in",
+                    "values": [
+                        "MARRIED",
+                        "COMMON_LAW"
+                    ]
+                },
+                "fields": [
+                    "spouse.fullName",
+                    "spouse.sin",
+                    "spouse.netIncome"
+                ],
+                "format": {
+                    "spouse.netIncome": "currency"
+                },
+                "editStepId": "spouse_info"
+            },
+            {
+                "id": "dependents",
+                "title": "Dependents",
+                "dataPath": "dependents",
+                "isRepeater": true,
+                "fields": [
+                    "firstName",
+                    "lastName",
+                    "relationship",
+                    "dateOfBirth"
+                ],
+                "editStepId": "dependents"
+            },
+            {
+                "id": "financial_sources",
+                "title": "Income Sources",
+                "fields": [
+                    "income.sources"
+                ],
+                "format": {
+                    "income.sources": "list"
+                },
+                "editStepId": "income_selection"
+            },
+            {
+                "id": "deductions",
+                "title": "Deductions",
+                "fields": [
+                    "deductions.selected"
+                ],
+                "format": {
+                    "deductions.selected": "list"
+                },
+                "editStepId": "deductions"
+            },
+            {
+                "id": "work_expenses",
+                "title": "Work Expenses",
+                "conditional": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "EMPLOYMENT"
+                },
+                "fields": [
+                    "workExpenses.categories"
+                ],
+                "format": {
+                    "workExpenses.categories": "list"
+                },
+                "editStepId": "work_expenses"
+            }
+        ],
+        "submitButton": {
+            "label": "Proceed to Payment",
+            "confirmMessage": "Are you sure all details are correct?",
+            "successMessage": "Filing details verified. Proceeding to payment..."
+        }
     }
 }
