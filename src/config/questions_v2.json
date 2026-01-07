@@ -110,6 +110,139 @@
             "order": 14
         },
         {
+            "id": "q_address",
+            "type": "text",
+            "label": "Current Address",
+            "name": "personalInfo.currentAddress",
+            "validation": {
+                "required": true
+            },
+            "step": "residency",
+            "order": 10
+        },
+        {
+            "id": "q_city",
+            "type": "text",
+            "label": "City",
+            "name": "personalInfo.city",
+            "validation": {
+                "required": true
+            },
+            "step": "residency",
+            "order": 20
+        },
+        {
+            "id": "q_postal",
+            "type": "text",
+            "label": "Postal Code",
+            "name": "personalInfo.postalCode",
+            "validation": {
+                "required": true,
+                "pattern": "^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$"
+            },
+            "placeholder": "A1A 1A1",
+            "step": "residency",
+            "order": 30
+        },
+        {
+            "id": "q_province",
+            "type": "select",
+            "label": "Province / Territory",
+            "name": "personalInfo.province",
+            "options": [
+                {
+                    "value": "AB",
+                    "label": "Alberta"
+                },
+                {
+                    "value": "BC",
+                    "label": "British Columbia"
+                },
+                {
+                    "value": "MB",
+                    "label": "Manitoba"
+                },
+                {
+                    "value": "NB",
+                    "label": "New Brunswick"
+                },
+                {
+                    "value": "NL",
+                    "label": "Newfoundland and Labrador"
+                },
+                {
+                    "value": "NS",
+                    "label": "Nova Scotia"
+                },
+                {
+                    "value": "ON",
+                    "label": "Ontario"
+                },
+                {
+                    "value": "PE",
+                    "label": "Prince Edward Island"
+                },
+                {
+                    "value": "QC",
+                    "label": "Quebec"
+                },
+                {
+                    "value": "SK",
+                    "label": "Saskatchewan"
+                },
+                {
+                    "value": "NT",
+                    "label": "Northwest Territories"
+                },
+                {
+                    "value": "NU",
+                    "label": "Nunavut"
+                },
+                {
+                    "value": "YT",
+                    "label": "Yukon"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "residency",
+            "order": 40
+        },
+        {
+            "id": "q_residency_status",
+            "type": "select",
+            "label": "Canadian Residency Status",
+            "name": "personalInfo.residencyStatus",
+            "options": [
+                {
+                    "value": "CITIZEN",
+                    "label": "Citizen"
+                },
+                {
+                    "value": "PERMANENT_RESIDENT",
+                    "label": "Permanent Resident"
+                },
+                {
+                    "value": "WORK_PERMIT",
+                    "label": "Work Permit"
+                },
+                {
+                    "value": "STUDENT",
+                    "label": "Student"
+                },
+                {
+                    "value": "REFUGEE",
+                    "label": "Refugee"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "residency",
+            "order": 50
+        },
+        {
             "id": "q_marital",
             "type": "select",
             "label": "Marital Status",
