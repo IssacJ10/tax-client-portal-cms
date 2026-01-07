@@ -694,6 +694,60 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiTaxTipTaxTip extends Struct.CollectionTypeSchema {
+  collectionName: 'tax_tips';
+  info: {
+    description: 'Educational tax tips and insights for users';
+    displayName: 'Tax Tip';
+    pluralName: 'tax-tips';
+    singularName: 'tax-tip';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    category: Schema.Attribute.Enumeration<
+      ['deduction', 'deadline', 'general', 'strategy']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'general'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    displayOrder: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    externalLink: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
+    icon: Schema.Attribute.Enumeration<
+      ['lightbulb', 'calculator', 'document', 'shield', 'trending']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'lightbulb'>;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tax-tip.tax-tip'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
   collectionName: 'tax_years';
   info: {
@@ -1260,6 +1314,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::filing.filing': ApiFilingFiling;
       'api::global.global': ApiGlobalGlobal;
+      'api::tax-tip.tax-tip': ApiTaxTipTaxTip;
       'api::tax-year.tax-year': ApiTaxYearTaxYear;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

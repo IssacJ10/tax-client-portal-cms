@@ -1,0 +1,62 @@
+{
+    "kind": "collectionType",
+    "collectionName": "tax_tips",
+    "info": {
+        "singularName": "tax-tip",
+        "pluralName": "tax-tips",
+        "displayName": "Tax Tip",
+        "description": "Educational tax tips and insights for users"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "title": {
+            "type": "string",
+            "required": true,
+            "maxLength": 255
+        },
+        "description": {
+            "type": "text",
+            "required": true
+        },
+        "icon": {
+            "type": "enumeration",
+            "enum": [
+                "lightbulb",
+                "calculator",
+                "document",
+                "shield",
+                "trending"
+            ],
+            "default": "lightbulb",
+            "required": true
+        },
+        "category": {
+            "type": "enumeration",
+            "enum": [
+                "deduction",
+                "deadline",
+                "general",
+                "strategy"
+            ],
+            "default": "general",
+            "required": true
+        },
+        "externalLink": {
+            "type": "string",
+            "maxLength": 500
+        },
+        "isActive": {
+            "type": "boolean",
+            "default": true,
+            "required": true
+        },
+        "displayOrder": {
+            "type": "integer",
+            "default": 0,
+            "required": true
+        }
+    }
+}
