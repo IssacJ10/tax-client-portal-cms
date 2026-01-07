@@ -553,7 +553,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -574,7 +574,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -593,7 +593,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -630,7 +630,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -649,7 +649,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -668,7 +668,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -687,7 +687,7 @@
             "conditional": {
                 "parentQuestionId": "maritalStatus.status",
                 "operator": "in",
-                "value": [
+                "values": [
                     "MARRIED",
                     "COMMON_LAW"
                 ]
@@ -1053,7 +1053,7 @@
             "options": [
                 {
                     "value": "EMPLOYMENT_T4",
-                    "label": "Employment Income (Job / Salary / Wages – T4)"
+                    "label": "Employment Income (Job / Salary / Wages \u2013 T4)"
                 },
                 {
                     "value": "SELF_EMPLOYMENT",
@@ -1077,15 +1077,15 @@
                 },
                 {
                     "value": "EI_T4E",
-                    "label": "Employment Insurance (EI – T4E)"
+                    "label": "Employment Insurance (EI \u2013 T4E)"
                 },
                 {
                     "value": "CPP_T4AP",
-                    "label": "Canada Pension Plan (CPP – T4A(P))"
+                    "label": "Canada Pension Plan (CPP \u2013 T4A(P))"
                 },
                 {
                     "value": "OAS_T4AOAS",
-                    "label": "Old Age Security (OAS – T4A(OAS))"
+                    "label": "Old Age Security (OAS \u2013 T4A(OAS))"
                 },
                 {
                     "value": "OTHER_GOV_BENEFITS",
