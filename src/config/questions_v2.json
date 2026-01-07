@@ -1077,7 +1077,7 @@
             "options": [
                 {
                     "value": "EMPLOYMENT_T4",
-                    "label": "Employment Income (Job / Salary / Wages \u2013 T4)"
+                    "label": "Employment Income (Job / Salary / Wages – T4)"
                 },
                 {
                     "value": "SELF_EMPLOYMENT",
@@ -1101,15 +1101,15 @@
                 },
                 {
                     "value": "EI_T4E",
-                    "label": "Employment Insurance (EI \u2013 T4E)"
+                    "label": "Employment Insurance (EI – T4E)"
                 },
                 {
                     "value": "CPP_T4AP",
-                    "label": "Canada Pension Plan (CPP \u2013 T4A(P))"
+                    "label": "Canada Pension Plan (CPP – T4A(P))"
                 },
                 {
                     "value": "OAS_T4AOAS",
-                    "label": "Old Age Security (OAS \u2013 T4A(OAS))"
+                    "label": "Old Age Security (OAS – T4A(OAS))"
                 },
                 {
                     "value": "OTHER_GOV_BENEFITS",
@@ -1317,7 +1317,16 @@
                 "required": false
             },
             "step": "work_expenses",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "workExpenses.categories",
+                "operator": "hasAny",
+                "value": [
+                    "WORKED_FROM_HOME",
+                    "TRAVEL_FOR_WORK",
+                    "PURCHASED_SUPPLIES"
+                ]
+            }
         },
         {
             "id": "q_home_office_total_size",
@@ -1362,7 +1371,12 @@
             },
             "step": "home_office",
             "order": 20,
-            "helpText": "Enter the total monthly amount. We will calculate the work-from-home portion."
+            "helpText": "Enter the total monthly amount. We will calculate the work-from-home portion.",
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_mortgage_interest",
@@ -1373,7 +1387,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_property_tax",
@@ -1384,7 +1403,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 30
+            "order": 30,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_insurance",
@@ -1395,7 +1419,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 35
+            "order": 35,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_electricity",
@@ -1406,7 +1435,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 40
+            "order": 40,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_water",
@@ -1417,7 +1451,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 45
+            "order": 45,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_heat",
@@ -1428,7 +1467,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 50
+            "order": 50,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_internet",
@@ -1439,7 +1483,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 55
+            "order": 55,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_other_utilities",
@@ -1450,7 +1499,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 60
+            "order": 60,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_cleaning_supplies",
@@ -1461,7 +1515,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 65
+            "order": 65,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_minor_repairs",
@@ -1472,7 +1531,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 70
+            "order": 70,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_home_other_maintenance",
@@ -1483,7 +1547,12 @@
                 "required": false
             },
             "step": "home_office",
-            "order": 75
+            "order": 75,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "HOME_OFFICE"
+            }
         },
         {
             "id": "q_vehicle_make",
@@ -1510,7 +1579,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 15
+            "order": 15,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_year",
@@ -1521,7 +1595,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 20
+            "order": 20,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_purchase_date",
@@ -1532,7 +1611,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_cost",
@@ -1543,7 +1627,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 30
+            "order": 30,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_total_km",
@@ -1554,7 +1643,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 35
+            "order": 35,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_km_year",
@@ -1565,7 +1659,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 40
+            "order": 40,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_km_work",
@@ -1576,7 +1675,12 @@
                 "required": true
             },
             "step": "vehicle_expenses",
-            "order": 45
+            "order": 45,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_ucc",
@@ -1588,7 +1692,12 @@
             },
             "step": "vehicle_expenses",
             "order": 50,
-            "helpText": "Used to calculate depreciation expenses of the vehicle"
+            "helpText": "Used to calculate depreciation expenses of the vehicle",
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_fuel",
@@ -1600,7 +1709,12 @@
             },
             "step": "vehicle_expenses",
             "order": 55,
-            "helpText": "Enter total monthly amounts. We will calculate the work-related yearly portion."
+            "helpText": "Enter total monthly amounts. We will calculate the work-related yearly portion.",
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_insurance",
@@ -1611,7 +1725,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 60
+            "order": 60,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_maintenance",
@@ -1622,7 +1741,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 65
+            "order": 65,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_license",
@@ -1633,7 +1757,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 70
+            "order": 70,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_parking",
@@ -1644,7 +1773,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 75
+            "order": 75,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_lease",
@@ -1655,7 +1789,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 80
+            "order": 80,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_loan_interest",
@@ -1666,7 +1805,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 85
+            "order": 85,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_rides",
@@ -1677,7 +1821,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 90
+            "order": 90,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_vehicle_other",
@@ -1688,7 +1837,12 @@
                 "required": false
             },
             "step": "vehicle_expenses",
-            "order": 95
+            "order": 95,
+            "conditional": {
+                "parentQuestionId": "workExpenses.expenseTypes",
+                "operator": "contains",
+                "value": "TRAVEL"
+            }
         },
         {
             "id": "q_self_emp_bookkeeping",
@@ -1783,7 +1937,12 @@
                 "required": false
             },
             "step": "self_employment",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "SELF_EMPLOYMENT"
+            }
         },
         {
             "id": "q_self_emp_gst_registered",
@@ -1904,7 +2063,12 @@
                 "required": false
             },
             "step": "self_employment",
-            "order": 50
+            "order": 50,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "SELF_EMPLOYMENT"
+            }
         },
         {
             "id": "q_self_emp_business_docs",
@@ -1915,7 +2079,12 @@
                 "required": false
             },
             "step": "self_employment",
-            "order": 55
+            "order": 55,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "SELF_EMPLOYMENT"
+            }
         },
         {
             "id": "q_rental_address",
@@ -1976,7 +2145,12 @@
                 "required": true
             },
             "step": "rental_income",
-            "order": 20
+            "order": 20,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_start_date",
@@ -1987,7 +2161,12 @@
                 "required": true
             },
             "step": "rental_income",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_full_year",
@@ -2008,7 +2187,12 @@
                 "required": true
             },
             "step": "rental_income",
-            "order": 30
+            "order": 30,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_personal_use",
@@ -2029,7 +2213,12 @@
                 "required": true
             },
             "step": "rental_income",
-            "order": 35
+            "order": 35,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_income_amount",
@@ -2041,7 +2230,12 @@
             },
             "step": "rental_income",
             "order": 40,
-            "helpText": "All rent received must be reported, even if paid in cash."
+            "helpText": "All rent received must be reported, even if paid in cash.",
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_other_income",
@@ -2052,7 +2246,12 @@
                 "required": false
             },
             "step": "rental_income",
-            "order": 45
+            "order": 45,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_expenses",
@@ -2109,7 +2308,12 @@
                 "required": false
             },
             "step": "rental_income",
-            "order": 50
+            "order": 50,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_claim_cca",
@@ -2131,7 +2335,12 @@
             },
             "step": "rental_income",
             "order": 55,
-            "helpText": "Claiming CCA can reduce tax now but may increase tax when the property is sold."
+            "helpText": "Claiming CCA can reduce tax now but may increase tax when the property is sold.",
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_purchase_price",
@@ -2190,7 +2399,12 @@
                 "required": false
             },
             "step": "rental_income",
-            "order": 75
+            "order": 75,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_partial_home_size",
@@ -2233,7 +2447,12 @@
                 "required": false
             },
             "step": "rental_income",
-            "order": 90
+            "order": 90,
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_rental_equipment",
@@ -2270,7 +2489,12 @@
                         "required": true
                     }
                 }
-            ]
+            ],
+            "conditional": {
+                "parentQuestionId": "income.sources",
+                "operator": "contains",
+                "value": "RENTAL_INCOME"
+            }
         },
         {
             "id": "q_moving_reason",
@@ -2316,7 +2540,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 15
+            "order": 15,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_old_city",
@@ -2327,7 +2556,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 20
+            "order": 20,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_new_address",
@@ -2338,7 +2572,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 25
+            "order": 25,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_new_city",
@@ -2349,7 +2588,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 30
+            "order": 30,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_date",
@@ -2360,7 +2604,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 35
+            "order": 35,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_work_start_date",
@@ -2371,7 +2620,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 40
+            "order": 40,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_transport_expenses",
@@ -2396,7 +2650,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 45
+            "order": 45,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_travel_expenses",
@@ -2425,7 +2684,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 50
+            "order": 50,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_temp_living",
@@ -2442,7 +2706,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 55
+            "order": 55,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_home_expenses",
@@ -2467,7 +2736,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 60
+            "order": 60,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_other_expenses",
@@ -2492,7 +2766,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 65
+            "order": 65,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_vehicle_used",
@@ -2513,7 +2792,12 @@
                 "required": true
             },
             "step": "moving_expenses",
-            "order": 70
+            "order": 70,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         },
         {
             "id": "q_moving_vehicle_info",
@@ -2556,7 +2840,12 @@
                 "required": false
             },
             "step": "moving_expenses",
-            "order": 85
+            "order": 85,
+            "conditional": {
+                "parentQuestionId": "deductions.selected",
+                "operator": "contains",
+                "value": "MOVING_EXPENSES"
+            }
         }
     ],
     "pricing": {
