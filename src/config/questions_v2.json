@@ -115,12 +115,30 @@
             "label": "Marital Status",
             "name": "personalInfo.maritalStatus",
             "options": [
-                "Single",
-                "Married",
-                "Common-law",
-                "Separated",
-                "Divorced",
-                "Widowed"
+                {
+                    "value": "SINGLE",
+                    "label": "Single"
+                },
+                {
+                    "value": "MARRIED",
+                    "label": "Married"
+                },
+                {
+                    "value": "COMMON_LAW",
+                    "label": "Common-law"
+                },
+                {
+                    "value": "SEPARATED",
+                    "label": "Separated"
+                },
+                {
+                    "value": "DIVORCED",
+                    "label": "Divorced"
+                },
+                {
+                    "value": "WIDOWED",
+                    "label": "Widowed"
+                }
             ],
             "validation": {
                 "required": true
