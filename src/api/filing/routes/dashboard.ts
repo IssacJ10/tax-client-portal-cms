@@ -23,7 +23,7 @@ module.exports = {
             path: '/dashboard/filings/:id',
             handler: 'dashboard.update',
             config: {
-                policies: [],
+                policies: ['global::has-consented'],
                 middlewares: [],
             },
         },

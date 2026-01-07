@@ -1,1028 +1,309 @@
 {
     "header": {
-        "title": "{year} Income Tax Return",
-        "description": "Complete your tax return filing with our guided wizard",
+        "title": "{year} Personal Tax Return (T1)",
+        "description": "Complete your T1 General Tax Return accurately.",
         "showProgress": true
     },
+    "steps": [
+        {
+            "id": "personal_id",
+            "title": "Personal Info",
+            "order": 10,
+            "description": "Identity & Contact"
+        },
+        {
+            "id": "residency",
+            "title": "Residency",
+            "order": 20,
+            "description": "Status & Provinces"
+        },
+        {
+            "id": "family",
+            "title": "Family",
+            "order": 30,
+            "description": "Spouse & Dependents"
+        },
+        {
+            "id": "income_selection",
+            "title": "Income Sources",
+            "order": 40,
+            "description": "T4, Self-Employment"
+        },
+        {
+            "id": "income_details",
+            "title": "Income Details",
+            "order": 50,
+            "description": "Detailed Entry"
+        },
+        {
+            "id": "deductions_selection",
+            "title": "Deductions",
+            "order": 60,
+            "description": "Expenses & Credits"
+        },
+        {
+            "id": "deductions_details",
+            "title": "Deduction Details",
+            "order": 70,
+            "description": "Medical, Moving"
+        },
+        {
+            "id": "review",
+            "title": "Review",
+            "order": 80,
+            "description": "Verify"
+        },
+        {
+            "id": "payment",
+            "title": "Payment",
+            "order": 90,
+            "description": "Finalize & Pay"
+        }
+    ],
     "questions": [
         {
-            "id": "q_first_name",
+            "id": "q_fname",
             "type": "text",
-            "label": "Given Name (First Name)",
+            "label": "First Name",
             "name": "personalInfo.firstName",
             "validation": {
                 "required": true
             },
-            "step": "personal_identity",
+            "step": "personal_id",
             "order": 10
         },
         {
-            "id": "q_middle_name",
+            "id": "q_lname",
             "type": "text",
-            "label": "Middle Name",
-            "name": "personalInfo.middleName",
-            "validation": {
-                "required": false
-            },
-            "step": "personal_identity",
-            "order": 20
-        },
-        {
-            "id": "q_last_name",
-            "type": "text",
-            "label": "Surname (Last Name)",
+            "label": "Last Name",
             "name": "personalInfo.lastName",
             "validation": {
                 "required": true
             },
-            "step": "personal_identity",
-            "order": 30
+            "step": "personal_id",
+            "order": 12
         },
         {
             "id": "q_sin",
             "type": "text",
-            "label": "SIN Number",
+            "label": "SIN",
             "name": "personalInfo.sin",
-            "placeholder": "XXX-XXX-XXX",
             "validation": {
                 "required": true,
-                "pattern": "^\\d{3}-\\d{3}-\\d{3}$"
+                "pattern": "^\\d{3}-?\\d{3}-?\\d{3}$"
             },
-            "step": "personal_identity",
-            "order": 40
+            "placeholder": "999-999-999",
+            "step": "personal_id",
+            "order": 13
         },
         {
             "id": "q_dob",
             "type": "date",
-            "label": "Date of birth",
+            "label": "Date of Birth",
             "name": "personalInfo.dateOfBirth",
             "validation": {
-                "required": true
+                "required": true,
+                "maxDate": "today",
+                "minDate": "1900-01-01"
             },
-            "step": "personal_identity",
-            "order": 50
+            "step": "personal_id",
+            "order": 14
         },
         {
-            "id": "q_first_time_filer",
-            "type": "radio",
-            "label": "Are you filing an Income Tax Return with the CRA for the first time?",
-            "name": "personalInfo.isFirstTimeFiler",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "personal_identity",
-            "order": 60
-        },
-        {
-            "id": "q_marital_status",
+            "id": "q_marital",
             "type": "select",
             "label": "Marital Status",
             "name": "personalInfo.maritalStatus",
             "options": [
-                {
-                    "label": "Married",
-                    "value": "MARRIED"
-                },
-                {
-                    "label": "Common-law",
-                    "value": "COMMON_LAW"
-                },
-                {
-                    "label": "Single",
-                    "value": "SINGLE"
-                },
-                {
-                    "label": "Separated",
-                    "value": "SEPARATED"
-                },
-                {
-                    "label": "Divorced",
-                    "value": "DIVORCED"
-                },
-                {
-                    "label": "Widowed",
-                    "value": "WIDOWED"
-                }
+                "Single",
+                "Married",
+                "Common-law",
+                "Separated",
+                "Divorced",
+                "Widowed"
             ],
             "validation": {
                 "required": true
             },
-            "step": "personal_identity",
-            "order": 70
+            "step": "family",
+            "order": 10
         },
         {
-            "id": "q_marital_status_changed",
-            "type": "radio",
-            "label": "Did your Marital Status change in {year}?",
-            "name": "personalInfo.maritalStatusChanged",
+            "id": "q_income_sources",
+            "type": "checkbox",
+            "label": "Select Income Sources (Check all that apply)",
+            "name": "income.sources",
             "options": [
-                "Yes",
-                "No"
+                "Employment (T4)",
+                "Self-Employment",
+                "Rental Income",
+                "Investments",
+                "Capital Gains",
+                "Pension (T4A)",
+                "Tuition (T2202)"
             ],
             "validation": {
                 "required": true
             },
-            "step": "personal_identity",
-            "order": 80
+            "step": "income_selection",
+            "order": 10
         },
         {
-            "id": "q_marital_status_change_date",
-            "type": "date",
-            "label": "Date of Marital status change",
-            "name": "personalInfo.maritalStatusChangeDate",
-            "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.maritalStatusChanged",
-                        "operator": "equals",
-                        "value": "Yes"
-                    }
-                }
-            },
-            "step": "personal_identity",
-            "order": 90,
-            "conditional": {
-                "parentQuestionId": "personalInfo.maritalStatusChanged",
-                "operator": "equals",
-                "value": "Yes"
-            }
-        },
-        {
-            "id": "q_has_dependents",
-            "type": "radio",
-            "label": "Do you have any children or dependents to claim?",
-            "name": "personalInfo.hasDependents",
+            "id": "q_deduction_sources",
+            "type": "checkbox",
+            "label": "Select Deductions & Credits",
+            "name": "deductions.sources",
             "options": [
-                "Yes",
-                "No"
+                "RRSP Contributions",
+                "Medical Expenses",
+                "Donations",
+                "Moving Expenses",
+                "Child Care",
+                "Work from Home"
             ],
             "validation": {
-                "required": true
+                "required": false
             },
-            "step": "personal_identity",
-            "order": 100
+            "step": "deductions_selection",
+            "order": 10
         },
         {
-            "id": "q_spouse_repeater",
+            "id": "q_moving_details",
             "type": "repeater",
-            "label": "Spouse Information",
-            "name": "spouse",
-            "step": "spouse",
-            "order": 10,
+            "label": "Moving Expenses",
+            "name": "deductions.moving",
+            "step": "deductions_details",
+            "order": 20,
             "config": {
-                "addButtonLabel": "Add Spouse Details",
-                "removeButtonLabel": "Remove Spouse",
-                "maxItems": 1,
-                "isSingle": true,
-                "emptyMessage": "Click below to add your spouse's information"
+                "addButtonLabel": "Add Move"
+            },
+            "conditional": {
+                "parentQuestionId": "deductions.sources",
+                "operator": "contains",
+                "value": "Moving Expenses"
             },
             "fields": [
                 {
-                    "id": "q_spouse_residency_status",
-                    "type": "radio",
-                    "label": "Canadian Residency Status Of Spouse",
-                    "name": "residencyStatus",
-                    "validation": {
-                        "required": true
-                    },
-                    "options": [
-                        {
-                            "label": "Resident",
-                            "value": "RESIDENT"
-                        },
-                        {
-                            "label": "Non-Resident",
-                            "value": "NON_RESIDENT"
-                        }
-                    ]
-                },
-                {
-                    "id": "q_spouse_first_name",
                     "type": "text",
-                    "label": "Given Name (Spouse)",
-                    "name": "firstName",
+                    "name": "oldAddress",
+                    "label": "Old Address",
                     "validation": {
                         "required": true
                     }
                 },
                 {
-                    "id": "q_spouse_middle_name",
                     "type": "text",
-                    "label": "Middle Name (Spouse)",
-                    "name": "middleName",
-                    "validation": {
-                        "required": false
-                    }
-                },
-                {
-                    "id": "q_spouse_last_name",
-                    "type": "text",
-                    "label": "Surname (Spouse)",
-                    "name": "lastName",
+                    "name": "newAddress",
+                    "label": "New Address",
                     "validation": {
                         "required": true
                     }
                 },
                 {
-                    "id": "q_spouse_dob",
                     "type": "date",
-                    "label": "Date of Birth (Spouse)",
-                    "name": "dateOfBirth",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_spouse_sin",
-                    "type": "text",
-                    "label": "SIN Number (Spouse)",
-                    "name": "sin",
-                    "placeholder": "XXX-XXX-XXX",
+                    "name": "moveDate",
+                    "label": "Date of Move",
                     "validation": {
                         "required": true,
-                        "pattern": "^\\d{3}-\\d{3}-\\d{3}$"
+                        "maxDate": "today"
                     }
                 },
                 {
-                    "id": "q_spouse_net_income",
                     "type": "number",
-                    "label": "Net Income (Spouse) - Line 23600",
-                    "name": "netIncome",
+                    "name": "distance",
+                    "label": "Distance (km)",
                     "validation": {
                         "required": true
                     }
                 }
-            ],
-            "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.maritalStatus",
-                        "operator": "in",
-                        "values": [
-                            "MARRIED",
-                            "COMMON_LAW"
-                        ]
-                    }
-                }
-            },
-            "conditional": {
-                "parentQuestionId": "personalInfo.maritalStatus",
-                "operator": "in",
-                "values": [
-                    "MARRIED",
-                    "COMMON_LAW"
-                ]
-            }
-        },
-        {
-            "id": "q_dependents_count",
-            "type": "select",
-            "label": "How many dependents are you claiming?",
-            "name": "personalInfo.dependentsCount",
-            "options": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
-            ],
-            "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.hasDependents",
-                        "operator": "equals",
-                        "value": "Yes"
-                    }
-                }
-            },
-            "step": "dependents",
-            "order": 10,
-            "conditional": {
-                "parentQuestionId": "personalInfo.hasDependents",
-                "operator": "equals",
-                "value": "Yes"
-            }
-        },
-        {
-            "id": "q_dependents_repeater",
-            "type": "repeater",
-            "label": "Dependent Details",
-            "name": "dependents",
-            "step": "dependents",
-            "order": 20,
-            "config": {
-                "addButtonLabel": "Add Dependent",
-                "removeButtonLabel": "Remove",
-                "minItems": 0,
-                "maxItems": 10,
-                "countField": "personalInfo.dependentsCount",
-                "emptyMessage": "Please add your dependent information below."
-            },
-            "fields": [
-                {
-                    "id": "q_dep_first_name",
-                    "type": "text",
-                    "label": "Given Name",
-                    "name": "firstName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_last_name",
-                    "type": "text",
-                    "label": "Surname",
-                    "name": "lastName",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_dob",
-                    "type": "date",
-                    "label": "Date of Birth",
-                    "name": "dateOfBirth",
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_sin",
-                    "type": "text",
-                    "label": "SIN Number",
-                    "name": "sin",
-                    "placeholder": "XXX-XXX-XXX",
-                    "validation": {
-                        "required": false
-                    }
-                },
-                {
-                    "id": "q_dep_relationship",
-                    "type": "select",
-                    "label": "Relationship",
-                    "name": "relationship",
-                    "options": [
-                        {
-                            "label": "Son",
-                            "value": "SON"
-                        },
-                        {
-                            "label": "Daughter",
-                            "value": "DAUGHTER"
-                        },
-                        {
-                            "label": "Foster Child",
-                            "value": "FOSTER_CHILD"
-                        },
-                        {
-                            "label": "Grandchild",
-                            "value": "GRANDCHILD"
-                        },
-                        {
-                            "label": "Other",
-                            "value": "OTHER"
-                        }
-                    ],
-                    "validation": {
-                        "required": true
-                    }
-                },
-                {
-                    "id": "q_dep_disability",
-                    "type": "radio",
-                    "label": "Does this dependent have a disability?",
-                    "name": "hasDisability",
-                    "options": [
-                        "Yes",
-                        "No"
-                    ],
-                    "validation": {
-                        "required": true
-                    }
-                }
-            ],
-            "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.hasDependents",
-                        "operator": "equals",
-                        "value": "Yes"
-                    }
-                }
-            },
-            "conditional": {
-                "parentQuestionId": "personalInfo.hasDependents",
-                "operator": "equals",
-                "value": "Yes"
-            }
-        },
-        {
-            "id": "q_email",
-            "type": "email",
-            "label": "Email",
-            "name": "personalInfo.email",
-            "validation": {
-                "required": true
-            },
-            "step": "personal_contact",
-            "order": 10
-        },
-        {
-            "id": "q_phone",
-            "type": "tel",
-            "label": "Phone number",
-            "name": "personalInfo.phoneNumber",
-            "validation": {
-                "required": true
-            },
-            "step": "personal_contact",
-            "order": 20
-        },
-        {
-            "id": "q_address",
-            "type": "text",
-            "label": "Current Address",
-            "name": "personalInfo.currentAddress",
-            "validation": {
-                "required": true
-            },
-            "step": "personal_contact",
-            "order": 30
-        },
-        {
-            "id": "q_city",
-            "type": "text",
-            "label": "City",
-            "name": "personalInfo.city",
-            "validation": {
-                "required": true
-            },
-            "step": "personal_contact",
-            "order": 40
-        },
-        {
-            "id": "q_postal_code",
-            "type": "text",
-            "label": "Postal Code",
-            "name": "personalInfo.postalCode",
-            "placeholder": "A1A 1A1",
-            "validation": {
-                "required": true,
-                "pattern": "^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$"
-            },
-            "step": "personal_contact",
-            "order": 50
-        },
-        {
-            "id": "q_province",
-            "type": "select",
-            "label": "Select a Province or Territory",
-            "name": "personalInfo.province",
-            "options": [
-                {
-                    "label": "Alberta",
-                    "value": "AB"
-                },
-                {
-                    "label": "British Columbia",
-                    "value": "BC"
-                },
-                {
-                    "label": "Manitoba",
-                    "value": "MB"
-                },
-                {
-                    "label": "New Brunswick",
-                    "value": "NB"
-                },
-                {
-                    "label": "Newfoundland and Labrador",
-                    "value": "NL"
-                },
-                {
-                    "label": "Northwest Territories",
-                    "value": "NT"
-                },
-                {
-                    "label": "Nova Scotia",
-                    "value": "NS"
-                },
-                {
-                    "label": "Nunavut",
-                    "value": "NU"
-                },
-                {
-                    "label": "Ontario",
-                    "value": "ON"
-                },
-                {
-                    "label": "Prince Edward Island",
-                    "value": "PE"
-                },
-                {
-                    "label": "Quebec",
-                    "value": "QC"
-                },
-                {
-                    "label": "Saskatchewan",
-                    "value": "SK"
-                },
-                {
-                    "label": "Yukon",
-                    "value": "YT"
-                }
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "personal_contact",
-            "order": 60
-        },
-        {
-            "id": "q_residency_status",
-            "type": "select",
-            "label": "Canadian Residency Status",
-            "name": "personalInfo.residencyStatus",
-            "options": [
-                {
-                    "label": "Citizen",
-                    "value": "CITIZEN"
-                },
-                {
-                    "label": "Permanent Resident",
-                    "value": "PERMANENT_RESIDENT"
-                },
-                {
-                    "label": "Work Permit",
-                    "value": "WORK_PERMIT"
-                },
-                {
-                    "label": "Refugee",
-                    "value": "REFUGEE"
-                },
-                {
-                    "label": "Student",
-                    "value": "STUDENT"
-                }
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "financial_other",
-            "order": 10
-        },
-        {
-            "id": "q_employment_status",
-            "type": "select",
-            "label": "Employment Status",
-            "name": "personalInfo.employmentStatus",
-            "options": [
-                {
-                    "label": "Employed (Full-time/Part-time)",
-                    "value": "EMPLOYED"
-                },
-                {
-                    "label": "Self-employed",
-                    "value": "SELF_EMPLOYED"
-                },
-                {
-                    "label": "Temporary/Contract Work",
-                    "value": "CONTRACT"
-                },
-                {
-                    "label": "Corporation",
-                    "value": "CORPORATION"
-                },
-                {
-                    "label": "Unemployed",
-                    "value": "UNEMPLOYED"
-                }
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "financial_other",
-            "order": 12
-        },
-        {
-            "id": "q_employment_details",
-            "type": "text",
-            "label": "If you selected 'Employed', please provide details of your employer",
-            "name": "personalInfo.employmentDetails",
-            "validation": {
-                "required": false,
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "personalInfo.employmentStatus",
-                        "operator": "equals",
-                        "value": "EMPLOYED"
-                    }
-                }
-            },
-            "step": "financial_other",
-            "order": 13,
-            "conditional": {
-                "parentQuestionId": "personalInfo.employmentStatus",
-                "operator": "equals",
-                "value": "EMPLOYED"
-            }
-        },
-        {
-            "id": "q_moved_in_year",
-            "type": "radio",
-            "label": "Did you move in {year}?",
-            "name": "personalInfo.movedInYear",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "financial_other",
-            "order": 20
-        },
-        {
-            "id": "q_previous_address",
-            "type": "text",
-            "label": "Previous Address (If moved in {year})",
-            "name": "personalInfo.previousAddress",
-            "validation": {
-                "required": false
-            },
-            "step": "financial_other",
-            "order": 30
-        },
-        {
-            "id": "q_arrival_date",
-            "type": "date",
-            "label": "If you came to Canada in {year}, Please specify the date of your arrival",
-            "name": "personalInfo.arrivalDate",
-            "validation": {
-                "required": false
-            },
-            "step": "financial_other",
-            "order": 40
-        },
-        {
-            "id": "q_worked_outside_canada",
-            "type": "radio",
-            "label": "If you arrived in Canada in {year}, did you work (in person or remotely) in any country besides Canada?",
-            "name": "personalInfo.workedOutsideCanada",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "financial_other",
-            "order": 50
-        },
-        {
-            "id": "q_amount_outside_canada",
-            "type": "number",
-            "label": "Enter Amount (in CAD)",
-            "name": "personalInfo.amountOutsideCanada",
-            "validation": {
-                "required": false
-            },
-            "step": "financial_other",
-            "order": 60
-        },
-        {
-            "id": "q_direct_deposit",
-            "type": "radio",
-            "label": "Complete this session if you would like Canada Revenue Agency (CRA) to deposit any amounts payable to you directly into your bank account.",
-            "name": "personalInfo.directDeposit",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "financial_other",
-            "order": 70
-        },
-        {
-            "id": "q_medical_expenses",
-            "type": "radio",
-            "label": "Did you pay for any health/medical/prescribed medication/dental work expenses not covered by insurance?",
-            "name": "personalInfo.medicalExpenses",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 5
-        },
-        {
-            "id": "q_donations",
-            "type": "radio",
-            "label": "Did you make any donations to a charitable organization in {year}?",
-            "name": "personalInfo.donations",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 6
-        },
-        {
-            "id": "q_rrsp",
-            "type": "radio",
-            "label": "Did you buy registered retirement savings plan (RRSP) in {year}?",
-            "name": "personalInfo.rrsp",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 10
-        },
-        {
-            "id": "q_work_from_home",
-            "type": "radio",
-            "label": "Do you work from home?",
-            "name": "personalInfo.workFromHome",
-            "options": [
-                "Yes",
-                "No"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 20
-        },
-        {
-            "id": "q_tax_slips",
-            "type": "checkbox",
-            "label": "Select The Tax Slips That Available To You in {year}",
-            "name": "personalInfo.taxSlips",
-            "options": [
-                "T2202 – Tuition and education credits",
-                "T4 -Employment income",
-                "T4A -Self-employment, pension, or other income",
-                "T4E -Employment Insurance (EI) benefits",
-                "T4A(P) – Canada Pension Plan (CPP) benefits",
-                "T5 – Investment income (interest, dividends)",
-                "T4RSP – RRSP withdrawals",
-                "RC62 – Universal Child Care Benefit (if applicable)",
-                "T3 – Income from trusts or mutual funds",
-                "T5007 – Social assistance or worker's compensation benefits",
-                "T5013 – Partnership income",
-                "Business or rental income (financial statements, invoices, receipts)",
-                "T4A(OAS) – Old Age Security (OAS) benefits",
-                "Disability Tax credit T2201",
-                "No Income"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 30
-        },
-        {
-            "id": "q_additional_docs",
-            "type": "checkbox",
-            "label": "Please E-mail me, if any of the following documents are available",
-            "name": "personalInfo.additionalDocs",
-            "options": [
-                "Rental Income",
-                "Investment or Capital Gain/Loss",
-                "Foreign Income & Assets",
-                "Property Tax/Rent Receipts",
-                "Any Other Employment Expenses",
-                "Child Care Receipts"
-            ],
-            "validation": {
-                "required": false
-            },
-            "step": "doc_selection",
-            "order": 40
-        },
-        {
-            "id": "q_file_upload",
-            "type": "file",
-            "label": "Upload All Available Slips Above",
-            "name": "personalInfo.uploadedFiles",
-            "validation": {
-                "required": true
-            },
-            "step": "doc_selection",
-            "order": 50
+            ]
         }
     ],
-    "steps": [
-        {
-            "id": "personal_identity",
-            "title": "Personal Identity",
-            "description": "Please provide your personal identity details.",
-            "order": 10
-        },
-        {
-            "id": "spouse",
-            "title": "Spouse Information",
-            "description": "Please provide details about your spouse.",
-            "order": 15,
-            "conditional": {
-                "anyQuestionVisible": true
-            }
-        },
-        {
-            "id": "dependents",
-            "title": "Dependents",
-            "description": "Please provide details for your dependents.",
-            "order": 20,
-            "conditional": {
-                "anyQuestionVisible": true
-            }
-        },
-        {
-            "id": "personal_contact",
-            "title": "Contact Information",
-            "description": "Please provide your contact details.",
-            "order": 30
-        },
-        {
-            "id": "financial_other",
-            "title": "Additional Information",
-            "description": "Please provide employment and residency details.",
-            "order": 40
-        },
-        {
-            "id": "doc_selection",
-            "title": "Document Selection & Upload",
-            "description": "Please select and upload the documents you have available.",
-            "order": 50
-        },
-        {
-            "id": "review",
-            "title": "Review Your Information",
-            "description": "Please review all the information you've provided before submitting.",
-            "order": 60
-        }
-    ],
-    "review": {
-        "title": "Review Your {year} Tax Return",
-        "description": "Please verify all information is correct before submitting",
-        "sections": [
+    "pricing": {
+        "baseFee": 45,
+        "currency": "CAD",
+        "taxRate": 0.15,
+        "rules": [
             {
-                "id": "identity",
-                "title": "Personal Identity",
-                "fields": [
-                    "personalInfo.firstName",
-                    "personalInfo.middleName",
-                    "personalInfo.lastName",
-                    "personalInfo.sin",
-                    "personalInfo.dateOfBirth",
-                    "personalInfo.isFirstTimeFiler",
-                    "personalInfo.maritalStatus"
-                ],
-                "editStepId": "personal_identity",
-                "format": {
-                    "personalInfo.dateOfBirth": "date",
-                    "personalInfo.sin": "masked",
-                    "personalInfo.isFirstTimeFiler": "boolean"
+                "id": "fee_moving",
+                "description": "Moving Expenses",
+                "amount": 5,
+                "condition": {
+                    "parentQuestionId": "deductions.sources",
+                    "operator": "contains",
+                    "value": "Moving Expenses"
                 }
             },
             {
-                "id": "spouse",
-                "title": "Spouse Information",
-                "dataPath": "spouse",
-                "isRepeater": true,
-                "fields": [
-                    "residencyStatus",
-                    "firstName",
-                    "middleName",
-                    "lastName",
-                    "dateOfBirth",
-                    "sin",
-                    "netIncome"
-                ],
-                "editStepId": "spouse",
-                "format": {
-                    "dateOfBirth": "date",
-                    "netIncome": "currency",
-                    "sin": "masked"
-                },
-                "conditional": {
-                    "parentQuestionId": "personalInfo.maritalStatus",
-                    "operator": "in",
-                    "values": [
-                        "MARRIED",
-                        "COMMON_LAW"
-                    ]
+                "id": "fee_childcare",
+                "description": "Childcare Expenses",
+                "amount": 5,
+                "condition": {
+                    "parentQuestionId": "deductions.sources",
+                    "operator": "contains",
+                    "value": "Child Care"
                 }
             },
             {
-                "id": "dependents",
-                "title": "Dependents",
-                "dataPath": "dependents",
-                "isRepeater": true,
-                "fields": [
-                    "firstName",
-                    "lastName",
-                    "dateOfBirth",
-                    "sin",
-                    "relationship",
-                    "hasDisability"
-                ],
-                "editStepId": "dependents",
-                "format": {
-                    "dateOfBirth": "date",
-                    "sin": "masked",
-                    "hasDisability": "boolean"
-                },
-                "conditional": {
-                    "parentQuestionId": "personalInfo.hasDependents",
-                    "operator": "equals",
-                    "value": "Yes"
+                "id": "fee_medical",
+                "description": "Medical Expenses",
+                "amount": 5,
+                "condition": {
+                    "parentQuestionId": "deductions.sources",
+                    "operator": "contains",
+                    "value": "Medical Expenses"
                 }
             },
             {
-                "id": "contact",
-                "title": "Contact Information",
-                "fields": [
-                    "personalInfo.email",
-                    "personalInfo.phoneNumber",
-                    "personalInfo.currentAddress",
-                    "personalInfo.city",
-                    "personalInfo.province",
-                    "personalInfo.postalCode"
-                ],
-                "editStepId": "personal_contact"
-            },
-            {
-                "id": "additional",
-                "title": "Additional Details",
-                "fields": [
-                    "personalInfo.residencyStatus",
-                    "personalInfo.employmentStatus",
-                    "personalInfo.employmentDetails",
-                    "personalInfo.movedInYear",
-                    "personalInfo.previousAddress",
-                    "personalInfo.arrivalDate",
-                    "personalInfo.workedOutsideCanada",
-                    "personalInfo.amountOutsideCanada",
-                    "personalInfo.directDeposit"
-                ],
-                "editStepId": "financial_other",
-                "format": {
-                    "personalInfo.arrivalDate": "date",
-                    "personalInfo.amountOutsideCanada": "currency",
-                    "personalInfo.movedInYear": "boolean",
-                    "personalInfo.workedOutsideCanada": "boolean",
-                    "personalInfo.directDeposit": "boolean"
+                "id": "fee_cap_gains",
+                "description": "Capital Gains",
+                "amount": 5,
+                "condition": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "Capital Gains"
                 }
             },
             {
-                "id": "documents",
-                "title": "Tax Documents & Uploads",
-                "fields": [
-                    "personalInfo.medicalExpenses",
-                    "personalInfo.donations",
-                    "personalInfo.rrsp",
-                    "personalInfo.workFromHome",
-                    "personalInfo.taxSlips",
-                    "personalInfo.additionalDocs",
-                    "personalInfo.uploadedFiles"
-                ],
-                "editStepId": "doc_selection",
-                "format": {
-                    "personalInfo.medicalExpenses": "boolean",
-                    "personalInfo.donations": "boolean",
-                    "personalInfo.rrsp": "boolean",
-                    "personalInfo.workFromHome": "boolean",
-                    "personalInfo.taxSlips": "list",
-                    "personalInfo.additionalDocs": "list",
-                    "personalInfo.uploadedFiles": "files"
+                "id": "fee_investments",
+                "description": "Investments/Principal Residence",
+                "amount": 5,
+                "condition": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "Investments"
+                }
+            },
+            {
+                "id": "fee_self_emp",
+                "description": "Self-Employment Income",
+                "amount": 15,
+                "condition": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "Self-Employment"
+                }
+            },
+            {
+                "id": "fee_rental",
+                "description": "Rental Income",
+                "amount": 15,
+                "condition": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "Rental Income"
+                }
+            },
+            {
+                "id": "disc_student",
+                "description": "Student Discount (T2202)",
+                "amount": -5,
+                "condition": {
+                    "parentQuestionId": "income.sources",
+                    "operator": "contains",
+                    "value": "Tuition (T2202)"
                 }
             }
-        ],
-        "submitButton": {
-            "label": "Submit {year} Tax Return",
-            "confirmMessage": "Are you sure you want to submit? You won't be able to edit after submission.",
-            "successMessage": "Tax return submitted successfully!"
-        }
+        ]
     }
 }

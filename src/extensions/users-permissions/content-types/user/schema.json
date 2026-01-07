@@ -66,6 +66,21 @@
       "inversedBy": "users",
       "configurable": false
     },
+    "filings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::filing.filing",
+      "mappedBy": "user"
+    },
+    "hasConsentedToTerms": {
+      "type": "boolean",
+      "default": false,
+      "configurable": false
+    },
+    "consentDate": {
+      "type": "datetime",
+      "configurable": false
+    },
     "firstName": {
       "type": "string",
       "regex": "^[a-zA-Z \\-']+$"
@@ -81,12 +96,6 @@
     "tokenVersion": {
       "type": "integer",
       "default": 1
-    },
-    "filings": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::filing.filing",
-      "mappedBy": "user"
     }
   }
 }

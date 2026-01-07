@@ -1254,6 +1254,7 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    consentDate: Schema.Attribute.DateTime;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1264,6 +1265,8 @@ export interface PluginUsersPermissionsUser
       }>;
     filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
     firstName: Schema.Attribute.String;
+    hasConsentedToTerms: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     lastName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
