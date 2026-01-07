@@ -24,6 +24,20 @@
             "target": "api::tax-year.tax-year",
             "inversedBy": "filings"
         },
+        "filingType": {
+            "type": "enumeration",
+            "enum": [
+                "PERSONAL",
+                "CORPORATE",
+                "TRUST"
+            ],
+            "default": "PERSONAL",
+            "required": true
+        },
+        "entityName": {
+            "type": "string",
+            "description": "Name of the person, company, or trust"
+        },
         "filingStatus": {
             "type": "enumeration",
             "default": "Not Started",

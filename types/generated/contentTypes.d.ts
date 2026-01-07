@@ -592,6 +592,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     email: Schema.Attribute.Email;
     employmentDetails: Schema.Attribute.Text;
     employmentStatus: Schema.Attribute.String;
+    entityName: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
     filingData: Schema.Attribute.JSON;
     filingStatus: Schema.Attribute.Enumeration<
@@ -605,6 +606,11 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       ]
     > &
       Schema.Attribute.DefaultTo<'Not Started'>;
+    filingType: Schema.Attribute.Enumeration<
+      ['PERSONAL', 'CORPORATE', 'TRUST']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'PERSONAL'>;
     firstName: Schema.Attribute.String;
     hasFamilyMembers: Schema.Attribute.Enumeration<
       ['SPOUSE', 'DEPENDENTS', 'BOTH', 'NONE']
@@ -706,6 +712,7 @@ export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    corporateQuestions: Schema.Attribute.JSON;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -722,6 +729,7 @@ export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    trustQuestions: Schema.Attribute.JSON;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

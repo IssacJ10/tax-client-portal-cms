@@ -1,149 +1,178 @@
 /**
- * Dedicated Dashboard Controller
- * Used exclusively by JJElevateDashboard to avoid side effects on JJElevate public app.
+ * Dashboard Controller - Custom endpoints for user dashboard
  */
 
-import { factories } from '@strapi/strapi';
-
-// @ts-ignore
-export default factories.createCoreController('api::filing.filing', ({ strapi }) => ({
+export default {
+    /**
+     * GET /dashboard/filings
+     * Get all filings for the authenticated user
+     */
     async find(ctx) {
-        const user = ctx.state.user;
-        if (!user) return ctx.unauthorized();
+        try {
+            const user = ctx.state.user;
+            if (!user) {
+                return ctx.unauthorized('You must be logged in to access the dashboard');
+            }
 
-        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
+            // Get user's filings with tax year relation
+            const filings = await strapi.entityService.findMany('api::filing.filing', {
+                filters: {
+                    user: user.id
+                },
+                populate: {
+                    taxYear: {
+                        fields: ['year', 'isActive', 'isCurrent', 'filingDeadline']
+                    }
+                },
+                sort: { updatedAt: 'desc' }
+            });
 
-        // Use Core Service find for pagination 
-        // @ts-ignore
-        const { results, pagination } = await strapi.service('api::filing.filing').find({
-            ...ctx.query,
-            filters: {
-                ...(ctx.query.filters as any || {}),
-                ...(isAdmin ? {} : { user: user.id })
-            },
-            populate: ['taxYear']
-        });
+            // Calculate overall stats
+            const stats = {
+                totalFilings: filings.length,
+                inProgress: filings.filter(f => f.filingStatus === 'In Progress').length,
+                submitted: filings.filter(f => ['Submitted', 'Under Review'].includes(f.filingStatus)).length,
+                completed: filings.filter(f => ['Approved', 'Completed'].includes(f.filingStatus)).length
+            };
 
-        const sanitizedResults = await this.sanitizeOutput(results, ctx);
-        return this.transformResponse(sanitizedResults, { pagination });
+            ctx.body = {
+                data: {
+                    stats,
+                    filings
+                }
+            };
+        } catch (err) {
+            console.error('Dashboard find error:', err);
+            ctx.throw(500, 'Failed to fetch dashboard data');
+        }
     },
 
+    /**
+     * GET /dashboard/filings/:id
+     * Get a single filing by ID
+     */
     async findOne(ctx) {
-        const user = ctx.state.user;
-        if (!user) return ctx.unauthorized();
+        try {
+            const user = ctx.state.user;
+            if (!user) {
+                return ctx.unauthorized('You must be logged in');
+            }
 
-        const { id } = ctx.params;
-        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
+            const { id } = ctx.params;
 
-        let entity: any;
-
-        // Safer ID handling for Dashboard: handle both numeric id and UUID documentId
-        const isNumeric = !isNaN(Number(id));
-
-        if (isNumeric) {
-            const results = await strapi.documents('api::filing.filing').findMany({
-                filters: { id: id },
-                populate: ['user', 'taxYear']
+            // Fetch the filing (cast to any for populated relations)
+            const filing: any = await strapi.entityService.findOne('api::filing.filing', id, {
+                populate: {
+                    user: {
+                        fields: ['id', 'username', 'email']
+                    },
+                    taxYear: {
+                        fields: ['year', 'isActive', 'isCurrent', 'filingDeadline', 'filingQuestions', 'corporateQuestions', 'trustQuestions']
+                    }
+                }
             });
-            if (results && results.length > 0) {
-                entity = results[0];
+
+            if (!filing) {
+                return ctx.notFound('Filing not found');
             }
-        }
 
-        if (!entity) {
-            try {
-                entity = await strapi.documents('api::filing.filing').findOne({
-                    documentId: id,
-                    populate: ['user', 'taxYear']
-                });
-            } catch (e) {
-                // Silent fail for documentId lookup
+            // Check ownership (unless admin)
+            const isAdmin = user.role?.type === 'admin' || user.role?.name === 'Admin';
+            const isOwner = filing.user?.id === user.id;
+
+            if (!isAdmin && !isOwner) {
+                return ctx.forbidden('You do not have permission to access this filing');
             }
+
+            ctx.body = { data: filing };
+        } catch (err) {
+            console.error('Dashboard findOne error:', err);
+            ctx.throw(500, 'Failed to fetch filing');
         }
-
-        const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
-        const userMatches = entityUserId === user.id || entityUserId === user.documentId;
-
-        if (!entity || (!isAdmin && !userMatches)) {
-            return ctx.notFound();
-        }
-
-        const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-        return this.transformResponse(sanitizedEntity);
     },
 
+    /**
+     * PUT /dashboard/filings/:id
+     * Update a filing
+     */
     async update(ctx) {
-        const user = ctx.state.user;
-        if (!user) return ctx.unauthorized();
+        try {
+            const user = ctx.state.user;
+            if (!user) {
+                return ctx.unauthorized('You must be logged in');
+            }
 
-        const { id } = ctx.params;
-        const isAdmin = user.role?.type === 'admin_role' || user.role?.name === 'Admin';
+            const { id } = ctx.params;
+            const { data } = ctx.request.body;
 
-        let entity: any;
-        const isNumeric = !isNaN(Number(id));
-
-        if (isNumeric) {
-            const results = await strapi.documents('api::filing.filing').findMany({
-                filters: { id: id },
-                populate: ['user']
+            // First, fetch the existing filing to check ownership (cast to any for populated relations)
+            const existingFiling: any = await strapi.entityService.findOne('api::filing.filing', id, {
+                populate: {
+                    user: {
+                        fields: ['id']
+                    }
+                }
             });
-            if (results && results.length > 0) {
-                entity = results[0];
+
+            if (!existingFiling) {
+                return ctx.notFound('Filing not found');
             }
-        }
 
-        if (!entity) {
-            try {
-                entity = await strapi.documents('api::filing.filing').findOne({
-                    documentId: id,
-                    populate: ['user']
-                });
-            } catch (e) {
-                // Silent fail
+            // Check ownership (unless admin)
+            const isAdmin = user.role?.type === 'admin' || user.role?.name === 'Admin';
+            const isOwner = existingFiling.user?.id === user.id;
+
+            if (!isAdmin && !isOwner) {
+                return ctx.forbidden('You do not have permission to update this filing');
             }
-        }
 
-        const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
-        const userMatches = entityUserId === user.id || entityUserId === user.documentId;
-
-        if (!entity || (!isAdmin && !userMatches)) {
-            return ctx.notFound();
-        }
-
-        const { data } = ctx.request.body;
-
-        // Prevent changing taxYear or user
-        if (data.user || data.taxYear) {
+            // Prevent changing ownership or tax year
             delete data.user;
             delete data.taxYear;
+
+            // Update the filing
+            const updatedFiling = await strapi.entityService.update('api::filing.filing', id, {
+                data,
+                populate: {
+                    taxYear: {
+                        fields: ['year', 'isActive', 'isCurrent', 'filingDeadline']
+                    }
+                }
+            });
+
+            ctx.body = { data: updatedFiling };
+        } catch (err) {
+            console.error('Dashboard update error:', err);
+            ctx.throw(500, 'Failed to update filing');
         }
-
-        const updated = await strapi.documents('api::filing.filing').update({
-            documentId: entity.documentId,
-            data
-        });
-
-        // Read back with full population
-        const verified: any = await strapi.documents('api::filing.filing').findOne({
-            documentId: entity.documentId,
-            populate: ['user', 'taxYear']
-        });
-
-        const sanitizedEntity = await this.sanitizeOutput(verified, ctx);
-        return this.transformResponse(sanitizedEntity);
     },
 
+    /**
+     * GET /dashboard/tax-years
+     * Get active tax years for new filings
+     */
     async getTaxYears(ctx) {
-        const user = ctx.state.user;
-        if (!user) return ctx.unauthorized();
+        try {
+            const user = ctx.state.user;
+            if (!user) {
+                return ctx.unauthorized('You must be logged in');
+            }
 
-        // Fetch latest 3 tax years
-        const taxYears = await strapi.documents('api::tax-year.tax-year').findMany({
-            sort: 'year:desc',
-            limit: 3,
-            fields: ['year', 'isActive', 'isCurrent']
-        });
+            // Get active tax years
+            const activeTaxYears = await strapi.entityService.findMany('api::tax-year.tax-year', {
+                filters: {
+                    isActive: true
+                },
+                sort: { year: 'desc' },
+                fields: ['year', 'isActive', 'isCurrent', 'filingDeadline']
+            });
 
-        return { data: taxYears };
+            ctx.body = {
+                data: activeTaxYears
+            };
+        } catch (err) {
+            console.error('Dashboard getTaxYears error:', err);
+            ctx.throw(500, 'Failed to fetch tax years');
+        }
     }
-}));
+};

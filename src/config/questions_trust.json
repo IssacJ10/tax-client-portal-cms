@@ -1,0 +1,218 @@
+{
+    "header": {
+        "title": "{year} T3 Trust Income Tax Return",
+        "description": "File tax return for a Trust or Estate",
+        "showProgress": true
+    },
+    "steps": [
+        {
+            "id": "trust_ident",
+            "title": "Trust Identification",
+            "description": "Trust details and residency",
+            "order": 10
+        },
+        {
+            "id": "trustees",
+            "title": "Trustees & Beneficiaries",
+            "description": "Parties involved in the trust",
+            "order": 20
+        },
+        {
+            "id": "income",
+            "title": "Income & Expenses",
+            "description": "Trust income, gains, and allocations",
+            "order": 30
+        },
+        {
+            "id": "review",
+            "title": "Review",
+            "description": "Verify and submit",
+            "order": 40
+        }
+    ],
+    "questions": [
+        {
+            "id": "q_trust_name",
+            "type": "text",
+            "label": "Name of Trust",
+            "name": "trustInfo.name",
+            "validation": {
+                "required": true
+            },
+            "step": "trust_ident",
+            "order": 10
+        },
+        {
+            "id": "q_trust_acct",
+            "type": "text",
+            "label": "Trust Account Number",
+            "name": "trustInfo.accountNumber",
+            "placeholder": "T12345678",
+            "validation": {
+                "required": true,
+                "pattern": "^T\\d{8}$"
+            },
+            "step": "trust_ident",
+            "order": 20
+        },
+        {
+            "id": "q_creation_date",
+            "type": "date",
+            "label": "Date Trust Created",
+            "name": "trustInfo.creationDate",
+            "validation": {
+                "required": true
+            },
+            "step": "trust_ident",
+            "order": 30
+        },
+        {
+            "id": "q_residency",
+            "type": "select",
+            "label": "Province of Residency",
+            "name": "trustInfo.residency",
+            "options": [
+                "ON",
+                "BC",
+                "AB",
+                "QC",
+                "Other"
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "trust_ident",
+            "order": 40
+        },
+        {
+            "id": "q_trustees",
+            "type": "repeater",
+            "label": "Trustees",
+            "name": "trustees",
+            "step": "trustees",
+            "order": 10,
+            "fields": [
+                {
+                    "type": "text",
+                    "name": "fullName",
+                    "label": "Name",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "type": "text",
+                    "name": "phone",
+                    "label": "Phone",
+                    "validation": {
+                        "required": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "q_beneficiaries",
+            "type": "repeater",
+            "label": "Beneficiaries",
+            "name": "beneficiaries",
+            "step": "trustees",
+            "order": 20,
+            "fields": [
+                {
+                    "type": "text",
+                    "name": "fullName",
+                    "label": "Name",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "type": "text",
+                    "name": "address",
+                    "label": "Address",
+                    "validation": {
+                        "required": false
+                    }
+                }
+            ]
+        },
+        {
+            "id": "q_income_interest",
+            "type": "number",
+            "label": "Interest Income",
+            "name": "income.interest",
+            "validation": {
+                "required": false
+            },
+            "step": "income",
+            "order": 10
+        },
+        {
+            "id": "q_income_dividends",
+            "type": "number",
+            "label": "Dividends (Taxable Amount)",
+            "name": "income.dividends",
+            "validation": {
+                "required": false
+            },
+            "step": "income",
+            "order": 20
+        },
+        {
+            "id": "q_capital_gains",
+            "type": "number",
+            "label": "Capital Gains",
+            "name": "income.capitalGains",
+            "validation": {
+                "required": false
+            },
+            "step": "income",
+            "order": 30
+        },
+        {
+            "id": "q_distributions",
+            "type": "number",
+            "label": "Total Distributions to Beneficiaries",
+            "name": "income.distributions",
+            "validation": {
+                "required": false
+            },
+            "step": "income",
+            "order": 40
+        }
+    ],
+    "review": {
+        "title": "Review T3 Return",
+        "description": "Verify Trust Details",
+        "sections": [
+            {
+                "id": "ident",
+                "title": "Trust Info",
+                "fields": [
+                    "trustInfo.name",
+                    "trustInfo.accountNumber"
+                ],
+                "editStepId": "trust_ident"
+            },
+            {
+                "id": "income_summary",
+                "title": "Income Summary",
+                "fields": [
+                    "income.interest",
+                    "income.dividends",
+                    "income.distributions"
+                ],
+                "format": {
+                    "income.interest": "currency",
+                    "income.dividends": "currency"
+                },
+                "editStepId": "income"
+            }
+        ],
+        "submitButton": {
+            "label": "Submit T3 Return",
+            "confirmMessage": "Submit Trust Return?",
+            "successMessage": "T3 Return submitted successfully!"
+        }
+    }
+}

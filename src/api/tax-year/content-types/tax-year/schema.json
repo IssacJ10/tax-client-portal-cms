@@ -40,6 +40,14 @@
     "filingQuestions": {
       "type": "json"
     },
+    "corporateQuestions": {
+      "type": "json",
+      "description": "T2 Corporate Questions Configuration"
+    },
+    "trustQuestions": {
+      "type": "json",
+      "description": "T3 Trust Questions Configuration"
+    },
     "filings": {
       "type": "relation",
       "relation": "oneToMany",

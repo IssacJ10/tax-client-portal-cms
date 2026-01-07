@@ -1,0 +1,262 @@
+{
+    "header": {
+        "title": "{year} T2 Corporate Tax Return",
+        "description": "File taxes for your incorporated business entity",
+        "showProgress": true
+    },
+    "steps": [
+        {
+            "id": "corp_ident",
+            "title": "Identification",
+            "description": "Corporation details and fiscal period",
+            "order": 10
+        },
+        {
+            "id": "shareholders",
+            "title": "Shareholders",
+            "description": "Ownership and director information",
+            "order": 20
+        },
+        {
+            "id": "financials",
+            "title": "Financial Information",
+            "description": "Revenue, expenses, and assets",
+            "order": 30
+        },
+        {
+            "id": "documents",
+            "title": "Documents",
+            "description": "Upload financial statements and receipts",
+            "order": 40
+        },
+        {
+            "id": "review",
+            "title": "Review",
+            "description": "Verify and submit return",
+            "order": 50
+        }
+    ],
+    "questions": [
+        {
+            "id": "q_corp_name",
+            "type": "text",
+            "label": "Legal Corporation Name",
+            "name": "corpInfo.legalName",
+            "validation": {
+                "required": true
+            },
+            "step": "corp_ident",
+            "order": 10
+        },
+        {
+            "id": "q_bn",
+            "type": "text",
+            "label": "Business Number (BN)",
+            "name": "corpInfo.businessNumber",
+            "placeholder": "123456789 RC0001",
+            "validation": {
+                "required": true,
+                "pattern": "^\\d{9}\\s?RC\\d{4}$"
+            },
+            "step": "corp_ident",
+            "order": 20
+        },
+        {
+            "id": "q_address",
+            "type": "text",
+            "label": "Corporate Address",
+            "name": "corpInfo.address",
+            "validation": {
+                "required": true
+            },
+            "step": "corp_ident",
+            "order": 30
+        },
+        {
+            "id": "q_inc_date",
+            "type": "date",
+            "label": "Date of Incorporation",
+            "name": "corpInfo.incorporationDate",
+            "validation": {
+                "required": true
+            },
+            "step": "corp_ident",
+            "order": 40
+        },
+        {
+            "id": "q_fiscal_end",
+            "type": "date",
+            "label": "Fiscal Year-End Date",
+            "name": "corpInfo.fiscalYearEnd",
+            "validation": {
+                "required": true
+            },
+            "step": "corp_ident",
+            "order": 50
+        },
+        {
+            "id": "q_shareholders",
+            "type": "repeater",
+            "label": "Shareholders & Directors",
+            "name": "shareholders",
+            "step": "shareholders",
+            "order": 10,
+            "config": {
+                "addButtonLabel": "Add Shareholder/Director",
+                "emptyMessage": "Add individuals with ownership or director status"
+            },
+            "fields": [
+                {
+                    "type": "text",
+                    "name": "fullName",
+                    "label": "Full Name",
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "type": "select",
+                    "name": "role",
+                    "label": "Role",
+                    "options": [
+                        "Shareholder",
+                        "Director",
+                        "Both"
+                    ],
+                    "validation": {
+                        "required": true
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "ownershipPercent",
+                    "label": "Ownership % (if applicable)",
+                    "validation": {
+                        "required": false,
+                        "max": 100
+                    }
+                },
+                {
+                    "type": "text",
+                    "name": "sin_bn",
+                    "label": "SIN or BN",
+                    "validation": {
+                        "required": false
+                    }
+                }
+            ]
+        },
+        {
+            "id": "q_revenue",
+            "type": "number",
+            "label": "Total Revenue / Gross Sales",
+            "name": "financials.totalRevenue",
+            "validation": {
+                "required": true
+            },
+            "step": "financials",
+            "order": 10
+        },
+        {
+            "id": "q_expenses_salary",
+            "type": "number",
+            "label": "Salaries & Wages",
+            "name": "financials.expenses.salaries",
+            "validation": {
+                "required": false
+            },
+            "step": "financials",
+            "order": 20
+        },
+        {
+            "id": "q_expenses_rent",
+            "type": "number",
+            "label": "Rent / Lease Expenses",
+            "name": "financials.expenses.rent",
+            "validation": {
+                "required": false
+            },
+            "step": "financials",
+            "order": 30
+        },
+        {
+            "id": "q_expenses_prof",
+            "type": "number",
+            "label": "Professional Fees (Legal/Accounting)",
+            "name": "financials.expenses.professionalFees",
+            "validation": {
+                "required": false
+            },
+            "step": "financials",
+            "order": 40
+        },
+        {
+            "id": "q_net_income",
+            "type": "number",
+            "label": "Net Income (Loss) before taxes",
+            "name": "financials.netIncome",
+            "validation": {
+                "required": true
+            },
+            "step": "financials",
+            "order": 50
+        },
+        {
+            "id": "q_uploads",
+            "type": "file",
+            "label": "Upload Financial Statements (Balance Sheet, Income Statement)",
+            "name": "documents.financialStatements",
+            "validation": {
+                "required": true
+            },
+            "step": "documents",
+            "order": 10
+        }
+    ],
+    "review": {
+        "title": "Review T2 Return",
+        "description": "Verify your corporate tax details",
+        "sections": [
+            {
+                "id": "corp_info",
+                "title": "Corporate Info",
+                "fields": [
+                    "corpInfo.legalName",
+                    "corpInfo.businessNumber",
+                    "corpInfo.incorporationDate"
+                ],
+                "editStepId": "corp_ident"
+            },
+            {
+                "id": "shareholders",
+                "title": "Shareholders",
+                "dataPath": "shareholders",
+                "isRepeater": true,
+                "fields": [
+                    "fullName",
+                    "role",
+                    "ownershipPercent"
+                ],
+                "editStepId": "shareholders"
+            },
+            {
+                "id": "financials",
+                "title": "Financial Summary",
+                "fields": [
+                    "financials.totalRevenue",
+                    "financials.netIncome"
+                ],
+                "format": {
+                    "financials.totalRevenue": "currency",
+                    "financials.netIncome": "currency"
+                },
+                "editStepId": "financials"
+            }
+        ],
+        "submitButton": {
+            "label": "Submit T2 Return",
+            "confirmMessage": "Confirm submission of Corporate Return?",
+            "successMessage": "T2 Return submitted successfully!"
+        }
+    }
+}
