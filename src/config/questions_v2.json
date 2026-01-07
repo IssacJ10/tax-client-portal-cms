@@ -27,7 +27,10 @@
             "id": "spouse_info",
             "title": "Spouse Info",
             "order": 35,
-            "description": "Partner Details"
+            "description": "Partner Details",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "dependants",
@@ -39,7 +42,10 @@
             "id": "elections_canada",
             "title": "Elections Canada",
             "order": 45,
-            "description": "Consent"
+            "description": "Consent",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "property_assets",
@@ -69,37 +75,55 @@
             "id": "work_expenses",
             "title": "Work Expenses",
             "order": 75,
-            "description": "Employment Costs"
+            "description": "Employment Costs",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "home_office",
             "title": "Home Office",
             "order": 78,
-            "description": "T777 Details"
+            "description": "T777 Details",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "vehicle_expenses",
             "title": "Vehicle Expenses",
             "order": 80,
-            "description": "Travel Costs"
+            "description": "Travel Costs",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "self_employment",
             "title": "Self-Employment",
             "order": 85,
-            "description": "Business Details"
+            "description": "Business Details",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "rental_income",
             "title": "Rental Income",
             "order": 90,
-            "description": "Property Income"
+            "description": "Property Income",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "moving_expenses",
             "title": "Moving Expenses",
             "order": 95,
-            "description": "Relocation Costs"
+            "description": "Relocation Costs",
+            "conditional": {
+                "anyQuestionVisible": true
+            }
         },
         {
             "id": "documents",
