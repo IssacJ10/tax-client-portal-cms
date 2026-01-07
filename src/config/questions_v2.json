@@ -6,12 +6,6 @@
     },
     "steps": [
         {
-            "id": "service_selection",
-            "title": "Service Type",
-            "order": 5,
-            "description": "Select Filing Type"
-        },
-        {
             "id": "personal_info",
             "title": "Personal Info",
             "order": 10,
@@ -127,32 +121,6 @@
         }
     ],
     "questions": [
-        {
-            "id": "q_service_type",
-            "type": "radio",
-            "label": "Select the service you require",
-            "name": "serviceType",
-            "options": [
-                {
-                    "value": "T1_PERSONAL",
-                    "label": "T1 - Personal Tax Return"
-                },
-                {
-                    "value": "T2_CORPORATE",
-                    "label": "T2 - Corporate Tax Return"
-                },
-                {
-                    "value": "T3_TRUST",
-                    "label": "T3 - Trust Tax Return"
-                }
-            ],
-            "validation": {
-                "required": true
-            },
-            "step": "service_selection",
-            "order": 10,
-            "helpText": "For T2 and T3 filings, you will need to book an appointment with a Tax Expert."
-        },
         {
             "id": "q_fname",
             "type": "text",
