@@ -2730,7 +2730,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2739,7 +2739,7 @@
             "step": "moving_expenses",
             "order": 15,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2752,7 +2752,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2761,7 +2761,7 @@
             "step": "moving_expenses",
             "order": 20,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2774,7 +2774,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2783,7 +2783,7 @@
             "step": "moving_expenses",
             "order": 25,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2796,7 +2796,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2805,7 +2805,7 @@
             "step": "moving_expenses",
             "order": 30,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2818,7 +2818,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2827,7 +2827,7 @@
             "step": "moving_expenses",
             "order": 35,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2840,7 +2840,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -2849,7 +2849,7 @@
             "step": "moving_expenses",
             "order": 40,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2879,7 +2879,7 @@
             "step": "moving_expenses",
             "order": 45,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2913,7 +2913,7 @@
             "step": "moving_expenses",
             "order": 50,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2935,7 +2935,7 @@
             "step": "moving_expenses",
             "order": 55,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2965,7 +2965,7 @@
             "step": "moving_expenses",
             "order": 60,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -2995,7 +2995,7 @@
             "step": "moving_expenses",
             "order": 65,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -3018,7 +3018,7 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "deductions.selected",
+                        "parentQuestionId": "deductions.sources",
                         "operator": "contains",
                         "value": "MOVING_EXPENSES"
                     }
@@ -3027,7 +3027,7 @@
             "step": "moving_expenses",
             "order": 70,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }
@@ -3075,7 +3075,7 @@
             "step": "moving_expenses",
             "order": 85,
             "conditional": {
-                "parentQuestionId": "deductions.selected",
+                "parentQuestionId": "deductions.sources",
                 "operator": "contains",
                 "value": "MOVING_EXPENSES"
             }

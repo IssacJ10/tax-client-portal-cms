@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-01-08T19:15:30.383Z",
+  "invalidParents": [],
+  "valueMismatches": [
+    {
+      "question": "workExpenses.t2200Document",
+      "parent": "workExpenses.categories",
+      "conditionalValue": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "availableValues": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "questionId": "q_t2200_upload"
+    },
+    {
+      "question": "workExpenses.expenseTypes",
+      "parent": "workExpenses.categories",
+      "conditionalValue": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "availableValues": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "questionId": "q_work_expense_types"
+    },
+    {
+      "question": "workExpenses.receiptDocuments",
+      "parent": "workExpenses.categories",
+      "conditionalValue": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "availableValues": [
+        "WORKED_FROM_HOME",
+        "TRAVEL_FOR_WORK",
+        "PURCHASED_SUPPLIES"
+      ],
+      "questionId": "q_work_expense_docs"
+    }
+  ],
+  "circularDeps": [],
+  "operatorMismatches": [],
+  "summary": {
+    "totalQuestions": 126,
+    "totalIssues": 3,
+    "invalidParents": 0,
+    "valueMismatches": 3,
+    "circularDeps": 0,
+    "operatorMismatches": 0
+  }
+}
