@@ -3202,7 +3202,7 @@
           "personalInfo.lastName",
           "personalInfo.sin",
           "personalInfo.dateOfBirth",
-          "personalInfo.maritalStatus"
+          "maritalStatus.status"
         ],
         "editStepId": "personal_identity"
       },
@@ -3211,9 +3211,9 @@
         "title": "Contact Details",
         "fields": [
           "personalInfo.email",
-          "personalInfo.phone",
-          "personalInfo.address.street",
-          "personalInfo.address.city"
+          "personalInfo.phoneNumber",
+          "personalInfo.streetName",
+          "personalInfo.city"
         ],
         "editStepId": "personal_contact"
       },
@@ -3241,13 +3241,13 @@
       {
         "id": "dependents",
         "title": "Dependents",
-        "dataPath": "dependents",
+        "dataPath": "dependants.list",
         "isRepeater": true,
         "fields": [
-          "firstName",
-          "lastName",
+          "fullName",
           "relationship",
-          "dateOfBirth"
+          "dateOfBirth",
+          "isClaimingDTC"
         ],
         "editStepId": "dependents"
       },
@@ -3266,7 +3266,7 @@
         "id": "deductions",
         "title": "Deductions",
         "fields": [
-          "deductions.selected"
+          "deductions.sources"
         ],
         "format": {
           "deductions.selected": "list"
