@@ -1,0 +1,122 @@
+[
+  {
+    "id": "employment_t4_details",
+    "title": "EMPLOYMENT T4 Details",
+    "parentField": "income.sources",
+    "value": "EMPLOYMENT_T4"
+  },
+  {
+    "id": "investment_income_details",
+    "title": "INVESTMENT INCOME Details",
+    "parentField": "income.sources",
+    "value": "INVESTMENT_INCOME"
+  },
+  {
+    "id": "pension_income_details",
+    "title": "PENSION INCOME Details",
+    "parentField": "income.sources",
+    "value": "PENSION_INCOME"
+  },
+  {
+    "id": "rrsp_withdrawal_details",
+    "title": "RRSP WITHDRAWAL Details",
+    "parentField": "income.sources",
+    "value": "RRSP_WITHDRAWAL"
+  },
+  {
+    "id": "other_income_details",
+    "title": "OTHER INCOME Details",
+    "parentField": "income.sources",
+    "value": "OTHER_INCOME"
+  },
+  {
+    "id": "rrsp_details",
+    "title": "RRSP Details",
+    "parentField": "deductions.sources",
+    "value": "RRSP"
+  },
+  {
+    "id": "union_dues_details",
+    "title": "UNION DUES Details",
+    "parentField": "deductions.sources",
+    "value": "UNION_DUES"
+  },
+  {
+    "id": "employment_expenses_details",
+    "title": "EMPLOYMENT EXPENSES Details",
+    "parentField": "deductions.sources",
+    "value": "EMPLOYMENT_EXPENSES"
+  },
+  {
+    "id": "moving_expenses_details",
+    "title": "MOVING EXPENSES Details",
+    "parentField": "deductions.sources",
+    "value": "MOVING_EXPENSES"
+  },
+  {
+    "id": "childcare_details",
+    "title": "CHILDCARE Details",
+    "parentField": "deductions.sources",
+    "value": "CHILDCARE"
+  },
+  {
+    "id": "disability_supports_details",
+    "title": "DISABILITY SUPPORTS Details",
+    "parentField": "deductions.sources",
+    "value": "DISABILITY_SUPPORTS"
+  },
+  {
+    "id": "medical_expenses_details",
+    "title": "MEDICAL EXPENSES Details",
+    "parentField": "deductions.sources",
+    "value": "MEDICAL_EXPENSES"
+  },
+  {
+    "id": "donations_details",
+    "title": "DONATIONS Details",
+    "parentField": "deductions.sources",
+    "value": "DONATIONS"
+  },
+  {
+    "id": "home_office_details",
+    "title": "HOME OFFICE Details",
+    "parentField": "deductions.sources",
+    "value": "HOME_OFFICE"
+  },
+  {
+    "id": "vehicle_expenses_details",
+    "title": "VEHICLE EXPENSES Details",
+    "parentField": "workExpenses.categories",
+    "value": "VEHICLE_EXPENSES"
+  },
+  {
+    "id": "home_office_expenses_details",
+    "title": "HOME OFFICE EXPENSES Details",
+    "parentField": "workExpenses.categories",
+    "value": "HOME_OFFICE_EXPENSES"
+  },
+  {
+    "id": "supplies_details",
+    "title": "SUPPLIES Details",
+    "parentField": "workExpenses.categories",
+    "value": "SUPPLIES"
+  },
+  {
+    "id": "professional_fees_details",
+    "title": "PROFESSIONAL FEES Details",
+    "parentField": "workExpenses.categories",
+    "value": "PROFESSIONAL_FEES"
+  },
+  {
+    "id": "travel_details",
+    "title": "TRAVEL Details",
+    "parentField": "workExpenses.categories",
+    "value": "TRAVEL"
+  },
+  {
+    "id": "meals_entertainment_details",
+    "title": "MEALS ENTERTAINMENT Details",
+    "parentField": "workExpenses.categories",
+    "value": "MEALS_ENTERTAINMENT"
+  }
+]

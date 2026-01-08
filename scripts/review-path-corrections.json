@@ -1,0 +1,7 @@
+[
+  {
+    "section": "dependents",
+    "from": "relationship",
+    "to": "dependants.list.relationship"
+  }
+]

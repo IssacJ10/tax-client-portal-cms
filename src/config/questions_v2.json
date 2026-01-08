@@ -3319,6 +3319,73 @@
         "editStepId": "deductions"
       },
       {
+        "id": "employment_t4_details",
+        "title": "Employment Income (T4)",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "EMPLOYMENT_T4"
+        },
+        "fields": [
+          "employment.t4Documents"
+        ],
+        "format": {
+          "employment.t4Documents": "files"
+        },
+        "editStepId": "employment_t4"
+      },
+      {
+        "id": "vehicle_expenses_details",
+        "title": "Vehicle Expenses",
+        "conditional": {
+          "parentQuestionId": "workExpenses.categories",
+          "operator": "contains",
+          "value": "VEHICLE_EXPENSES"
+        },
+        "fields": [
+          "workExpenses.vehicleMake",
+          "workExpenses.vehicleYear",
+          "workExpenses.vehicleKmTotal",
+          "workExpenses.vehicleKmWork"
+        ],
+        "format": {},
+        "editStepId": "vehicle_expenses"
+      },
+      {
+        "id": "home_office_work_details",
+        "title": "Home Office (Work)",
+        "conditional": {
+          "parentQuestionId": "workExpenses.categories",
+          "operator": "contains",
+          "value": "HOME_OFFICE"
+        },
+        "fields": [
+          "workExpenses.homeOfficeSize",
+          "workExpenses.totalHomeSize",
+          "workExpenses.homeOfficePercentage"
+        ],
+        "format": {},
+        "editStepId": "home_office_work"
+      },
+      {
+        "id": "disability_credit_details",
+        "title": "Disability Tax Credit",
+        "conditional": {
+          "parentQuestionId": "disabilityCredit.affectedPersons",
+          "operator": "contains",
+          "value": ""
+        },
+        "fields": [
+          "disabilityCredit.affectedPersons",
+          "disabilityCredit.documents"
+        ],
+        "format": {
+          "disabilityCredit.affectedPersons": "list",
+          "disabilityCredit.documents": "files"
+        },
+        "editStepId": "disability_credit"
+      },
+      {
         "id": "work_expenses",
         "title": "Work Expenses",
         "conditional": {
