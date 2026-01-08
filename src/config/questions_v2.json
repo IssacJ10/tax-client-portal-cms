@@ -1633,18 +1633,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 10,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1655,18 +1655,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 15,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1677,18 +1677,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 20,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1699,18 +1699,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 25,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1721,18 +1721,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 30,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1743,18 +1743,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 35,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1765,18 +1765,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 40,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1787,18 +1787,18 @@
             "validation": {
                 "conditionalRequired": {
                     "when": {
-                        "parentQuestionId": "workExpenses.expenseTypes",
+                        "parentQuestionId": "workExpenses.categories",
                         "operator": "contains",
-                        "value": "TRAVEL"
+                        "value": "TRAVEL_FOR_WORK"
                     }
                 }
             },
             "step": "vehicle_expenses",
             "order": 45,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1813,9 +1813,9 @@
             "order": 50,
             "helpText": "Used to calculate depreciation expenses of the vehicle",
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1830,9 +1830,9 @@
             "order": 55,
             "helpText": "Enter total monthly amounts. We will calculate the work-related yearly portion.",
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1846,9 +1846,9 @@
             "step": "vehicle_expenses",
             "order": 60,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1862,9 +1862,9 @@
             "step": "vehicle_expenses",
             "order": 65,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1878,9 +1878,9 @@
             "step": "vehicle_expenses",
             "order": 70,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1894,9 +1894,9 @@
             "step": "vehicle_expenses",
             "order": 75,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1910,9 +1910,9 @@
             "step": "vehicle_expenses",
             "order": 80,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1926,9 +1926,9 @@
             "step": "vehicle_expenses",
             "order": 85,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1942,9 +1942,9 @@
             "step": "vehicle_expenses",
             "order": 90,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
@@ -1958,9 +1958,9 @@
             "step": "vehicle_expenses",
             "order": 95,
             "conditional": {
-                "parentQuestionId": "workExpenses.expenseTypes",
+                "parentQuestionId": "workExpenses.categories",
                 "operator": "contains",
-                "value": "TRAVEL"
+                "value": "TRAVEL_FOR_WORK"
             }
         },
         {
