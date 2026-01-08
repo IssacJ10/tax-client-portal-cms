@@ -3267,13 +3267,54 @@
         "editStepId": "income_selection"
       },
       {
+        "id": "self_employment_details",
+        "title": "Self-Employment Details",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "SELF_EMPLOYMENT"
+        },
+        "fields": [
+          "selfEmployment.needsBookkeeping",
+          "selfEmployment.gstRegistered",
+          "selfEmployment.hasCapitalAssets"
+        ],
+        "format": {
+          "selfEmployment.needsBookkeeping": "boolean",
+          "selfEmployment.gstRegistered": "boolean",
+          "selfEmployment.hasCapitalAssets": "boolean"
+        },
+        "editStepId": "self_employment"
+      },
+      {
+        "id": "rental_income_details",
+        "title": "Rental Income Details",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "RENTAL_INCOME"
+        },
+        "fields": [
+          "rentalIncome.propertyAddress",
+          "rentalIncome.propertyType",
+          "rentalIncome.ownershipPercentage",
+          "rentalIncome.rentalStartDate",
+          "rentalIncome.totalRentReceived"
+        ],
+        "format": {
+          "rentalIncome.rentalStartDate": "date",
+          "rentalIncome.totalRentReceived": "currency"
+        },
+        "editStepId": "rental_income"
+      },
+      {
         "id": "deductions",
         "title": "Deductions",
         "fields": [
           "deductions.sources"
         ],
         "format": {
-          "deductions.selected": "list"
+          "deductions.sources": "list"
         },
         "editStepId": "deductions"
       },
