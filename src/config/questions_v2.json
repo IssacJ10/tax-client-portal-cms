@@ -3267,6 +3267,117 @@
         "editStepId": "income_selection"
       },
       {
+        "id": "investment_income_details",
+        "title": "Investment Income",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "INVESTMENT_INCOME"
+        },
+        "fields": [
+          "investment.t3Documents",
+          "investment.t5Documents",
+          "investment.otherDocuments"
+        ],
+        "format": {
+          "investment.t3Documents": "files",
+          "investment.t5Documents": "files",
+          "investment.otherDocuments": "files"
+        },
+        "editStepId": "investment_income"
+      },
+      {
+        "id": "pension_income_details",
+        "title": "Pension Income",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "PENSION_INCOME"
+        },
+        "fields": [
+          "pension.pensionDocuments",
+          "pension.oasDocuments"
+        ],
+        "format": {
+          "pension.pensionDocuments": "files",
+          "pension.oasDocuments": "files"
+        },
+        "editStepId": "pension_income"
+      },
+      {
+        "id": "rrsp_withdrawal_details",
+        "title": "RRSP Withdrawals",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "RRSP_WITHDRAWAL"
+        },
+        "fields": [
+          "rrspWithdrawal.totalAmount",
+          "rrspWithdrawal.documents"
+        ],
+        "format": {
+          "rrspWithdrawal.totalAmount": "currency",
+          "rrspWithdrawal.documents": "files"
+        },
+        "editStepId": "rrsp_withdrawal"
+      },
+      {
+        "id": "other_income_details",
+        "title": "Other Income",
+        "conditional": {
+          "parentQuestionId": "income.sources",
+          "operator": "contains",
+          "value": "OTHER_INCOME"
+        },
+        "fields": [
+          "otherIncome.description",
+          "otherIncome.amount",
+          "otherIncome.documents"
+        ],
+        "format": {
+          "otherIncome.amount": "currency",
+          "otherIncome.documents": "files"
+        },
+        "editStepId": "other_income"
+      },
+      {
+        "id": "rrsp_contributions_details",
+        "title": "RRSP Contributions",
+        "conditional": {
+          "parentQuestionId": "deductions.sources",
+          "operator": "contains",
+          "value": "RRSP"
+        },
+        "fields": [
+          "rrsp.contributionAmount",
+          "rrsp.receipts"
+        ],
+        "format": {
+          "rrsp.contributionAmount": "currency",
+          "rrsp.receipts": "files"
+        },
+        "editStepId": "rrsp_deductions"
+      },
+      {
+        "id": "union_dues_details",
+        "title": "Union Dues",
+        "conditional": {
+          "parentQuestionId": "deductions.sources",
+          "operator": "contains",
+          "value": "UNION_DUES"
+        },
+        "fields": [
+          "unionDues.totalAmount",
+          "unionDues.receipts"
+        ],
+        "format": {
+          "unionDues.totalAmount": "currency",
+          "unionDues.receipts": "files"
+        },
+        "editStepId": "union_dues"
+      },
+      {
         "id": "self_employment_details",
         "title": "Self-Employment Details",
         "conditional": {
