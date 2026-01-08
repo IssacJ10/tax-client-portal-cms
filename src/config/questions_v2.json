@@ -3249,7 +3249,11 @@
           "dateOfBirth",
           "isClaimingDTC"
         ],
-        "editStepId": "dependents"
+        "editStepId": "dependents",
+        "format": {
+          "isClaimingDTC": "boolean",
+          "dateOfBirth": "date"
+        }
       },
       {
         "id": "financial_sources",
