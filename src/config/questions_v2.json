@@ -6,6 +6,12 @@
     },
     "steps": [
         {
+            "id": "filing_setup",
+            "title": "Filing Setup",
+            "order": 5,
+            "description": "Who are you filing for?"
+        },
+        {
             "id": "personal_info",
             "title": "Personal Info",
             "order": 10,
@@ -145,6 +151,28 @@
         }
     ],
     "questions": [
+        {
+            "id": "q_filing_type",
+            "type": "radio",
+            "label": "Who are you filing taxes for this year?",
+            "name": "filingSetup.type",
+            "options": [
+                {
+                    "value": "INDIVIDUAL",
+                    "label": "Just myself"
+                },
+                {
+                    "value": "MULTI_PERSON",
+                    "label": "Myself and others (spouse, earning dependents)"
+                }
+            ],
+            "validation": {
+                "required": true
+            },
+            "step": "filing_setup",
+            "order": 1,
+            "helpText": "Select 'Myself and others' if you want to include your spouse's income or dependents who earned income this year"
+        },
         {
             "id": "q_fname",
             "type": "text",
