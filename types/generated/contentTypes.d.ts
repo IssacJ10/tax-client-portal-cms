@@ -591,10 +591,133 @@ export interface ApiConsentConsent extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiCorporateFilingCorporateFiling
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'corporate_filings';
+  info: {
+    description: 'Corporate tax filing data for T2 returns';
+    displayName: 'Corporate Filing (T2)';
+    pluralName: 'corporate-filings';
+    singularName: 'corporate-filing';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    address: Schema.Attribute.Text;
+    businessNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expenses: Schema.Attribute.JSON;
+    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    financialStatements: Schema.Attribute.JSON;
+    fiscalYearEnd: Schema.Attribute.Date;
+    formData: Schema.Attribute.JSON;
+    incorporationDate: Schema.Attribute.Date;
+    legalName: Schema.Attribute.String & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::corporate-filing.corporate-filing'
+    > &
+      Schema.Attribute.Private;
+    netIncome: Schema.Attribute.Decimal;
+    publishedAt: Schema.Attribute.DateTime;
+    shareholders: Schema.Attribute.JSON;
+    totalRevenue: Schema.Attribute.Decimal;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFilingStatusFilingStatus
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'filing_statuses';
+  info: {
+    description: 'Master table for filing status workflow';
+    displayName: 'Filing Status';
+    pluralName: 'filing-statuses';
+    singularName: 'filing-status';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    color: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#6B7280'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    displayName: Schema.Attribute.String & Schema.Attribute.Required;
+    filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::filing-status.filing-status'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    statusCode: Schema.Attribute.Enumeration<
+      [
+        'NOT_STARTED',
+        'IN_PROGRESS',
+        'UNDER_REVIEW',
+        'SUBMITTED',
+        'APPROVED',
+        'COMPLETED',
+        'REJECTED',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFilingTypeFilingType extends Struct.CollectionTypeSchema {
+  collectionName: 'filing_types';
+  info: {
+    description: 'Master table for filing type taxonomy';
+    displayName: 'Filing Type';
+    pluralName: 'filing-types';
+    singularName: 'filing-type';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    displayName: Schema.Attribute.String & Schema.Attribute.Required;
+    filings: Schema.Attribute.Relation<'oneToMany', 'api::filing.filing'>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::filing-type.filing-type'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<['PERSONAL', 'CORPORATE', 'TRUST']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
   collectionName: 'filings';
   info: {
-    description: 'User tax filings';
+    description: 'Main filing orchestrator table';
     displayName: 'Filing';
     pluralName: 'filings';
     singularName: 'filing';
@@ -603,65 +726,34 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    amountOutsideCanada: Schema.Attribute.Decimal;
-    arrivalDateCanada: Schema.Attribute.Date;
-    birthDate: Schema.Attribute.Date;
-    city: Schema.Attribute.String;
-    confirmationNumber: Schema.Attribute.String;
+    assignedTo: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    completedAt: Schema.Attribute.DateTime;
+    confirmationNumber: Schema.Attribute.String & Schema.Attribute.Unique;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    currentAddress: Schema.Attribute.Text;
-    currentStatus: Schema.Attribute.String;
-    dependents: Schema.Attribute.Component<'filing.dependent-info', true>;
-    dependentsCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    directDepositInfo: Schema.Attribute.Text;
-    donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    email: Schema.Attribute.Email;
-    employmentDetails: Schema.Attribute.Text;
-    employmentStatus: Schema.Attribute.String;
     entityName: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
-    filingData: Schema.Attribute.JSON;
-    filingStatus: Schema.Attribute.Enumeration<
-      [
-        'Not Started',
-        'In Progress',
-        'Under Review',
-        'Submitted',
-        'Approved',
-        'Rejected',
-      ]
-    > &
-      Schema.Attribute.DefaultTo<'Not Started'>;
-    filingType: Schema.Attribute.Enumeration<
-      ['PERSONAL', 'CORPORATE', 'TRUST']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'PERSONAL'>;
-    firstName: Schema.Attribute.String;
-    hasFamilyMembers: Schema.Attribute.Enumeration<
-      ['SPOUSE', 'DEPENDENTS', 'BOTH', 'NONE']
+    filingType: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::filing-type.filing-type'
     >;
-    isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    lastName: Schema.Attribute.String;
+    internalNotes: Schema.Attribute.RichText;
+    lastStatusChangeAt: Schema.Attribute.DateTime;
+    lastStatusChangeBy: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::filing.filing'
     > &
       Schema.Attribute.Private;
-    maritalStatus: Schema.Attribute.Enumeration<
-      ['SINGLE', 'MARRIED', 'COMMON_LAW', 'SEPARATED', 'DIVORCED', 'WIDOWED']
-    >;
-    maritalStatusChanged: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    maritalStatusChangeDate: Schema.Attribute.Date;
-    medicalExpenses: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    middleName: Schema.Attribute.String;
-    movedForWork: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    phoneNumber: Schema.Attribute.String;
-    postalCode: Schema.Attribute.String;
-    previousAddress: Schema.Attribute.Text;
+    payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
     progress: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -671,11 +763,15 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<0>;
-    province: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    sin: Schema.Attribute.String & Schema.Attribute.Private;
-    spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
+    rejectedAt: Schema.Attribute.DateTime;
+    rejectionReason: Schema.Attribute.Text;
+    reviewedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::filing-status.filing-status'
+    >;
+    submittedAt: Schema.Attribute.DateTime;
     taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -685,8 +781,6 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    workedOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    workFromHome: Schema.Attribute.Enumeration<['Yes', 'No']>;
   };
 }
 
@@ -719,6 +813,152 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
+  collectionName: 'payments';
+  info: {
+    description: 'Payment tracking for filings';
+    displayName: 'Payment';
+    pluralName: 'payments';
+    singularName: 'payment';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    additionalServiceFees: Schema.Attribute.JSON;
+    baseFee: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'CAD'>;
+    dependentFee: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    gst: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    hst: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    invoiceNumber: Schema.Attribute.String & Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::payment.payment'
+    > &
+      Schema.Attribute.Private;
+    numberOfDependents: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<0>;
+    paidAmount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    paymentDate: Schema.Attribute.DateTime;
+    paymentMethod: Schema.Attribute.Enumeration<
+      ['CREDIT_CARD', 'DEBIT_CARD', 'BANK_TRANSFER', 'PAYPAL', 'OTHER']
+    >;
+    paymentNotes: Schema.Attribute.Text;
+    paymentStatus: Schema.Attribute.Enumeration<
+      ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'REFUNDED']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'PENDING'>;
+    pst: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    receiptUrl: Schema.Attribute.String;
+    refundedAmount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    spouseFee: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    subtotal: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    totalAmount: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<0>;
+    transactionId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPersonalFilingPersonalFiling
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'personal_filings';
+  info: {
+    description: 'Personal tax filing data for T1 returns';
+    displayName: 'Personal Filing (T1)';
+    pluralName: 'personal-filings';
+    singularName: 'personal-filing';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    additionalDocs: Schema.Attribute.JSON;
+    amountOutsideCanada: Schema.Attribute.Decimal;
+    apartmentNumber: Schema.Attribute.String;
+    arrivalDateCanada: Schema.Attribute.Date;
+    becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
+    city: Schema.Attribute.String;
+    countryOfResidence: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentAddress: Schema.Attribute.Text;
+    dateBecameResident: Schema.Attribute.Date;
+    dateOfBirth: Schema.Attribute.Date;
+    deductionSources: Schema.Attribute.JSON;
+    dependents: Schema.Attribute.Component<'filing.dependent-info', true>;
+    dependentsCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    directDeposit: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    directDepositInfo: Schema.Attribute.Text;
+    donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    email: Schema.Attribute.Email;
+    employmentDetails: Schema.Attribute.Text;
+    employmentStatus: Schema.Attribute.String;
+    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    firstName: Schema.Attribute.String;
+    formData: Schema.Attribute.JSON;
+    hasFamilyMembers: Schema.Attribute.Enumeration<
+      ['SPOUSE', 'DEPENDENTS', 'BOTH', 'NONE']
+    >;
+    incomeSources: Schema.Attribute.JSON;
+    isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    lastName: Schema.Attribute.String;
+    livedOutsideCanada: Schema.Attribute.Enumeration<['YES', 'NO']>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::personal-filing.personal-filing'
+    > &
+      Schema.Attribute.Private;
+    maritalStatus: Schema.Attribute.Enumeration<
+      ['SINGLE', 'MARRIED', 'COMMON_LAW', 'SEPARATED', 'DIVORCED', 'WIDOWED']
+    >;
+    maritalStatusChanged: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    maritalStatusChangeDate: Schema.Attribute.Date;
+    medicalExpenses: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    middleName: Schema.Attribute.String;
+    movedInYear: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    phoneNumber: Schema.Attribute.String;
+    postalCode: Schema.Attribute.String;
+    previousAddress: Schema.Attribute.Text;
+    province: Schema.Attribute.String;
+    provinceResided: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    sin: Schema.Attribute.String & Schema.Attribute.Private;
+    spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
+    statusInCanada: Schema.Attribute.Enumeration<
+      [
+        'CANADIAN_CITIZEN',
+        'PERMANENT_RESIDENT',
+        'TEMPORARY_RESIDENT',
+        'PROTECTED_PERSON',
+      ]
+    >;
+    streetName: Schema.Attribute.String;
+    streetNumber: Schema.Attribute.String;
+    taxSlips: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    workedOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    workFromHome: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    worldIncome: Schema.Attribute.Decimal;
   };
 }
 
@@ -818,6 +1058,43 @@ export interface ApiTaxYearTaxYear extends Struct.CollectionTypeSchema {
     year: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+  };
+}
+
+export interface ApiTrustFilingTrustFiling extends Struct.CollectionTypeSchema {
+  collectionName: 'trust_filings';
+  info: {
+    description: 'Trust tax filing data for T3 returns';
+    displayName: 'Trust Filing (T3)';
+    pluralName: 'trust-filings';
+    singularName: 'trust-filing';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    accountNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    beneficiaries: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    creationDate: Schema.Attribute.Date;
+    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    formData: Schema.Attribute.JSON;
+    income: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::trust-filing.trust-filing'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    residency: Schema.Attribute.String;
+    trustees: Schema.Attribute.JSON;
+    trustName: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1344,10 +1621,16 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
       'api::consent.consent': ApiConsentConsent;
+      'api::corporate-filing.corporate-filing': ApiCorporateFilingCorporateFiling;
+      'api::filing-status.filing-status': ApiFilingStatusFilingStatus;
+      'api::filing-type.filing-type': ApiFilingTypeFilingType;
       'api::filing.filing': ApiFilingFiling;
       'api::global.global': ApiGlobalGlobal;
+      'api::payment.payment': ApiPaymentPayment;
+      'api::personal-filing.personal-filing': ApiPersonalFilingPersonalFiling;
       'api::tax-tip.tax-tip': ApiTaxTipTaxTip;
       'api::tax-year.tax-year': ApiTaxYearTaxYear;
+      'api::trust-filing.trust-filing': ApiTrustFilingTrustFiling;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

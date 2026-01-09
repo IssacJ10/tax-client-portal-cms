@@ -9,7 +9,10 @@
             "id": "filing_setup",
             "title": "Filing Setup",
             "order": 5,
-            "description": "Who are you filing for?"
+            "description": "Who are you filing for?",
+            "visibleForRoles": [
+                "PRIMARY"
+            ]
         },
         {
             "id": "personal_info",
@@ -27,13 +30,19 @@
             "id": "marital_status",
             "title": "Marital Status",
             "order": 30,
-            "description": "Year-Specific"
+            "description": "Year-Specific",
+            "visibleForRoles": [
+                "PRIMARY"
+            ]
         },
         {
             "id": "spouse_info",
             "title": "Spouse Info",
             "order": 35,
             "description": "Partner Details",
+            "visibleForRoles": [
+                "PRIMARY"
+            ],
             "conditional": {
                 "anyQuestionVisible": true
             }
@@ -42,7 +51,10 @@
             "id": "dependants",
             "title": "Dependants",
             "order": 40,
-            "description": "Children & Others"
+            "description": "Children & Others",
+            "visibleForRoles": [
+                "PRIMARY"
+            ]
         },
         {
             "id": "elections_canada",

@@ -14,14 +14,17 @@ export default {
                 return ctx.unauthorized('You must be logged in to access the dashboard');
             }
 
-            // Get user's filings with tax year relation
-            const filings = await strapi.entityService.findMany('api::filing.filing', {
+            // Get user's filings with tax year and status relations
+            const filings: any[] = await strapi.entityService.findMany('api::filing.filing', {
                 filters: {
                     user: user.id
                 },
                 populate: {
                     taxYear: {
                         fields: ['year', 'isActive', 'isCurrent', 'filingDeadline']
+                    },
+                    status: {
+                        fields: ['statusCode', 'displayName']
                     }
                 },
                 sort: { updatedAt: 'desc' }
@@ -30,9 +33,9 @@ export default {
             // Calculate overall stats
             const stats = {
                 totalFilings: filings.length,
-                inProgress: filings.filter(f => f.filingStatus === 'In Progress').length,
-                submitted: filings.filter(f => ['Submitted', 'Under Review'].includes(f.filingStatus)).length,
-                completed: filings.filter(f => ['Approved', 'Completed'].includes(f.filingStatus)).length
+                inProgress: filings.filter(f => f.status?.statusCode === 'IN_PROGRESS').length,
+                submitted: filings.filter(f => ['SUBMITTED', 'UNDER_REVIEW'].includes(f.status?.statusCode)).length,
+                completed: filings.filter(f => ['APPROVED', 'COMPLETED'].includes(f.status?.statusCode)).length
             };
 
             ctx.body = {
@@ -68,6 +71,12 @@ export default {
                     },
                     taxYear: {
                         fields: ['year', 'isActive', 'isCurrent', 'filingDeadline', 'filingQuestions', 'corporateQuestions', 'trustQuestions']
+                    },
+                    status: {
+                        fields: ['statusCode', 'displayName', 'color']
+                    },
+                    filingType: {
+                        fields: ['type', 'displayName']
                     }
                 }
             });
@@ -136,6 +145,12 @@ export default {
                 populate: {
                     taxYear: {
                         fields: ['year', 'isActive', 'isCurrent', 'filingDeadline']
+                    },
+                    status: {
+                        fields: ['statusCode', 'displayName', 'color']
+                    },
+                    filingType: {
+                        fields: ['type', 'displayName']
                     }
                 }
             });

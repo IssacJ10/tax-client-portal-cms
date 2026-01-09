@@ -6,6 +6,8 @@ describe('Filing Security & Workflow', () => {
     let userA, jwtA;
     let userB, jwtB;
     let taxYear2024;
+    let inProgressStatusId;
+    let personalFilingTypeId;
 
     beforeAll(async () => {
         // 1. Init Strapi
@@ -25,7 +27,19 @@ describe('Filing Security & Workflow', () => {
             taxYear2024 = existingYear[0];
         }
 
-        // 4. Create User A
+        // 4. Get FilingStatus "In Progress" ID
+        const inProgressStatus = await strapiInstance.entityService.findMany('api::filing-status.filing-status', {
+            filters: { statusCode: 'IN_PROGRESS' }
+        });
+        inProgressStatusId = inProgressStatus[0]?.id;
+
+        // 5. Get FilingType "Personal" ID
+        const personalType = await strapiInstance.entityService.findMany('api::filing-type.filing-type', {
+            filters: { type: 'PERSONAL' }
+        });
+        personalFilingTypeId = personalType[0]?.id;
+
+        // 6. Create User A
         const timestamp = Date.now();
         let resA = await request(strapiInstance.server.httpServer)
             .post('/api/auth/local/register')
@@ -39,7 +53,7 @@ describe('Filing Security & Workflow', () => {
         jwtA = resA.body.jwt;
         userA = resA.body.user;
 
-        // 5. Create User B
+        // 7. Create User B
         let resB = await request(strapiInstance.server.httpServer)
             .post('/api/auth/local/register')
             .send({
@@ -52,7 +66,7 @@ describe('Filing Security & Workflow', () => {
         jwtB = resB.body.jwt;
         userB = resB.body.user;
 
-        // 6. Grant Permissions (Filing: create, find, findOne)
+        // 8. Grant Permissions (Filing: create, find, findOne)
         const authenticatedRole = await strapiInstance.entityService.findMany('plugin::users-permissions.role', {
             filters: { type: 'authenticated' }
         });
@@ -80,13 +94,14 @@ describe('Filing Security & Workflow', () => {
             .send({
                 data: {
                     taxYear: taxYear2024.id,
-                    status: 'In Progress'
+                    status: inProgressStatusId,
+                    filingType: personalFilingTypeId
                 }
             });
 
         expect(res.status).toBe(200);
-        const status = res.body.data.attributes ? res.body.data.attributes.status : res.body.data.status;
-        expect(status).toBe('In Progress');
+        const statusId = res.body.data.attributes?.status?.data?.id || res.body.data.status;
+        expect(statusId).toBe(inProgressStatusId);
     });
 
     it('User A should NOT be able to create a DUPLICATE filing for 2024', async () => {
@@ -96,7 +111,8 @@ describe('Filing Security & Workflow', () => {
             .send({
                 data: {
                     taxYear: taxYear2024.id,
-                    status: 'In Progress'
+                    status: inProgressStatusId,
+                    filingType: personalFilingTypeId
                 }
             });
 

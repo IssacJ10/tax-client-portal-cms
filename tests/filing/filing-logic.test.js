@@ -5,6 +5,8 @@ describe('Filing Logic & Validation', () => {
     let strapiInstance;
     let user, jwt;
     let activeYearId;
+    let inProgressStatusId;
+    let personalFilingTypeId;
 
     beforeAll(async () => {
         // 1. Init Strapi
@@ -31,20 +33,27 @@ describe('Filing Logic & Validation', () => {
             filters: { type: 'authenticated' }
         });
 
-        // We need create permission for tax-year to test validation (admin usually does this, but we can simulate or just use entityService if we want strict schema validation check. 
-        // Actually, schema validation happens on entityService too. Let's use entityService for TaxYear to test schema directly, 
-        // and API for Filing to test controller/API layer validation if needed, or entityService for both specific schema constraints).
-        // The Prompt asked for "TaxYear entries display years correctly" which implies verifying the string format.
-
         await strapiInstance.entityService.create('plugin::users-permissions.permission', {
             data: { action: 'api::filing.filing.create', role: authenticatedRole[0].id }
         });
 
-        // Setup a valid tax year for reference
+        // 4. Setup a valid tax year for reference
         const validYear = await strapiInstance.entityService.create('api::tax-year.tax-year', {
-            data: { year: `9${timestamp.toString().substring(9, 12)}`, isActive: true } // Random 4 digit string
+            data: { year: `9${timestamp.toString().substring(9, 12)}`, isActive: true }
         });
         activeYearId = validYear.id;
+
+        // 5. Get FilingStatus "In Progress" ID
+        const inProgressStatus = await strapiInstance.entityService.findMany('api::filing-status.filing-status', {
+            filters: { statusCode: 'IN_PROGRESS' }
+        });
+        inProgressStatusId = inProgressStatus[0]?.id;
+
+        // 6. Get FilingType "Personal" ID
+        const personalType = await strapiInstance.entityService.findMany('api::filing-type.filing-type', {
+            filters: { type: 'PERSONAL' }
+        });
+        personalFilingTypeId = personalType[0]?.id;
 
     }, 60000);
 
@@ -81,32 +90,34 @@ describe('Filing Logic & Validation', () => {
         }
     });
 
-    test('Filing schema should REJECT "snake_case" status', async () => {
+    test('Filing schema should REJECT invalid status ID (non-existent relation)', async () => {
         try {
             await strapiInstance.entityService.create('api::filing.filing', {
                 data: {
                     user: user.id,
                     taxYear: activeYearId,
-                    status: 'in_progress'
+                    filingType: personalFilingTypeId,
+                    status: 99999 // Non-existent FilingStatus ID
                 }
             });
-            throw new Error('Should have failed enum validation');
+            throw new Error('Should have failed relation validation');
         } catch (e) {
-            // Error message: "status must be one of the following values..."
-            expect(e.message).toMatch(/must be one of/i);
+            // Error message: "1 relation(s) of type api::filing-status.filing-status associated with this entity do not exist"
+            expect(e.message).toMatch(/do not exist/i);
         }
     });
 
-    test('Filing schema should ACCEPT "Title Case" status', async () => {
+    test('Filing schema should ACCEPT valid status ID', async () => {
         const filing = await strapiInstance.entityService.create('api::filing.filing', {
             data: {
                 user: user.id,
                 taxYear: activeYearId,
-                status: 'In Progress'
+                filingType: personalFilingTypeId,
+                status: inProgressStatusId
             }
         });
         expect(filing).toBeDefined();
-        expect(filing.status).toBe('In Progress');
+        expect(filing.status).toBe(inProgressStatusId);
     });
 
 });

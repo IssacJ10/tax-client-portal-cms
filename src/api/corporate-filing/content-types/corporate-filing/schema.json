@@ -1,0 +1,60 @@
+{
+    "kind": "collectionType",
+    "collectionName": "corporate_filings",
+    "info": {
+        "singularName": "corporate-filing",
+        "pluralName": "corporate-filings",
+        "displayName": "Corporate Filing (T2)",
+        "description": "Corporate tax filing data for T2 returns"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "filing": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::filing.filing"
+        },
+        "legalName": {
+            "type": "string",
+            "required": true
+        },
+        "businessNumber": {
+            "type": "string",
+            "required": true
+        },
+        "address": {
+            "type": "text"
+        },
+        "incorporationDate": {
+            "type": "date"
+        },
+        "fiscalYearEnd": {
+            "type": "date"
+        },
+        "shareholders": {
+            "type": "json",
+            "description": "Array of shareholder/director information"
+        },
+        "totalRevenue": {
+            "type": "decimal"
+        },
+        "netIncome": {
+            "type": "decimal"
+        },
+        "expenses": {
+            "type": "json",
+            "description": "Breakdown of expenses (salaries, rent, professional fees, etc.)"
+        },
+        "financialStatements": {
+            "type": "json",
+            "description": "References to uploaded financial statements"
+        },
+        "formData": {
+            "type": "json",
+            "description": "Complete form data from questions_corporate.json"
+        }
+    }
+}

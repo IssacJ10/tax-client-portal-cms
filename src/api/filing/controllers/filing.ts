@@ -14,17 +14,50 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
 
         const requestData = ctx.request.body.data || {};
 
+        // Resolve Filing Type if ID is provided
+        let filingTypeStr = 'PERSONAL'; // Default
+        if (requestData.filingType) {
+            // If it's a number/ID
+            if (typeof requestData.filingType === 'number' || !isNaN(Number(requestData.filingType))) {
+                // Try to find by numeric ID first (most likely case from frontend)
+                const results = await strapi.documents('api::filing-type.filing-type').findMany({
+                    filters: { id: requestData.filingType },
+                    limit: 1
+                });
+
+                if (results && results.length > 0) {
+                    filingTypeStr = results[0].type;
+                } else {
+                    // Fallback: try as documentId just in case
+                    try {
+                        const doc = await strapi.documents('api::filing-type.filing-type').findOne({
+                            documentId: String(requestData.filingType),
+                        });
+                        if (doc) {
+                            filingTypeStr = doc.type;
+                        } else {
+                            return ctx.badRequest('Invalid filing type ID provided');
+                        }
+                    } catch (e) {
+                        return ctx.badRequest('Invalid filing type ID provided');
+                    }
+                }
+            } else if (typeof requestData.filingType === 'string') {
+                filingTypeStr = requestData.filingType; // Backward compat
+            }
+        }
+
         // Check if filing already exists for this specific combination
         if (requestData.taxYear) {
             const filters: any = {
                 user: user.id,
                 taxYear: requestData.taxYear,
-                filingType: requestData.filingType || 'PERSONAL'
+                filingType: requestData.filingType // Works if it's ID or String
             };
 
             // For PERSONAL returns: one per user per year
             // For CORPORATE/TRUST: check entity name to allow multiple entities
-            if (requestData.filingType !== 'PERSONAL' && requestData.entityName) {
+            if (filingTypeStr !== 'PERSONAL' && requestData.entityName) {
                 filters.entityName = requestData.entityName;
             }
 
@@ -33,10 +66,9 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             });
 
             if (existing && existing.length > 0) {
-                const filingType = requestData.filingType || 'PERSONAL';
-                const typeLabel = filingType.toLowerCase();
+                const typeLabel = filingTypeStr.toLowerCase();
 
-                if (filingType === 'PERSONAL') {
+                if (filingTypeStr === 'PERSONAL') {
                     return ctx.badRequest(`A ${typeLabel} return already exists for this tax year`);
                 } else {
                     return ctx.badRequest(`A ${typeLabel} return for "${requestData.entityName}" already exists for this tax year`);
@@ -49,8 +81,9 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             data: {
                 ...requestData,
                 user: user.id,
-                status: 'published' // Strapi v5 published status
-            }
+                status: requestData.status || 'published' // Ensure status ID is passed if provided
+            },
+            populate: ['status', 'filingType', 'taxYear']
         });
 
         // Sanitize output
@@ -73,7 +106,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                 ...(ctx.query.filters as any || {}),
                 ...(isAdmin ? {} : { user: user.id })
             },
-            populate: ['taxYear']
+            populate: ['taxYear', 'status', 'filingType'] // Added master data relations
         });
 
         const sanitizedResults = await this.sanitizeOutput(results, ctx);
@@ -93,7 +126,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         // First try: use findMany with ID filter (works for numeric IDs)
         const results = await strapi.documents('api::filing.filing').findMany({
             filters: { id: id },
-            populate: ['user', 'taxYear']
+            populate: ['user', 'taxYear', 'status', 'filingType'] // Added master data relations
         });
 
         if (results && results.length > 0) {
@@ -103,7 +136,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             try {
                 entity = await strapi.documents('api::filing.filing').findOne({
                     documentId: id,
-                    populate: ['user', 'taxYear']
+                    populate: ['user', 'taxYear', 'status', 'filingType'] // Added master data relations
                 });
             } catch (e) {
                 console.log('[FINDONE DEBUG] DocumentId lookup failed:', e.message);
@@ -112,26 +145,11 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
 
         console.log('[FINDONE DEBUG] Entity found:', !!entity, 'for ID:', id);
 
-        console.log('[FINDONE DEBUG] Entity user:', {
-            entityUserId: entity?.user?.id,
-            entityUserDocumentId: entity?.user?.documentId,
-            entityUser: entity?.user,
-            currentUserId: user.id,
-            isAdmin
-        });
-
         // Handle both numeric ID and documentId comparison
         const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
         const userMatches = entityUserId === user.id || entityUserId === user.documentId;
 
         if (!entity || (!isAdmin && !userMatches)) {
-            console.log('[FINDONE DEBUG] Access denied:', {
-                hasEntity: !!entity,
-                isAdmin,
-                userMatches,
-                entityUserId,
-                currentUserId: user.id
-            });
             return ctx.notFound();
         }
 
@@ -188,7 +206,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         console.log('[CONTROLLER DEBUG] Updating filing via Document Service:', {
             id,
             documentId: entity.documentId,
-            filingStatus: data.filingStatus,
+            filingStatus: data.filingStatus, // Might be undefined now
+            status: data.status, // New ID field
             hasFilingData: !!data.filingData,
             keys: Object.keys(data)
         });
@@ -197,7 +216,6 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         // Extract top-level fields from filingData if they exist, to ensure Schema columns are populated
         if (data.filingData && data.filingData.personalInfo) {
             // Sync Dependents Count
-            // Note: In questions.json we renamed it to personalInfo.dependentsCount
             if (data.filingData.personalInfo.dependentsCount) {
                 data.dependentsCount = parseInt(data.filingData.personalInfo.dependentsCount);
             }
@@ -211,20 +229,14 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         // This handles components, JSON fields, and regular fields correctly in Strapi v5
         const updated = await strapi.documents('api::filing.filing').update({
             documentId: entity.documentId,
-            data
+            data,
+            populate: ['status', 'filingType'] // Populate relations in return
         });
 
         // Verify and read back via document service
         const verified: any = await strapi.documents('api::filing.filing').findOne({
             documentId: entity.documentId,
-            populate: ['user', 'taxYear']
-        });
-
-        console.log('[CONTROLLER DEBUG] Verified update:', {
-            filingStatus: verified?.filingStatus,
-            confirmationNumber: verified?.confirmationNumber,
-            progress: verified?.progress,
-            hasFilingData: !!verified?.filingData
+            populate: ['user', 'taxYear', 'status', 'filingType'] // Added master data relations
         });
 
         // Return in Strapi API format

@@ -5,7 +5,7 @@
         "singularName": "filing",
         "pluralName": "filings",
         "displayName": "Filing",
-        "description": "User tax filings"
+        "description": "Main filing orchestrator table"
     },
     "options": {
         "draftAndPublish": false
@@ -25,42 +25,30 @@
             "inversedBy": "filings"
         },
         "filingType": {
-            "type": "enumeration",
-            "enum": [
-                "PERSONAL",
-                "CORPORATE",
-                "TRUST"
-            ],
-            "default": "PERSONAL",
-            "required": true
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::filing-type.filing-type",
+            "inversedBy": "filings"
+        },
+        "status": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::filing-status.filing-status",
+            "inversedBy": "filings"
+        },
+        "payment": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::payment.payment",
+            "mappedBy": "filing"
         },
         "entityName": {
             "type": "string",
             "description": "Name of the person, company, or trust"
         },
-        "filingStatus": {
-            "type": "enumeration",
-            "default": "Not Started",
-            "enum": [
-                "Not Started",
-                "In Progress",
-                "Under Review",
-                "Submitted",
-                "Approved",
-                "Rejected"
-            ]
-        },
-        "filingData": {
-            "type": "json"
-        },
-        "progress": {
-            "type": "integer",
-            "default": 0,
-            "min": 0,
-            "max": 100
-        },
         "confirmationNumber": {
-            "type": "string"
+            "type": "string",
+            "unique": true
         },
         "estimatedRefund": {
             "type": "decimal"
@@ -74,153 +62,42 @@
                 "images"
             ]
         },
-        "firstName": {
-            "type": "string"
-        },
-        "lastName": {
-            "type": "string"
-        },
-        "email": {
-            "type": "email"
-        },
-        "phoneNumber": {
-            "type": "string"
-        },
-        "sin": {
-            "type": "string",
-            "private": true
-        },
-        "birthDate": {
-            "type": "date"
-        },
-        "maritalStatus": {
-            "type": "enumeration",
-            "enum": [
-                "SINGLE",
-                "MARRIED",
-                "COMMON_LAW",
-                "SEPARATED",
-                "DIVORCED",
-                "WIDOWED"
-            ]
-        },
-        "province": {
-            "type": "string"
-        },
-        "city": {
-            "type": "string"
-        },
-        "middleName": {
-            "type": "string"
-        },
-        "isFirstTimeFiler": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "maritalStatusChanged": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "maritalStatusChangeDate": {
-            "type": "date"
-        },
-        "currentAddress": {
-            "type": "text"
-        },
-        "previousAddress": {
-            "type": "text"
-        },
-        "postalCode": {
-            "type": "string"
-        },
-        "employmentStatus": {
-            "type": "string"
-        },
-        "employmentDetails": {
-            "type": "text"
-        },
-        "currentStatus": {
-            "type": "string"
-        },
-        "movedForWork": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "arrivalDateCanada": {
-            "type": "date"
-        },
-        "workedOutsideCanada": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "amountOutsideCanada": {
-            "type": "decimal"
-        },
-        "directDepositInfo": {
-            "type": "text"
-        },
-        "medicalExpenses": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "donations": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "rrsp": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "workFromHome": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "dependentsCount": {
+        "progress": {
             "type": "integer",
-            "default": 0
+            "default": 0,
+            "min": 0,
+            "max": 100
         },
-        "hasFamilyMembers": {
-            "type": "enumeration",
-            "enum": [
-                "SPOUSE",
-                "DEPENDENTS",
-                "BOTH",
-                "NONE"
-            ]
+        "submittedAt": {
+            "type": "datetime"
         },
-        "spouse": {
-            "type": "component",
-            "component": "filing.spouse-info",
-            "repeatable": false
+        "reviewedAt": {
+            "type": "datetime"
         },
-        "dependents": {
-            "type": "component",
-            "component": "filing.dependent-info",
-            "repeatable": true
+        "completedAt": {
+            "type": "datetime"
+        },
+        "rejectedAt": {
+            "type": "datetime"
+        },
+        "rejectionReason": {
+            "type": "text"
+        },
+        "assignedTo": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user"
+        },
+        "internalNotes": {
+            "type": "richtext"
+        },
+        "lastStatusChangeAt": {
+            "type": "datetime"
+        },
+        "lastStatusChangeBy": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user"
         }
     }
 }
