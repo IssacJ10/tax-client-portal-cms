@@ -174,6 +174,58 @@
             "helpText": "Select 'Myself and others' if you want to include your spouse's income or dependents who earned income this year"
         },
         {
+            "id": "q_include_spouse",
+            "type": "radio",
+            "label": "Are you including your spouse's income in this filing?",
+            "name": "filingSetup.includeSpouse",
+            "options": [
+                {
+                    "value": "YES",
+                    "label": "Yes, include spouse"
+                },
+                {
+                    "value": "NO",
+                    "label": "No, spouse will file separately"
+                }
+            ],
+            "validation": {
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "filingSetup.type",
+                        "operator": "equals",
+                        "value": "MULTI_PERSON"
+                    }
+                }
+            },
+            "step": "filing_setup",
+            "order": 2,
+            "conditional": {
+                "parentQuestionId": "filingSetup.type",
+                "operator": "equals",
+                "value": "MULTI_PERSON"
+            },
+            "helpText": "If you're married or common-law and want to include your spouse's income, select Yes"
+        },
+        {
+            "id": "q_num_earning_dependents",
+            "type": "number",
+            "label": "How many of your dependents earned income this year?",
+            "name": "filingSetup.numEarningDependents",
+            "validation": {
+                "min": 0,
+                "max": 10
+            },
+            "step": "filing_setup",
+            "order": 3,
+            "conditional": {
+                "parentQuestionId": "filingSetup.type",
+                "operator": "equals",
+                "value": "MULTI_PERSON"
+            },
+            "helpText": "Enter the number of dependents who had employment, self-employment, or other income this year. Enter 0 if none.",
+            "placeholder": "0"
+        },
+        {
             "id": "q_fname",
             "type": "text",
             "label": "First Name",
