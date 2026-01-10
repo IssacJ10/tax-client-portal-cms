@@ -837,6 +837,44 @@
             }
         },
         {
+            "id": "q_spouse_residency_status",
+            "type": "select",
+            "label": "Spouse/Partner Residency Status",
+            "name": "spouse.residencyStatus",
+            "options": [
+                {
+                    "value": "RESIDENT",
+                    "label": "Resident"
+                },
+                {
+                    "value": "NON_RESIDENT",
+                    "label": "Non-Resident"
+                }
+            ],
+            "validation": {
+                "conditionalRequired": {
+                    "when": {
+                        "parentQuestionId": "maritalStatus.status",
+                        "operator": "in",
+                        "values": [
+                            "MARRIED",
+                            "COMMON_LAW"
+                        ]
+                    }
+                }
+            },
+            "step": "spouse_info",
+            "order": 28,
+            "conditional": {
+                "parentQuestionId": "maritalStatus.status",
+                "operator": "in",
+                "values": [
+                    "MARRIED",
+                    "COMMON_LAW"
+                ]
+            }
+        },
+        {
             "id": "q_spouse_entry_date",
             "type": "date",
             "label": "Spouse/Partner Date of Entry into Canada",
