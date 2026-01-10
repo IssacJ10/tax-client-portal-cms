@@ -4,6 +4,230 @@
 
 import { factories } from '@strapi/strapi'
 
+// --- HELPER FUNCTIONS ---
+const clean = (val: any) => (val === "" || val === undefined ? null : val);
+
+const yesNoToBool = (val: any) => (val === 'YES' || val === 'Yes' || val === true) ? true : ((val === 'NO' || val === 'No' || val === false) ? false : null);
+
+const splitName = (fullName: string) => {
+    if (!fullName) return { firstName: null, lastName: null };
+    const parts = fullName.trim().split(' ');
+    return {
+        firstName: parts[0],
+        lastName: parts.slice(1).join(' ') || null
+    };
+};
+
+const extractValue = (source: any, key: string) => {
+    if (source?.[key] && typeof source[key] === 'object' && source[key].status) {
+        return source[key].status;
+    }
+    if (source?.[key] && typeof source[key] === 'object' && source[key].value) {
+        return source[key].value;
+    }
+    return source?.[key];
+};
+
+const mapPersonalFilingData = (filingData: any) => {
+    if (!filingData) return {};
+    const fd = filingData;
+    const personalInfo = fd.personalInfo || {};
+
+    // SPOUSE
+    let mappedSpouse = null;
+    const spousePayload = fd.spouse;
+    if (spousePayload && (spousePayload.fullName || spousePayload.firstName)) {
+        const { firstName, lastName } = spousePayload.firstName
+            ? { firstName: spousePayload.firstName, lastName: spousePayload.lastName }
+            : splitName(spousePayload.fullName);
+
+        mappedSpouse = {
+            firstName: clean(firstName),
+            lastName: clean(lastName),
+            middleName: clean(spousePayload.middleName),
+            sin: clean(spousePayload.sin),
+            birthDate: clean(spousePayload.dateOfBirth),
+            phoneNumber: clean(spousePayload.phoneNumber),
+            netIncome: clean(spousePayload.netIncome),
+            statusInCanada: clean(spousePayload.statusInCanada),
+            residencyStatus: ['RESIDENT', 'NON_RESIDENT'].includes(spousePayload.residencyStatus) ? spousePayload.residencyStatus : null,
+            incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null
+        };
+    }
+
+    // DEPENDENTS
+    const rawDependents = fd.dependants?.list || fd.dependents?.list || [];
+    const mappedDependents = Array.isArray(rawDependents) ? rawDependents.map((dep: any) => {
+        const { firstName, lastName } = dep.firstName
+            ? { firstName: dep.firstName, lastName: dep.lastName }
+            : splitName(dep.fullName);
+
+        return {
+            firstName: clean(firstName),
+            lastName: clean(lastName),
+            middleName: clean(dep.middleName),
+            birthDate: clean(dep.dateOfBirth),
+            sin: clean(dep.sin),
+            relationship: clean(dep.relationship)
+        };
+    }) : [];
+
+    // NEW COMPONENTS
+    const mappedElections = fd.electionsCanada ? {
+        authorizeCRA: yesNoToBool(fd.electionsCanada.authorizeCRA),
+        consentRegister: yesNoToBool(fd.electionsCanada.consentRegister)
+    } : null;
+
+    const pa = fd.propertyAssets;
+    const mappedPropertyAssets = pa ? {
+        purchasedPrincipalResidence: yesNoToBool(pa.purchasedPrincipalResidence),
+        disposedPrincipalResidence: yesNoToBool(pa.disposedPrincipalResidence),
+        foreignPropertyOver100k: yesNoToBool(pa.foreignPropertyOver100k),
+        foreignAffiliate: yesNoToBool(pa.foreignAffiliate)
+    } : null;
+
+    const mappedDisability = fd.disabilityCredit ? {
+        affectedPersons: fd.disabilityCredit.affectedPersons,
+        dependantName: clean(fd.disabilityCredit.dependantName)
+    } : null;
+
+    const mappedWorkExpenses = fd.workExpenses ? {
+        categories: fd.workExpenses.categories,
+        expenseTypes: fd.workExpenses.expenseTypes
+    } : null;
+
+    const ho = fd.homeOffice;
+    const mappedHomeOffice = ho ? {
+        totalHomeSize: clean(ho.totalHomeSize),
+        workAreaSize: clean(ho.workAreaSize),
+        monthlyRent: clean(ho.monthlyRent),
+        monthlyMortgageInterest: clean(ho.monthlyMortgageInterest),
+        monthlyPropertyTax: clean(ho.monthlyPropertyTax),
+        monthlyInsurance: clean(ho.monthlyInsurance),
+        monthlyElectricity: clean(ho.monthlyElectricity),
+        monthlyWater: clean(ho.monthlyWater),
+        monthlyHeat: clean(ho.monthlyHeat),
+        monthlyInternet: clean(ho.monthlyInternet),
+        monthlyOtherUtilities: clean(ho.monthlyOtherUtilities),
+        monthlyCleaningSupplies: clean(ho.monthlyCleaningSupplies),
+        monthlyMinorRepairs: clean(ho.monthlyMinorRepairs),
+        monthlyOtherMaintenance: clean(ho.monthlyOtherMaintenance)
+    } : null;
+
+    const ve = fd.vehicleExpenses;
+    const mappedVehicleExpenses = ve ? {
+        make: clean(ve.make),
+        model: clean(ve.model),
+        year: clean(ve.year),
+        purchaseDate: clean(ve.purchaseDate),
+        purchaseCost: clean(ve.purchaseCost),
+        totalKmDriven: clean(ve.totalKmDriven),
+        kmDrivenThisYear: clean(ve.kmDrivenThisYear),
+        kmDrivenForWork: clean(ve.kmDrivenForWork),
+        uccStartOfYear: clean(ve.uccStartOfYear),
+        monthlyFuel: clean(ve.monthlyFuel),
+        monthlyInsurance: clean(ve.monthlyInsurance),
+        monthlyMaintenance: clean(ve.monthlyMaintenance),
+        monthlyLicense: clean(ve.monthlyLicense),
+        monthlyParking: clean(ve.monthlyParking),
+        monthlyLease: clean(ve.monthlyLease),
+        monthlyLoanInterest: clean(ve.monthlyLoanInterest),
+        monthlyRides: clean(ve.monthlyRides),
+        monthlyOther: clean(ve.monthlyOther)
+    } : null;
+
+    const se = fd.selfEmployment;
+    const mappedSelfEmployment = se ? {
+        needsBookkeeping: clean(se.needsBookkeeping),
+        expenseCategories: se.expenseCategories,
+        gstRegistered: yesNoToBool(se.gstRegistered),
+        gstNumber: clean(se.gstNumber),
+        hasCapitalAssets: yesNoToBool(se.hasCapitalAssets),
+        capitalAssets: Array.isArray(se.capitalAssets) ? se.capitalAssets.map((ca: any) => ({
+            assetName: clean(ca.assetName),
+            purchaseDate: clean(ca.purchaseDate),
+            cost: clean(ca.cost)
+        })) : []
+    } : null;
+
+    const ri = fd.rentalIncome;
+    const mappedRentalIncome = ri ? {
+        propertyAddress: clean(ri.propertyAddress),
+        propertyType: clean(ri.propertyType),
+        ownershipPercentage: clean(ri.ownershipPercentage),
+        rentalStartDate: clean(ri.rentalStartDate),
+        rentedFullYear: yesNoToBool(ri.rentedFullYear),
+        personalUse: yesNoToBool(ri.personalUse),
+        totalRentReceived: clean(ri.totalRentReceived),
+        expenses: clean(ri.expenses),
+        ccaClaims: clean(ri.ccaClaims),
+        equipment: Array.isArray(ri.equipment) ? ri.equipment.map((eq: any) => ({
+            assetName: clean(eq.assetName),
+            purchaseDate: clean(eq.purchaseDate),
+            cost: clean(eq.cost)
+        })) : []
+    } : null;
+
+    const me = fd.movingExpenses;
+    const mappedMovingExpenses = me ? {
+        reason: clean(me.reason),
+        oldAddress: clean(me.oldAddress),
+        newAddress: clean(me.newAddress),
+        dateOfMove: clean(me.dateOfMove),
+        dateStartedJob: clean(me.dateStartedJob),
+        transportCost: clean(me.transportCost),
+        travelCost: clean(me.travelCost),
+        temporaryLivingCost: clean(me.temporaryLivingCost),
+        costOfSellingOldHome: clean(me.costOfSellingOldHome),
+        costOfPurchasingNewHome: clean(me.costOfPurchasingNewHome),
+        addressChangeCost: clean(me.addressChangeCost),
+        kmDrivenForMoving: clean(me.kmDrivenForMoving)
+    } : null;
+
+    return {
+        firstName: clean(personalInfo.firstName),
+        lastName: clean(personalInfo.lastName),
+        middleName: clean(personalInfo.middleName),
+        sin: clean(personalInfo.sin),
+        birthDate: clean(personalInfo.dateOfBirth),
+        phoneNumber: clean(personalInfo.phoneNumber),
+        streetNumber: clean(personalInfo.address?.streetNumber || personalInfo.streetNumber),
+        streetName: clean(personalInfo.address?.streetName || personalInfo.streetName),
+        apartmentNumber: clean(personalInfo.address?.apartmentNumber || personalInfo.apartmentNumber),
+        city: clean(personalInfo.address?.city || personalInfo.city),
+        province: clean(personalInfo.address?.province || personalInfo.province),
+        postalCode: clean(personalInfo.address?.postalCode || personalInfo.postalCode),
+
+        maritalStatus: extractValue(personalInfo, 'maritalStatus'),
+        maritalStatusChangedDate: clean(personalInfo.maritalStatusChangedDate),
+
+        provinceResided: extractValue(personalInfo.residency, 'provinceResided'),
+        livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
+        becameResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
+        dateOfEntry: clean(personalInfo.residency?.dateOfEntry),
+
+        // CHILDREN & COMPONENTS
+        spouse: mappedSpouse,
+        dependents: mappedDependents,
+        electionsCanada: mappedElections,
+        propertyAssets: mappedPropertyAssets,
+        disabilityCredit: mappedDisability,
+        workExpenses: mappedWorkExpenses,
+        homeOffice: mappedHomeOffice,
+        vehicleExpenses: mappedVehicleExpenses,
+        selfEmployment: mappedSelfEmployment,
+        rentalIncome: mappedRentalIncome,
+        movingExpenses: mappedMovingExpenses,
+
+        // JSON ARRAYS
+        incomeSources: fd.income?.sources || personalInfo.incomeSources,
+        deductionSources: fd.deductions?.sources || personalInfo.deductionSources,
+        taxSlips: personalInfo.taxSlips, // If exists in payload
+        additionalDocs: personalInfo.additionalDocs // If exists in payload
+    };
+}
+
+
 // @ts-ignore
 export default factories.createCoreController('api::filing.filing', ({ strapi }) => ({
     async create(ctx) {
@@ -90,10 +314,12 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         // HANDLE DATA PERSISTENCE BASED ON TYPE
         try {
             if (filingTypeStr === 'PERSONAL') {
+                const mappedData = mapPersonalFilingData(requestData.filingData);
                 await strapi.documents('api::personal-filing.personal-filing').create({
                     data: {
                         filing: newFiling.documentId,
-                        formData: requestData.filingData || {}
+                        formData: requestData.filingData || {},
+                        ...mappedData
                     }
                 });
             } else if (filingTypeStr === 'CORPORATE') {
