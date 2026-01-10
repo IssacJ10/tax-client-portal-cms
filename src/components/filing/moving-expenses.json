@@ -1,0 +1,55 @@
+{
+    "collectionName": "components_filing_moving_expenses",
+    "info": {
+        "displayName": "Moving Expenses",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "reason": {
+            "type": "string"
+        },
+        "oldAddress": {
+            "type": "string"
+        },
+        "oldCityProvince": {
+            "type": "string"
+        },
+        "newAddress": {
+            "type": "string"
+        },
+        "newCityProvince": {
+            "type": "string"
+        },
+        "moveDate": {
+            "type": "date"
+        },
+        "workStartDate": {
+            "type": "date"
+        },
+        "transportExpenses": {
+            "type": "json"
+        },
+        "travelExpenses": {
+            "type": "json"
+        },
+        "tempLivingExpenses": {
+            "type": "json"
+        },
+        "homeExpenses": {
+            "type": "json"
+        },
+        "otherExpenses": {
+            "type": "json"
+        },
+        "usedVehicle": {
+            "type": "boolean"
+        },
+        "vehicleInfo": {
+            "type": "string"
+        },
+        "kmDrivenForMoving": {
+            "type": "decimal"
+        }
+    }
+}

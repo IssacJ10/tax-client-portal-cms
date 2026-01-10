@@ -1,0 +1,52 @@
+{
+    "collectionName": "components_filing_home_offices",
+    "info": {
+        "displayName": "Home Office",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "totalHomeSize": {
+            "type": "decimal"
+        },
+        "workAreaSize": {
+            "type": "decimal"
+        },
+        "monthlyRent": {
+            "type": "decimal"
+        },
+        "monthlyMortgageInterest": {
+            "type": "decimal"
+        },
+        "monthlyPropertyTax": {
+            "type": "decimal"
+        },
+        "monthlyInsurance": {
+            "type": "decimal"
+        },
+        "monthlyElectricity": {
+            "type": "decimal"
+        },
+        "monthlyWater": {
+            "type": "decimal"
+        },
+        "monthlyHeat": {
+            "type": "decimal"
+        },
+        "monthlyInternet": {
+            "type": "decimal"
+        },
+        "monthlyOtherUtilities": {
+            "type": "decimal"
+        },
+        "monthlyCleaningSupplies": {
+            "type": "decimal"
+        },
+        "monthlyMinorRepairs": {
+            "type": "decimal"
+        },
+        "monthlyOtherMaintenance": {
+            "type": "decimal"
+        }
+    }
+}

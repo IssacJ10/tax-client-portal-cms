@@ -1,0 +1,19 @@
+{
+    "collectionName": "components_filing_capital_assets",
+    "info": {
+        "displayName": "Capital Asset",
+        "description": "Used in Self-Employment and Rental Income"
+    },
+    "options": {},
+    "attributes": {
+        "assetName": {
+            "type": "string"
+        },
+        "purchaseDate": {
+            "type": "date"
+        },
+        "cost": {
+            "type": "decimal"
+        }
+    }
+}

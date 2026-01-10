@@ -229,6 +229,51 @@
             "type": "json",
             "description": "Array of additional document types"
         },
+        "electionsCanada": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.elections-canada"
+        },
+        "propertyAssets": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.property-assets"
+        },
+        "disabilityCredit": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.disability-credit"
+        },
+        "workExpenses": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.work-expenses"
+        },
+        "homeOffice": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.home-office"
+        },
+        "vehicleExpenses": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.vehicle-expenses"
+        },
+        "selfEmployment": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.self-employment"
+        },
+        "rentalIncome": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.rental-income"
+        },
+        "movingExpenses": {
+            "type": "component",
+            "repeatable": false,
+            "component": "filing.moving-expenses"
+        },
         "formData": {
             "type": "json",
             "description": "Complete form data from questions_v2.json"

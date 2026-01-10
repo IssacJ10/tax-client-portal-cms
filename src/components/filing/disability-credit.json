@@ -1,0 +1,16 @@
+{
+    "collectionName": "components_filing_disability_credits",
+    "info": {
+        "displayName": "Disability Credit",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "affectedPersons": {
+            "type": "json"
+        },
+        "dependantName": {
+            "type": "string"
+        }
+    }
+}

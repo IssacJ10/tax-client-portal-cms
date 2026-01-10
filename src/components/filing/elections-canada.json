@@ -1,0 +1,16 @@
+{
+    "collectionName": "components_filing_elections_canadas",
+    "info": {
+        "displayName": "Elections Canada",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "authorizeCRA": {
+            "type": "boolean"
+        },
+        "consentRegister": {
+            "type": "boolean"
+        }
+    }
+}

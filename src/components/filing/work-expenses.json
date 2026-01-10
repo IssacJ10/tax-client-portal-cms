@@ -1,0 +1,16 @@
+{
+    "collectionName": "components_filing_work_expenses",
+    "info": {
+        "displayName": "Work Expenses",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "categories": {
+            "type": "json"
+        },
+        "expenseTypes": {
+            "type": "json"
+        }
+    }
+}

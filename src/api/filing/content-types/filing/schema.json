@@ -30,7 +30,7 @@
             "target": "api::filing-type.filing-type",
             "inversedBy": "filings"
         },
-        "status": {
+        "filingStatus": {
             "type": "relation",
             "relation": "manyToOne",
             "target": "api::filing-status.filing-status",

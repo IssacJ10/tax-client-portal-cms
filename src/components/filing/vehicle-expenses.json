@@ -1,0 +1,64 @@
+{
+    "collectionName": "components_filing_vehicle_expenses",
+    "info": {
+        "displayName": "Vehicle Expenses",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "make": {
+            "type": "string"
+        },
+        "model": {
+            "type": "string"
+        },
+        "year": {
+            "type": "integer"
+        },
+        "purchaseDate": {
+            "type": "date"
+        },
+        "purchaseCost": {
+            "type": "decimal"
+        },
+        "totalKmDriven": {
+            "type": "decimal"
+        },
+        "kmDrivenThisYear": {
+            "type": "decimal"
+        },
+        "kmDrivenForWork": {
+            "type": "decimal"
+        },
+        "uccStartOfYear": {
+            "type": "decimal"
+        },
+        "monthlyFuel": {
+            "type": "decimal"
+        },
+        "monthlyInsurance": {
+            "type": "decimal"
+        },
+        "monthlyMaintenance": {
+            "type": "decimal"
+        },
+        "monthlyLicense": {
+            "type": "decimal"
+        },
+        "monthlyParking": {
+            "type": "decimal"
+        },
+        "monthlyLease": {
+            "type": "decimal"
+        },
+        "monthlyLoanInterest": {
+            "type": "decimal"
+        },
+        "monthlyRides": {
+            "type": "decimal"
+        },
+        "monthlyOther": {
+            "type": "decimal"
+        }
+    }
+}

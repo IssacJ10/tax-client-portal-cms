@@ -40,6 +40,15 @@
                 "No"
             ]
         },
+        "statusInCanada": {
+            "type": "enumeration",
+            "enum": [
+                "CANADIAN_CITIZEN",
+                "PERMANENT_RESIDENT",
+                "TEMPORARY_RESIDENT",
+                "PROTECTED_PERSON"
+            ]
+        },
         "phoneNumber": {
             "type": "string"
         }

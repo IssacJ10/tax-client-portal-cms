@@ -45,7 +45,7 @@
             "type": "relation",
             "relation": "oneToMany",
             "target": "api::filing.filing",
-            "mappedBy": "status"
+            "mappedBy": "filingStatus"
         }
     }
 }

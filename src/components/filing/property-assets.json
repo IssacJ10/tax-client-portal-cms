@@ -1,0 +1,22 @@
+{
+    "collectionName": "components_filing_property_assets",
+    "info": {
+        "displayName": "Property Assets",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "purchasedPrincipalResidence": {
+            "type": "boolean"
+        },
+        "disposedPrincipalResidence": {
+            "type": "boolean"
+        },
+        "foreignPropertyOver100k": {
+            "type": "boolean"
+        },
+        "foreignAffiliate": {
+            "type": "boolean"
+        }
+    }
+}

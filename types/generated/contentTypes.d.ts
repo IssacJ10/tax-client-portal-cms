@@ -737,6 +737,10 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     entityName: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
+    filingStatus: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::filing-status.filing-status'
+    >;
     filingType: Schema.Attribute.Relation<
       'manyToOne',
       'api::filing-type.filing-type'
@@ -767,10 +771,6 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     rejectedAt: Schema.Attribute.DateTime;
     rejectionReason: Schema.Attribute.Text;
     reviewedAt: Schema.Attribute.DateTime;
-    status: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::filing-status.filing-status'
-    >;
     submittedAt: Schema.Attribute.DateTime;
     taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -905,7 +905,15 @@ export interface ApiPersonalFilingPersonalFiling
     dependentsCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     directDeposit: Schema.Attribute.Enumeration<['Yes', 'No']>;
     directDepositInfo: Schema.Attribute.Text;
+    disabilityCredit: Schema.Attribute.Component<
+      'filing.disability-credit',
+      false
+    >;
     donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    electionsCanada: Schema.Attribute.Component<
+      'filing.elections-canada',
+      false
+    >;
     email: Schema.Attribute.Email;
     employmentDetails: Schema.Attribute.Text;
     employmentStatus: Schema.Attribute.String;
@@ -915,6 +923,7 @@ export interface ApiPersonalFilingPersonalFiling
     hasFamilyMembers: Schema.Attribute.Enumeration<
       ['SPOUSE', 'DEPENDENTS', 'BOTH', 'NONE']
     >;
+    homeOffice: Schema.Attribute.Component<'filing.home-office', false>;
     incomeSources: Schema.Attribute.JSON;
     isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
@@ -933,13 +942,17 @@ export interface ApiPersonalFilingPersonalFiling
     medicalExpenses: Schema.Attribute.Enumeration<['Yes', 'No']>;
     middleName: Schema.Attribute.String;
     movedInYear: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    movingExpenses: Schema.Attribute.Component<'filing.moving-expenses', false>;
     phoneNumber: Schema.Attribute.String;
     postalCode: Schema.Attribute.String;
     previousAddress: Schema.Attribute.Text;
+    propertyAssets: Schema.Attribute.Component<'filing.property-assets', false>;
     province: Schema.Attribute.String;
     provinceResided: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    rentalIncome: Schema.Attribute.Component<'filing.rental-income', false>;
     rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    selfEmployment: Schema.Attribute.Component<'filing.self-employment', false>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
     statusInCanada: Schema.Attribute.Enumeration<
@@ -956,7 +969,12 @@ export interface ApiPersonalFilingPersonalFiling
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    vehicleExpenses: Schema.Attribute.Component<
+      'filing.vehicle-expenses',
+      false
+    >;
     workedOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
+    workExpenses: Schema.Attribute.Component<'filing.work-expenses', false>;
     workFromHome: Schema.Attribute.Enumeration<['Yes', 'No']>;
     worldIncome: Schema.Attribute.Decimal;
   };

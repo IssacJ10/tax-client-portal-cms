@@ -132,6 +132,37 @@ export default {
     await grantPermission('authenticated', 'plugin::upload.content-api.upload'); // Fix 403 on Upload
     await grantPermission('public', 'api::token.token.refresh');
 
+    // Grant Permissions for MASTER DATA (Read-only for Authenticated)
+    await grantPermission('authenticated', 'api::filing-status.filing-status.find');
+    await grantPermission('authenticated', 'api::filing-status.filing-status.findOne');
+    await grantPermission('authenticated', 'api::filing-type.filing-type.find');
+    await grantPermission('authenticated', 'api::filing-type.filing-type.findOne');
+
+    // Grant Permissions for NEW FILING COLLECTIONS (CRUD for Authenticated)
+    // Personal Filing
+    await grantPermission('authenticated', 'api::personal-filing.personal-filing.find');
+    await grantPermission('authenticated', 'api::personal-filing.personal-filing.findOne');
+    await grantPermission('authenticated', 'api::personal-filing.personal-filing.create');
+    await grantPermission('authenticated', 'api::personal-filing.personal-filing.update');
+
+    // Corporate Filing
+    await grantPermission('authenticated', 'api::corporate-filing.corporate-filing.find');
+    await grantPermission('authenticated', 'api::corporate-filing.corporate-filing.findOne');
+    await grantPermission('authenticated', 'api::corporate-filing.corporate-filing.create');
+    await grantPermission('authenticated', 'api::corporate-filing.corporate-filing.update');
+
+    // Trust Filing
+    await grantPermission('authenticated', 'api::trust-filing.trust-filing.find');
+    await grantPermission('authenticated', 'api::trust-filing.trust-filing.findOne');
+    await grantPermission('authenticated', 'api::trust-filing.trust-filing.create');
+    await grantPermission('authenticated', 'api::trust-filing.trust-filing.update');
+
+    // Payment
+    await grantPermission('authenticated', 'api::payment.payment.find');
+    await grantPermission('authenticated', 'api::payment.payment.findOne');
+    await grantPermission('authenticated', 'api::payment.payment.create');
+    await grantPermission('authenticated', 'api::payment.payment.update');
+
 
     // 4. SEED FILING QUESTIONS (2024/2025)
     // Now loading from the V2 format in src/config/questions_v2.json

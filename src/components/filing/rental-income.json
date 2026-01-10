@@ -1,0 +1,63 @@
+{
+    "collectionName": "components_filing_rental_incomes",
+    "info": {
+        "displayName": "Rental Income",
+        "description": ""
+    },
+    "options": {},
+    "attributes": {
+        "propertyAddress": {
+            "type": "string"
+        },
+        "propertyType": {
+            "type": "string"
+        },
+        "ownershipPercentage": {
+            "type": "decimal"
+        },
+        "rentalStartDate": {
+            "type": "date"
+        },
+        "rentedFullYear": {
+            "type": "boolean"
+        },
+        "personalUse": {
+            "type": "boolean"
+        },
+        "totalRentReceived": {
+            "type": "decimal"
+        },
+        "otherRentalIncome": {
+            "type": "decimal"
+        },
+        "expenseCategories": {
+            "type": "json"
+        },
+        "claimCCA": {
+            "type": "boolean"
+        },
+        "purchasePrice": {
+            "type": "decimal"
+        },
+        "purchaseDate": {
+            "type": "date"
+        },
+        "buildingValue": {
+            "type": "decimal"
+        },
+        "priorCCAClaimed": {
+            "type": "decimal"
+        },
+        "totalHomeSize": {
+            "type": "decimal"
+        },
+        "rentalAreaSize": {
+            "type": "decimal"
+        },
+        "equipment": {
+            "type": "component",
+            "repeatable": true,
+            "component": "filing.capital-asset"
+        }
+    }
+}
