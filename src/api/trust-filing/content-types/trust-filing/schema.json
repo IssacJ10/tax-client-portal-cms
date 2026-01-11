@@ -1,51 +1,48 @@
 {
-    "kind": "collectionType",
-    "collectionName": "trust_filings",
-    "info": {
-        "singularName": "trust-filing",
-        "pluralName": "trust-filings",
-        "displayName": "Trust Filing (T3)",
-        "description": "Trust tax filing data for T3 returns"
+  "kind": "collectionType",
+  "collectionName": "trust_filings",
+  "info": {
+    "singularName": "trust-filing",
+    "pluralName": "trust-filings",
+    "displayName": "Trust Filing (T3)",
+    "description": "Trust tax filing data for T3 returns"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "filing": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::filing.filing",
+      "mappedBy": "trustFiling"
     },
-    "options": {
-        "draftAndPublish": false
+    "trustName": {
+      "type": "string",
+      "required": true
     },
-    "pluginOptions": {},
-    "attributes": {
-        "filing": {
-            "type": "relation",
-            "relation": "oneToOne",
-            "target": "api::filing.filing"
-        },
-        "trustName": {
-            "type": "string",
-            "required": true
-        },
-        "accountNumber": {
-            "type": "string",
-            "required": true
-        },
-        "creationDate": {
-            "type": "date"
-        },
-        "residency": {
-            "type": "string"
-        },
-        "trustees": {
-            "type": "json",
-            "description": "Array of trustee information"
-        },
-        "beneficiaries": {
-            "type": "json",
-            "description": "Array of beneficiary information"
-        },
-        "income": {
-            "type": "json",
-            "description": "Income breakdown (interest, dividends, capital gains, distributions)"
-        },
-        "formData": {
-            "type": "json",
-            "description": "Complete form data from questions_trust.json"
-        }
+    "accountNumber": {
+      "type": "string",
+      "required": true
+    },
+    "creationDate": {
+      "type": "date"
+    },
+    "residency": {
+      "type": "string"
+    },
+    "trustees": {
+      "type": "json"
+    },
+    "beneficiaries": {
+      "type": "json"
+    },
+    "income": {
+      "type": "json"
+    },
+    "formData": {
+      "type": "json"
     }
+  }
 }

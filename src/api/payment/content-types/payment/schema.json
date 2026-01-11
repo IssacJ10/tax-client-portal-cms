@@ -1,113 +1,113 @@
 {
-    "kind": "collectionType",
-    "collectionName": "payments",
-    "info": {
-        "singularName": "payment",
-        "pluralName": "payments",
-        "displayName": "Payment",
-        "description": "Payment tracking for filings"
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "Payment",
+    "description": "Payment tracking for filings"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "filing": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::filing.filing",
+      "inversedBy": "payment"
     },
-    "options": {
-        "draftAndPublish": false
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "PENDING",
+        "PROCESSING",
+        "COMPLETED",
+        "FAILED",
+        "REFUNDED"
+      ],
+      "default": "PENDING",
+      "required": true
     },
-    "pluginOptions": {},
-    "attributes": {
-        "filing": {
-            "type": "relation",
-            "relation": "oneToOne",
-            "target": "api::filing.filing",
-            "inversedBy": "payment"
-        },
-        "paymentStatus": {
-            "type": "enumeration",
-            "enum": [
-                "PENDING",
-                "PROCESSING",
-                "COMPLETED",
-                "FAILED",
-                "REFUNDED"
-            ],
-            "default": "PENDING",
-            "required": true
-        },
-        "paymentMethod": {
-            "type": "enumeration",
-            "enum": [
-                "CREDIT_CARD",
-                "DEBIT_CARD",
-                "BANK_TRANSFER",
-                "PAYPAL",
-                "OTHER"
-            ]
-        },
-        "transactionId": {
-            "type": "string"
-        },
-        "paymentDate": {
-            "type": "datetime"
-        },
-        "currency": {
-            "type": "string",
-            "default": "CAD"
-        },
-        "baseFee": {
-            "type": "decimal",
-            "default": 0
-        },
-        "spouseFee": {
-            "type": "decimal",
-            "default": 0
-        },
-        "dependentFee": {
-            "type": "decimal",
-            "default": 0
-        },
-        "numberOfDependents": {
-            "type": "integer",
-            "default": 0
-        },
-        "additionalServiceFees": {
-            "type": "json",
-            "description": "Itemized add-on fees for services like self-employment, rental income, etc."
-        },
-        "subtotal": {
-            "type": "decimal",
-            "default": 0
-        },
-        "hst": {
-            "type": "decimal",
-            "default": 0
-        },
-        "gst": {
-            "type": "decimal",
-            "default": 0
-        },
-        "pst": {
-            "type": "decimal",
-            "default": 0
-        },
-        "totalAmount": {
-            "type": "decimal",
-            "required": true,
-            "default": 0
-        },
-        "paidAmount": {
-            "type": "decimal",
-            "default": 0
-        },
-        "refundedAmount": {
-            "type": "decimal",
-            "default": 0
-        },
-        "paymentNotes": {
-            "type": "text"
-        },
-        "receiptUrl": {
-            "type": "string"
-        },
-        "invoiceNumber": {
-            "type": "string",
-            "unique": true
-        }
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "CREDIT_CARD",
+        "DEBIT_CARD",
+        "BANK_TRANSFER",
+        "PAYPAL",
+        "OTHER"
+      ]
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "paymentDate": {
+      "type": "datetime"
+    },
+    "currency": {
+      "type": "string",
+      "default": "CAD"
+    },
+    "baseFee": {
+      "type": "decimal",
+      "default": 0
+    },
+    "spouseFee": {
+      "type": "decimal",
+      "default": 0
+    },
+    "dependentFee": {
+      "type": "decimal",
+      "default": 0
+    },
+    "numberOfDependents": {
+      "type": "integer",
+      "default": 0
+    },
+    "additionalServiceFees": {
+      "type": "json",
+      "description": "Itemized add-on fees for services like self-employment, rental income, etc."
+    },
+    "subtotal": {
+      "type": "decimal",
+      "default": 0
+    },
+    "hst": {
+      "type": "decimal",
+      "default": 0
+    },
+    "gst": {
+      "type": "decimal",
+      "default": 0
+    },
+    "pst": {
+      "type": "decimal",
+      "default": 0
+    },
+    "totalAmount": {
+      "type": "decimal",
+      "required": true,
+      "default": 0
+    },
+    "paidAmount": {
+      "type": "decimal",
+      "default": 0
+    },
+    "refundedAmount": {
+      "type": "decimal",
+      "default": 0
+    },
+    "paymentNotes": {
+      "type": "text"
+    },
+    "receiptUrl": {
+      "type": "string"
+    },
+    "invoiceNumber": {
+      "type": "string",
+      "unique": true
     }
+  }
 }

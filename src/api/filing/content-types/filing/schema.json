@@ -43,8 +43,7 @@
             "mappedBy": "filing"
         },
         "entityName": {
-            "type": "string",
-            "description": "Name of the person, company, or trust"
+            "type": "string"
         },
         "confirmationNumber": {
             "type": "string",
@@ -98,6 +97,24 @@
             "type": "relation",
             "relation": "manyToOne",
             "target": "plugin::users-permissions.user"
+        },
+        "personalFiling": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::personal-filing.personal-filing",
+            "inversedBy": "filing"
+        },
+        "corporateFiling": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::corporate-filing.corporate-filing",
+            "inversedBy": "filing"
+        },
+        "trustFiling": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::trust-filing.trust-filing",
+            "inversedBy": "filing"
         }
     }
 }

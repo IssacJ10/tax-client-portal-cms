@@ -732,6 +732,10 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     >;
     completedAt: Schema.Attribute.DateTime;
     confirmationNumber: Schema.Attribute.String & Schema.Attribute.Unique;
+    corporateFiling: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::corporate-filing.corporate-filing'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -758,6 +762,10 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
+    personalFiling: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::personal-filing.personal-filing'
+    >;
     progress: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -773,6 +781,10 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     reviewedAt: Schema.Attribute.DateTime;
     submittedAt: Schema.Attribute.DateTime;
     taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
+    trustFiling: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::trust-filing.trust-filing'
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

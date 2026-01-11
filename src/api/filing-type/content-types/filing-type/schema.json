@@ -1,43 +1,43 @@
 {
-    "kind": "collectionType",
-    "collectionName": "filing_types",
-    "info": {
-        "singularName": "filing-type",
-        "pluralName": "filing-types",
-        "displayName": "Filing Type",
-        "description": "Master table for filing type taxonomy"
+  "kind": "collectionType",
+  "collectionName": "filing_types",
+  "info": {
+    "singularName": "filing-type",
+    "pluralName": "filing-types",
+    "displayName": "Filing Type",
+    "description": "Master table for filing type taxonomy"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "PERSONAL",
+        "CORPORATE",
+        "TRUST"
+      ],
+      "required": true,
+      "unique": true
     },
-    "options": {
-        "draftAndPublish": false
+    "displayName": {
+      "type": "string",
+      "required": true
     },
-    "pluginOptions": {},
-    "attributes": {
-        "type": {
-            "type": "enumeration",
-            "enum": [
-                "PERSONAL",
-                "CORPORATE",
-                "TRUST"
-            ],
-            "required": true,
-            "unique": true
-        },
-        "displayName": {
-            "type": "string",
-            "required": true
-        },
-        "description": {
-            "type": "text"
-        },
-        "isActive": {
-            "type": "boolean",
-            "default": true
-        },
-        "filings": {
-            "type": "relation",
-            "relation": "oneToMany",
-            "target": "api::filing.filing",
-            "mappedBy": "filingType"
-        }
+    "description": {
+      "type": "text"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "filings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::filing.filing",
+      "mappedBy": "filingType"
     }
+  }
 }

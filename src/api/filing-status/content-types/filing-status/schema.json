@@ -1,51 +1,51 @@
 {
-    "kind": "collectionType",
-    "collectionName": "filing_statuses",
-    "info": {
-        "singularName": "filing-status",
-        "pluralName": "filing-statuses",
-        "displayName": "Filing Status",
-        "description": "Master table for filing status workflow"
+  "kind": "collectionType",
+  "collectionName": "filing_statuses",
+  "info": {
+    "singularName": "filing-status",
+    "pluralName": "filing-statuses",
+    "displayName": "Filing Status",
+    "description": "Master table for filing status workflow"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "statusCode": {
+      "type": "enumeration",
+      "enum": [
+        "NOT_STARTED",
+        "IN_PROGRESS",
+        "UNDER_REVIEW",
+        "SUBMITTED",
+        "APPROVED",
+        "COMPLETED",
+        "REJECTED"
+      ],
+      "required": true,
+      "unique": true
     },
-    "options": {
-        "draftAndPublish": false
+    "displayName": {
+      "type": "string",
+      "required": true
     },
-    "pluginOptions": {},
-    "attributes": {
-        "statusCode": {
-            "type": "enumeration",
-            "enum": [
-                "NOT_STARTED",
-                "IN_PROGRESS",
-                "UNDER_REVIEW",
-                "SUBMITTED",
-                "APPROVED",
-                "COMPLETED",
-                "REJECTED"
-            ],
-            "required": true,
-            "unique": true
-        },
-        "displayName": {
-            "type": "string",
-            "required": true
-        },
-        "description": {
-            "type": "text"
-        },
-        "color": {
-            "type": "string",
-            "default": "#6B7280"
-        },
-        "order": {
-            "type": "integer",
-            "default": 0
-        },
-        "filings": {
-            "type": "relation",
-            "relation": "oneToMany",
-            "target": "api::filing.filing",
-            "mappedBy": "filingStatus"
-        }
+    "description": {
+      "type": "text"
+    },
+    "color": {
+      "type": "string",
+      "default": "#6B7280"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "filings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::filing.filing",
+      "mappedBy": "filingStatus"
     }
+  }
 }

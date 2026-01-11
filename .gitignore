@@ -129,3 +129,15 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+scripts/console-sync.js
+scripts/db-inspect.js
+.gitignore
+scripts/fix-specific.js
+scripts/fix-sub-links.js
+scripts/get-ids.js
+scripts/inspect-raw.js
+scripts/inspect-record.js
+scripts/master-repair.js
+scripts/migrate-relations.js
+scripts/seed-2026.js
+scripts/seed-categorical-data.js

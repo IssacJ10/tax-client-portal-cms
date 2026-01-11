@@ -1,282 +1,278 @@
 {
-    "kind": "collectionType",
-    "collectionName": "personal_filings",
-    "info": {
-        "singularName": "personal-filing",
-        "pluralName": "personal-filings",
-        "displayName": "Personal Filing (T1)",
-        "description": "Personal tax filing data for T1 returns"
+  "kind": "collectionType",
+  "collectionName": "personal_filings",
+  "info": {
+    "singularName": "personal-filing",
+    "pluralName": "personal-filings",
+    "displayName": "Personal Filing (T1)",
+    "description": "Personal tax filing data for T1 returns"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "filing": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::filing.filing",
+      "mappedBy": "personalFiling"
     },
-    "options": {
-        "draftAndPublish": false
+    "firstName": {
+      "type": "string"
     },
-    "pluginOptions": {},
-    "attributes": {
-        "filing": {
-            "type": "relation",
-            "relation": "oneToOne",
-            "target": "api::filing.filing"
-        },
-        "firstName": {
-            "type": "string"
-        },
-        "middleName": {
-            "type": "string"
-        },
-        "lastName": {
-            "type": "string"
-        },
-        "sin": {
-            "type": "string",
-            "private": true
-        },
-        "dateOfBirth": {
-            "type": "date"
-        },
-        "email": {
-            "type": "email"
-        },
-        "phoneNumber": {
-            "type": "string"
-        },
-        "streetNumber": {
-            "type": "string"
-        },
-        "streetName": {
-            "type": "string"
-        },
-        "apartmentNumber": {
-            "type": "string"
-        },
-        "city": {
-            "type": "string"
-        },
-        "province": {
-            "type": "string"
-        },
-        "postalCode": {
-            "type": "string"
-        },
-        "currentAddress": {
-            "type": "text"
-        },
-        "previousAddress": {
-            "type": "text"
-        },
-        "isFirstTimeFiler": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "statusInCanada": {
-            "type": "enumeration",
-            "enum": [
-                "CANADIAN_CITIZEN",
-                "PERMANENT_RESIDENT",
-                "TEMPORARY_RESIDENT",
-                "PROTECTED_PERSON"
-            ]
-        },
-        "dateBecameResident": {
-            "type": "date"
-        },
-        "provinceResided": {
-            "type": "string"
-        },
-        "livedOutsideCanada": {
-            "type": "enumeration",
-            "enum": [
-                "YES",
-                "NO"
-            ]
-        },
-        "countryOfResidence": {
-            "type": "string"
-        },
-        "becameResidentThisYear": {
-            "type": "enumeration",
-            "enum": [
-                "YES",
-                "NO"
-            ]
-        },
-        "worldIncome": {
-            "type": "decimal"
-        },
-        "maritalStatus": {
-            "type": "enumeration",
-            "enum": [
-                "SINGLE",
-                "MARRIED",
-                "COMMON_LAW",
-                "SEPARATED",
-                "DIVORCED",
-                "WIDOWED"
-            ]
-        },
-        "maritalStatusChanged": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "maritalStatusChangeDate": {
-            "type": "date"
-        },
-        "spouse": {
-            "type": "component",
-            "component": "filing.spouse-info",
-            "repeatable": false
-        },
-        "dependents": {
-            "type": "component",
-            "component": "filing.dependent-info",
-            "repeatable": true
-        },
-        "dependentsCount": {
-            "type": "integer",
-            "default": 0
-        },
-        "hasFamilyMembers": {
-            "type": "enumeration",
-            "enum": [
-                "SPOUSE",
-                "DEPENDENTS",
-                "BOTH",
-                "NONE"
-            ]
-        },
-        "employmentStatus": {
-            "type": "string"
-        },
-        "employmentDetails": {
-            "type": "text"
-        },
-        "movedInYear": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "arrivalDateCanada": {
-            "type": "date"
-        },
-        "workedOutsideCanada": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "amountOutsideCanada": {
-            "type": "decimal"
-        },
-        "directDeposit": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "directDepositInfo": {
-            "type": "text"
-        },
-        "medicalExpenses": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "donations": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "rrsp": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "workFromHome": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
-        },
-        "incomeSources": {
-            "type": "json",
-            "description": "Array of selected income source types"
-        },
-        "deductionSources": {
-            "type": "json",
-            "description": "Array of selected deduction types"
-        },
-        "taxSlips": {
-            "type": "json",
-            "description": "Array of selected tax slip types"
-        },
-        "additionalDocs": {
-            "type": "json",
-            "description": "Array of additional document types"
-        },
-        "electionsCanada": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.elections-canada"
-        },
-        "propertyAssets": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.property-assets"
-        },
-        "disabilityCredit": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.disability-credit"
-        },
-        "workExpenses": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.work-expenses"
-        },
-        "homeOffice": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.home-office"
-        },
-        "vehicleExpenses": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.vehicle-expenses"
-        },
-        "selfEmployment": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.self-employment"
-        },
-        "rentalIncome": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.rental-income"
-        },
-        "movingExpenses": {
-            "type": "component",
-            "repeatable": false,
-            "component": "filing.moving-expenses"
-        },
-        "formData": {
-            "type": "json",
-            "description": "Complete form data from questions_v2.json"
-        }
+    "middleName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "sin": {
+      "type": "string",
+      "private": true
+    },
+    "dateOfBirth": {
+      "type": "date"
+    },
+    "email": {
+      "type": "email"
+    },
+    "phoneNumber": {
+      "type": "string"
+    },
+    "streetNumber": {
+      "type": "string"
+    },
+    "streetName": {
+      "type": "string"
+    },
+    "apartmentNumber": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "province": {
+      "type": "string"
+    },
+    "postalCode": {
+      "type": "string"
+    },
+    "currentAddress": {
+      "type": "text"
+    },
+    "previousAddress": {
+      "type": "text"
+    },
+    "isFirstTimeFiler": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "statusInCanada": {
+      "type": "enumeration",
+      "enum": [
+        "CANADIAN_CITIZEN",
+        "PERMANENT_RESIDENT",
+        "TEMPORARY_RESIDENT",
+        "PROTECTED_PERSON"
+      ]
+    },
+    "dateBecameResident": {
+      "type": "date"
+    },
+    "provinceResided": {
+      "type": "string"
+    },
+    "livedOutsideCanada": {
+      "type": "enumeration",
+      "enum": [
+        "YES",
+        "NO"
+      ]
+    },
+    "countryOfResidence": {
+      "type": "string"
+    },
+    "becameResidentThisYear": {
+      "type": "enumeration",
+      "enum": [
+        "YES",
+        "NO"
+      ]
+    },
+    "worldIncome": {
+      "type": "decimal"
+    },
+    "maritalStatus": {
+      "type": "enumeration",
+      "enum": [
+        "SINGLE",
+        "MARRIED",
+        "COMMON_LAW",
+        "SEPARATED",
+        "DIVORCED",
+        "WIDOWED"
+      ]
+    },
+    "maritalStatusChanged": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "maritalStatusChangeDate": {
+      "type": "date"
+    },
+    "spouse": {
+      "type": "component",
+      "component": "filing.spouse-info",
+      "repeatable": false
+    },
+    "dependents": {
+      "type": "component",
+      "component": "filing.dependent-info",
+      "repeatable": true
+    },
+    "dependentsCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "hasFamilyMembers": {
+      "type": "enumeration",
+      "enum": [
+        "SPOUSE",
+        "DEPENDENTS",
+        "BOTH",
+        "NONE"
+      ]
+    },
+    "employmentStatus": {
+      "type": "string"
+    },
+    "employmentDetails": {
+      "type": "text"
+    },
+    "movedInYear": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "arrivalDateCanada": {
+      "type": "date"
+    },
+    "workedOutsideCanada": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "amountOutsideCanada": {
+      "type": "decimal"
+    },
+    "directDeposit": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "directDepositInfo": {
+      "type": "text"
+    },
+    "medicalExpenses": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "donations": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "rrsp": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "workFromHome": {
+      "type": "enumeration",
+      "enum": [
+        "Yes",
+        "No"
+      ]
+    },
+    "incomeSources": {
+      "type": "json"
+    },
+    "deductionSources": {
+      "type": "json"
+    },
+    "taxSlips": {
+      "type": "json"
+    },
+    "additionalDocs": {
+      "type": "json"
+    },
+    "electionsCanada": {
+      "type": "component",
+      "component": "filing.elections-canada",
+      "repeatable": false
+    },
+    "propertyAssets": {
+      "type": "component",
+      "component": "filing.property-assets",
+      "repeatable": false
+    },
+    "disabilityCredit": {
+      "type": "component",
+      "component": "filing.disability-credit",
+      "repeatable": false
+    },
+    "workExpenses": {
+      "type": "component",
+      "component": "filing.work-expenses",
+      "repeatable": false
+    },
+    "homeOffice": {
+      "type": "component",
+      "component": "filing.home-office",
+      "repeatable": false
+    },
+    "vehicleExpenses": {
+      "type": "component",
+      "component": "filing.vehicle-expenses",
+      "repeatable": false
+    },
+    "selfEmployment": {
+      "type": "component",
+      "component": "filing.self-employment",
+      "repeatable": false
+    },
+    "rentalIncome": {
+      "type": "component",
+      "component": "filing.rental-income",
+      "repeatable": false
+    },
+    "movingExpenses": {
+      "type": "component",
+      "component": "filing.moving-expenses",
+      "repeatable": false
+    },
+    "formData": {
+      "type": "json"
     }
+  }
 }
