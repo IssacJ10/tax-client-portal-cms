@@ -35,11 +35,19 @@ async function verify() {
 
     // Expected values from our QA payload
     const expectations = [
-        { label: "Spouse Name", actual: pf.spouse?.firstName, expected: "Spouse_Runtime" },
-        { label: "Spouse Net Income", actual: pf.spouse?.netIncome, expected: 55000 },
+        { label: "Spouse Name", actual: pf.spouse?.firstName, expected: "SpouseQA" },
+        { label: "Spouse Net Income", actual: pf.spouse?.netIncome, expected: 50000 },
         { label: "Spouse Status", actual: pf.spouse?.statusInCanada, expected: "CANADIAN_CITIZEN" },
-        { label: "Dependent Name", actual: pf.dependents?.[0]?.firstName, expected: "Kid_Runtime" },
+        { label: "Spouse Resident Date", actual: pf.spouse?.dateBecameResident, expected: "2020-01-01" },
+        { label: "Spouse Entry Date", actual: pf.spouse?.dateOfEntry, expected: "2020-02-02" },
+
+        { label: "Dependent Name", actual: pf.dependents?.[0]?.firstName, expected: "Kid1" },
+        { label: "Dependent Status", actual: pf.dependents?.[0]?.statusInCanada, expected: "CANADIAN_CITIZEN" },
+        { label: "Dependent Earns Inc", actual: pf.dependents?.[0]?.earnsIncome, expected: "YES" },
+
         { label: "Rental Income", actual: pf.rentalIncome?.totalRentReceived, expected: 12000 },
+        { label: "Rental Price", actual: pf.rentalIncome?.purchasePrice, expected: 500000 },
+        { label: "Rental Area", actual: pf.rentalIncome?.rentalAreaSize, expected: 500 },
         { label: "Rental Asset", actual: pf.rentalIncome?.equipment?.[0]?.assetName, expected: "Washing Machine" },
         { label: "Self Emp GST", actual: pf.selfEmployment?.gstRegistered, expected: true }, // Boolean check
         { label: "Self Emp Asset", actual: pf.selfEmployment?.capitalAssets?.[0]?.assetName, expected: "Laptop" },
@@ -47,7 +55,10 @@ async function verify() {
         { label: "Home Office Size", actual: pf.homeOffice?.totalHomeSize, expected: 2000 },
         { label: "Moving Params", actual: pf.movingExpenses?.kmDrivenForMoving, expected: 500 },
         { label: "CRA Auth", actual: pf.electionsCanada?.authorizeCRA, expected: true },
-        { label: "Work Categories", actual: pf.workExpenses?.categories?.[0], expected: "MEALS" }
+        { label: "Work Categories", actual: pf.workExpenses?.categories?.[0], expected: "MEALS" },
+
+        { label: "Country of Residence", actual: pf.countryOfResidence, expected: "USA" },
+        { label: "World Income", actual: pf.worldIncome, expected: 100000 }
     ];
 
     let failures = 0;

@@ -25,6 +25,25 @@
         },
         "relationship": {
             "type": "string"
+        },
+        "statusInCanada": {
+            "type": "enumeration",
+            "enum": [
+                "CANADIAN_CITIZEN",
+                "PERMANENT_RESIDENT",
+                "TEMPORARY_RESIDENT",
+                "PROTECTED_PERSON"
+            ]
+        },
+        "dateBecameResident": {
+            "type": "date"
+        },
+        "earnsIncome": {
+            "type": "enumeration",
+            "enum": [
+                "YES",
+                "NO"
+            ]
         }
     }
 }

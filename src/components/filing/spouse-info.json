@@ -26,12 +26,11 @@
         "netIncome": {
             "type": "decimal"
         },
-        "residencyStatus": {
-            "type": "enumeration",
-            "enum": [
-                "RESIDENT",
-                "NON_RESIDENT"
-            ]
+        "dateBecameResident": {
+            "type": "date"
+        },
+        "dateOfEntry": {
+            "type": "date"
         },
         "incomeOutsideCanada": {
             "type": "enumeration",

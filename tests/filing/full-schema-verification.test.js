@@ -31,7 +31,9 @@ describe('Full Schema Verification QA', () => {
                 maritalStatus: "MARRIED", // Direct string or object handling
                 residency: {
                     provinceResided: "ON",
-                    livedOutsideCanada: "NO",
+                    livedOutsideCanada: "YES",
+                    countryOfResidence: "USA",
+                    worldIncome: 100000,
                     becameResidentThisYear: "NO"
                 }
             },
@@ -42,7 +44,8 @@ describe('Full Schema Verification QA', () => {
                 dateOfBirth: "1992-02-02",
                 netIncome: 50000,
                 statusInCanada: "CANADIAN_CITIZEN",
-                residencyStatus: "RESIDENT"
+                dateBecameResident: "2020-01-01",
+                dateOfEntry: "2020-02-02"
             },
             dependants: {
                 list: [
@@ -51,7 +54,10 @@ describe('Full Schema Verification QA', () => {
                         lastName: "Tester",
                         dateOfBirth: "2020-01-01",
                         relationship: "SON",
-                        sin: "000-000-000"
+                        sin: "000-000-000",
+                        statusInCanada: "CANADIAN_CITIZEN",
+                        dateBecameResident: "2021-01-01",
+                        earnsIncome: "YES"
                     }
                 ]
             },
@@ -60,6 +66,12 @@ describe('Full Schema Verification QA', () => {
                 propertyAddress: "1 Rental Rd",
                 totalRentReceived: 12000,
                 rentedFullYear: "YES",
+                purchasePrice: 500000,
+                buildingValue: 300000,
+                rentalAreaSize: 500,
+                claimCCA: "YES",
+                otherRentalIncome: 500,
+                expenseCategories: ["ADVERTISING", "REPAIRS"],
                 equipment: [
                     { assetName: "Washing Machine", purchaseDate: "2023-01-01", cost: 500 }
                 ]
@@ -227,15 +239,26 @@ describe('Full Schema Verification QA', () => {
         expect(pf.spouse.firstName).toBe("SpouseQA");
         expect(pf.spouse.netIncome).toBe(50000); // The fix we just made
         expect(pf.spouse.statusInCanada).toBe("CANADIAN_CITIZEN");
+        expect(pf.spouse.dateBecameResident).toBe("2020-01-01");
+        expect(pf.spouse.dateOfEntry).toBe("2020-02-02");
+        expect(pf.countryOfResidence).toBe("USA");
+        expect(pf.worldIncome).toBe(100000);
 
         // dependents
         expect(pf.dependents.length).toBe(1);
         expect(pf.dependents[0].firstName).toBe("Kid1");
+        expect(pf.dependents[0].statusInCanada).toBe("CANADIAN_CITIZEN");
+        expect(pf.dependents[0].dateBecameResident).toBe("2021-01-01");
+        expect(pf.dependents[0].earnsIncome).toBe("YES");
 
         // rentalIncome (Component)
         expect(pf.rentalIncome).toBeDefined();
         expect(pf.rentalIncome.totalRentReceived).toBe(12000);
         expect(pf.rentalIncome.rentedFullYear).toBe(true); // "YES" -> true conversion lookup
+        expect(pf.rentalIncome.purchasePrice).toBe(500000);
+        expect(pf.rentalIncome.claimCCA).toBe(true);
+        expect(pf.rentalIncome.expenseCategories.length).toBe(2);
+        expect(pf.rentalIncome.rentalAreaSize).toBe(500);
         expect(pf.rentalIncome.equipment.length).toBe(1);
         expect(pf.rentalIncome.equipment[0].assetName).toBe("Washing Machine");
 
@@ -254,6 +277,7 @@ describe('Full Schema Verification QA', () => {
         // homeOffice
         expect(pf.homeOffice).toBeDefined();
         expect(pf.homeOffice.totalHomeSize).toBe(2000);
+        expect(pf.homeOffice.monthlyElectricity).toBe(100);
 
         // movingExpenses
         expect(pf.movingExpenses).toBeDefined();

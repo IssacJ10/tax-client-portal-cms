@@ -19,25 +19,35 @@ const fullPayload = {
                 phoneNumber: "555-0199",
                 email: "qa_runtime@example.com",
                 maritalStatus: "MARRIED",
-                residency: { provinceResided: "ON", livedOutsideCanada: "NO" }
+                residency: {
+                    provinceResided: "ON",
+                    livedOutsideCanada: "YES",
+                    countryOfResidence: "USA",
+                    worldIncome: 100000,
+                    becameResidentThisYear: "NO"
+                }
             },
             spouse: {
-                firstName: "Spouse_Runtime",
+                firstName: "SpouseQA",
                 lastName: "Tester",
                 sin: "888-888-888",
                 dateOfBirth: "1992-02-02",
-                netIncome: 55000, // Testing the FIX
-                statusInCanada: "CANADIAN_CITIZEN", // Testing the FIX
-                residencyStatus: "RESIDENT"
+                netIncome: 50000,
+                statusInCanada: "CANADIAN_CITIZEN",
+                dateBecameResident: "2020-01-01",
+                dateOfEntry: "2020-02-02"
             },
             dependants: {
                 list: [
                     {
-                        firstName: "Kid_Runtime",
+                        firstName: "Kid1",
                         lastName: "Tester",
                         dateOfBirth: "2020-01-01",
                         relationship: "SON",
-                        sin: "000-000-000"
+                        sin: "000-000-000",
+                        statusInCanada: "CANADIAN_CITIZEN",
+                        dateBecameResident: "2021-01-01",
+                        earnsIncome: "YES"
                     }
                 ]
             },
@@ -45,7 +55,15 @@ const fullPayload = {
                 propertyAddress: "1 Rental Rd",
                 totalRentReceived: 12000,
                 rentedFullYear: "YES",
-                equipment: [{ assetName: "Washing Machine", purchaseDate: "2023-01-01", cost: 500 }]
+                purchasePrice: 500000,
+                buildingValue: 300000,
+                rentalAreaSize: 500,
+                claimCCA: "YES",
+                otherRentalIncome: 500,
+                expenseCategories: ["ADVERTISING", "REPAIRS"],
+                equipment: [
+                    { assetName: "Washing Machine", purchaseDate: "2023-01-01", cost: 500 }
+                ]
             },
             selfEmployment: {
                 needsBookkeeping: "BOOKKEEPING",
@@ -61,7 +79,11 @@ const fullPayload = {
                 totalKmDriven: 20000,
                 kmDrivenForWork: 10000
             },
-            homeOffice: { totalHomeSize: 2000, workAreaSize: 200, monthlyElectricity: 100 },
+            homeOffice: {
+                totalHomeSize: 2000,
+                workAreaSize: 200,
+                monthlyElectricity: 100
+            },
             movingExpenses: { reason: "NEW_JOB", oldAddress: "Old Place", newAddress: "New Place", kmDrivenForMoving: 500 },
             electionsCanada: { authorizeCRA: "YES", consentRegister: "YES" },
             propertyAssets: { purchasedPrincipalResidence: "YES", foreignPropertyOver100k: "NO" },

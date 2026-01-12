@@ -50,7 +50,8 @@ const mapPersonalFilingData = (filingData: any) => {
             phoneNumber: clean(spousePayload.phoneNumber),
             netIncome: clean(spousePayload.netIncome),
             statusInCanada: clean(spousePayload.statusInCanada),
-            residencyStatus: ['RESIDENT', 'NON_RESIDENT'].includes(spousePayload.residencyStatus) ? spousePayload.residencyStatus : null,
+            dateBecameResident: clean(spousePayload.dateBecameResident),
+            dateOfEntry: clean(spousePayload.dateOfEntry),
             incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null
         };
     }
@@ -68,7 +69,10 @@ const mapPersonalFilingData = (filingData: any) => {
             middleName: clean(dep.middleName),
             birthDate: clean(dep.dateOfBirth),
             sin: clean(dep.sin),
-            relationship: clean(dep.relationship)
+            relationship: clean(dep.relationship),
+            statusInCanada: clean(dep.statusInCanada),
+            dateBecameResident: clean(dep.dateBecameResident),
+            earnsIncome: ['YES', 'NO'].includes(dep.earnsIncome) ? dep.earnsIncome : null
         };
     }) : [];
 
@@ -159,8 +163,15 @@ const mapPersonalFilingData = (filingData: any) => {
         rentedFullYear: yesNoToBool(ri.rentedFullYear),
         personalUse: yesNoToBool(ri.personalUse),
         totalRentReceived: clean(ri.totalRentReceived),
-        expenses: clean(ri.expenses),
-        ccaClaims: clean(ri.ccaClaims),
+        otherRentalIncome: clean(ri.otherRentalIncome),
+        expenseCategories: ri.expenseCategories,
+        claimCCA: yesNoToBool(ri.claimCCA),
+        purchasePrice: clean(ri.purchasePrice),
+        purchaseDate: clean(ri.purchaseDate),
+        buildingValue: clean(ri.buildingValue),
+        priorCCAClaimed: clean(ri.priorCCAClaimed),
+        totalHomeSize: clean(ri.totalHomeSize),
+        rentalAreaSize: clean(ri.rentalAreaSize),
         equipment: Array.isArray(ri.equipment) ? ri.equipment.map((eq: any) => ({
             assetName: clean(eq.assetName),
             purchaseDate: clean(eq.purchaseDate),
@@ -203,7 +214,9 @@ const mapPersonalFilingData = (filingData: any) => {
 
         provinceResided: extractValue(personalInfo.residency, 'provinceResided'),
         livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
-        becameResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
+        countryOfResidence: clean(personalInfo.residency?.countryOfResidence),
+        becomeResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
+        worldIncome: clean(personalInfo.residency?.worldIncome),
         dateOfEntry: clean(personalInfo.residency?.dateOfEntry),
 
         // CHILDREN & COMPONENTS

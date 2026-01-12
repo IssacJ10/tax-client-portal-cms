@@ -22,11 +22,21 @@ export interface FilingDependentInfo extends Struct.ComponentSchema {
   };
   attributes: {
     birthDate: Schema.Attribute.Date;
+    dateBecameResident: Schema.Attribute.Date;
+    earnsIncome: Schema.Attribute.Enumeration<['YES', 'NO']>;
     firstName: Schema.Attribute.String;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
     relationship: Schema.Attribute.String;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
+    statusInCanada: Schema.Attribute.Enumeration<
+      [
+        'CANADIAN_CITIZEN',
+        'PERMANENT_RESIDENT',
+        'TEMPORARY_RESIDENT',
+        'PROTECTED_PERSON',
+      ]
+    >;
   };
 }
 
@@ -169,13 +179,14 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
   };
   attributes: {
     birthDate: Schema.Attribute.Date;
+    dateBecameResident: Schema.Attribute.Date;
+    dateOfEntry: Schema.Attribute.Date;
     firstName: Schema.Attribute.String;
     incomeOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
     phoneNumber: Schema.Attribute.String;
-    residencyStatus: Schema.Attribute.Enumeration<['RESIDENT', 'NON_RESIDENT']>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     statusInCanada: Schema.Attribute.Enumeration<
       [
