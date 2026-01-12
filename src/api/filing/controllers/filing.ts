@@ -212,12 +212,12 @@ const mapPersonalFilingData = (filingData: any) => {
         maritalStatus: extractValue(personalInfo, 'maritalStatus'),
         maritalStatusChangedDate: clean(personalInfo.maritalStatusChangedDate),
 
-        provinceResided: extractValue(personalInfo.residency, 'provinceResided'),
-        livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
-        countryOfResidence: clean(personalInfo.residency?.countryOfResidence),
-        becomeResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
-        worldIncome: clean(personalInfo.residency?.worldIncome),
-        dateOfEntry: clean(personalInfo.residency?.dateOfEntry),
+        provinceResided: extractValue(personalInfo.residency, 'provinceResided') || extractValue(fd.residency, 'provinceResided'),
+        livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' || extractValue(fd.residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
+        countryOfResidence: clean(fd.residency?.countryOfResidence || personalInfo.residency?.countryOfResidence),
+        becomeResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' || extractValue(fd.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
+        worldIncome: clean(fd.residency?.worldIncome || personalInfo.residency?.worldIncome),
+        dateOfEntry: clean(fd.residency?.dateOfEntry || personalInfo.residency?.dateOfEntry),
 
         // CHILDREN & COMPONENTS
         spouse: mappedSpouse,
@@ -576,6 +576,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                         phoneNumber: clean(spousePayload.phoneNumber),
                         netIncome: clean(spousePayload.netIncome),
                         statusInCanada: clean(spousePayload.statusInCanada),
+                        dateBecameResident: clean(spousePayload.dateBecameResident),
+                        dateOfEntry: clean(spousePayload.dateOfEntry),
                         residencyStatus: ['RESIDENT', 'NON_RESIDENT'].includes(spousePayload.residencyStatus) ? spousePayload.residencyStatus : null,
                         incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null
                     };
@@ -594,7 +596,10 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                         middleName: clean(dep.middleName),
                         birthDate: clean(dep.dateOfBirth),
                         sin: clean(dep.sin),
-                        relationship: clean(dep.relationship)
+                        relationship: clean(dep.relationship),
+                        statusInCanada: clean(dep.statusInCanada),
+                        dateBecameResident: clean(dep.dateBecameResident),
+                        earnsIncome: clean(dep.earnsIncome)
                     };
                 }) : [];
 
@@ -750,9 +755,9 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     dateBecameResident: clean(personalData.dateBecameResident),
                     provinceResided: clean(data.filingData.residency?.provinceResided || personalData.provinceResided), // From root residency obj
                     livedOutsideCanada: clean(data.filingData.residency?.livedOutsideCanada || personalData.livedOutsideCanada),
-                    countryOfResidence: clean(personalData.countryOfResidence),
+                    countryOfResidence: clean(data.filingData.residency?.countryOfResidence || personalData.countryOfResidence),
                     becameResidentThisYear: clean(data.filingData.residency?.becameResidentThisYear || personalData.becameResidentThisYear),
-                    worldIncome: clean(personalData.worldIncome),
+                    worldIncome: clean(data.filingData.residency?.worldIncome || personalData.worldIncome),
 
                     // Marital Status (Fix: Handle { status: "SINGLE" })
                     maritalStatus: clean(extractValue(data.filingData, 'maritalStatus') || personalData.maritalStatus),
