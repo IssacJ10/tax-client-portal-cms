@@ -741,6 +741,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     entityName: Schema.Attribute.String;
     estimatedRefund: Schema.Attribute.Decimal;
+    filingData: Schema.Attribute.JSON;
     filingStatus: Schema.Attribute.Relation<
       'manyToOne',
       'api::filing-status.filing-status'

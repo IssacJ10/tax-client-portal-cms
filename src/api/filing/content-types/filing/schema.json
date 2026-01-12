@@ -115,6 +115,9 @@
             "relation": "oneToOne",
             "target": "api::trust-filing.trust-filing",
             "inversedBy": "filing"
+        },
+        "filingData": {
+            "type": "json"
         }
     }
 }
