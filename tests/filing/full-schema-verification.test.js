@@ -69,6 +69,7 @@ describe('Full Schema Verification QA', () => {
                 purchasePrice: 500000,
                 buildingValue: 300000,
                 rentalAreaSize: 500,
+                totalHomeSize: 2000,
                 claimCCA: "YES",
                 otherRentalIncome: 500,
                 expenseCategories: ["ADVERTISING", "REPAIRS"],
@@ -160,17 +161,30 @@ describe('Full Schema Verification QA', () => {
             activeYearId = validYear.id;
             fullPayload.taxYear = activeYearId;
 
-            // Status
-            const inProgressStatus = await strapiInstance.entityService.findMany('api::filing-status.filing-status', {
+            // Status - Create or Find 'IN_PROGRESS'
+            let inProgressStatus = await strapiInstance.entityService.findMany('api::filing-status.filing-status', {
                 filters: { statusCode: 'IN_PROGRESS' }
             });
-            inProgressStatusId = inProgressStatus[0]?.id;
+            if (inProgressStatus.length === 0) {
+                const createdStatus = await strapiInstance.entityService.create('api::filing-status.filing-status', {
+                    data: { displayName: 'In Progress', statusCode: 'IN_PROGRESS', description: 'Filing in progress' }
+                });
+                inProgressStatus = [createdStatus];
+            }
+            const inProgressStatusId = inProgressStatus[0].id;
+            fullPayload.filingStatus = inProgressStatusId;
 
-            // Type
-            const personalType = await strapiInstance.entityService.findMany('api::filing-type.filing-type', {
+            // Type - Create or Find 'PERSONAL'
+            let personalType = await strapiInstance.entityService.findMany('api::filing-type.filing-type', {
                 filters: { type: 'PERSONAL' }
             });
-            personalFilingTypeId = personalType[0]?.id;
+            if (personalType.length === 0) {
+                const createdType = await strapiInstance.entityService.create('api::filing-type.filing-type', {
+                    data: { displayName: 'Personal', type: 'PERSONAL', description: 'Personal Filing' }
+                });
+                personalType = [createdType];
+            }
+            personalFilingTypeId = personalType[0].id;
             fullPayload.filingType = personalFilingTypeId;
 
             // Permissions
@@ -202,9 +216,13 @@ describe('Full Schema Verification QA', () => {
             .set('Authorization', `Bearer ${jwt}`)
             .send({ data: fullPayload });
 
+        if (createRes.status !== 200) {
+            console.error("Create Filing Error:", JSON.stringify(createRes.body, null, 2));
+        }
+
         expect(createRes.status).toBe(200);
         const filingId = createRes.body.data.id;
-        const filingDocId = createRes.body.data.attributes.documentId;
+        const filingDocId = createRes.body.data.documentId;
 
         // 2. Fetch the "Personal Filing" entry directly via Entity Service to verify columns
         // The API returns the "Filing" wrapper, but we want to check the linked "PersonalFiling" details
@@ -261,6 +279,8 @@ describe('Full Schema Verification QA', () => {
         expect(pf.rentalIncome.rentalAreaSize).toBe(500);
         expect(pf.rentalIncome.equipment.length).toBe(1);
         expect(pf.rentalIncome.equipment[0].assetName).toBe("Washing Machine");
+        expect(pf.rentalIncome.rentalAreaSize).toBe(500);
+        expect(pf.rentalIncome.totalHomeSize).toBe(2000);
 
         // selfEmployment
         expect(pf.selfEmployment).toBeDefined();
@@ -277,6 +297,7 @@ describe('Full Schema Verification QA', () => {
         // homeOffice
         expect(pf.homeOffice).toBeDefined();
         expect(pf.homeOffice.totalHomeSize).toBe(2000);
+        expect(pf.homeOffice.workAreaSize).toBe(200);
         expect(pf.homeOffice.monthlyElectricity).toBe(100);
 
         // movingExpenses

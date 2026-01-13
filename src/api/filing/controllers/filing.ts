@@ -287,9 +287,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         // Check if filing already exists for this specific combination
         if (requestData.taxYear) {
             const filters: any = {
-                user: user.id,
-                taxYear: requestData.taxYear,
-                filingType: requestData.filingType // Works if it's ID or String
+                user: { id: user.id },
+                taxYear: { id: requestData.taxYear }
             };
 
             // For PERSONAL returns: one per user per year
@@ -298,9 +297,12 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                 filters.entityName = requestData.entityName;
             }
 
-            const existing = await strapi.documents('api::filing.filing').findMany({
-                filters
+            const candidates = await strapi.documents('api::filing.filing').findMany({
+                filters,
+                populate: ['filingType']
             });
+
+            const existing = candidates.filter(f => f.filingType && f.filingType.documentId === requestData.filingType || f.filingType.id === requestData.filingType);
 
             if (existing && existing.length > 0) {
                 const typeLabel = filingTypeStr.toLowerCase();
@@ -536,6 +538,24 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
 
                 // Helper to clean empty strings to null (Strapi validation hates "" for dates/enums)
                 const clean = (val: any) => (val === "" || val === undefined ? null : val);
+
+                // STRICT DATE CLEANER
+                // Returns val if YYYY-MM-DD, otherwise null
+                const cleanDate = (val: any) => {
+                    if (!val) return null;
+                    const strVal = String(val).trim();
+                    // Regex for YYYY-MM-DD
+                    const regex = /^\d{4}-\d{2}-\d{2}$/;
+                    if (regex.test(strVal)) return strVal;
+                    // Attempt to rescue ISO strings (e.g. 2023-01-01T00:00:00.000Z)
+                    if (strVal.includes('T')) {
+                        const part = strVal.split('T')[0];
+                        if (regex.test(part)) return part;
+                    }
+                    console.warn(`[CONTROLLER] Invalid Date Format Dropped: ${val}`);
+                    return null;
+                };
+
                 const yesNoToBool = (val: any) => (val === 'YES' || val === 'Yes' || val === true) ? true : ((val === 'NO' || val === 'No' || val === false) ? false : null);
 
                 // Helper to split fullName into firstName/lastName if needed
@@ -572,12 +592,12 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                         lastName: clean(lastName),
                         middleName: clean(spousePayload.middleName),
                         sin: clean(spousePayload.sin),
-                        birthDate: clean(spousePayload.dateOfBirth),
+                        birthDate: cleanDate(spousePayload.dateOfBirth),
                         phoneNumber: clean(spousePayload.phoneNumber),
                         netIncome: clean(spousePayload.netIncome),
                         statusInCanada: clean(spousePayload.statusInCanada),
-                        dateBecameResident: clean(spousePayload.dateBecameResident),
-                        dateOfEntry: clean(spousePayload.dateOfEntry),
+                        dateBecameResident: cleanDate(spousePayload.dateBecameResident),
+                        dateOfEntry: cleanDate(spousePayload.dateOfEntry),
                         residencyStatus: ['RESIDENT', 'NON_RESIDENT'].includes(spousePayload.residencyStatus) ? spousePayload.residencyStatus : null,
                         incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null
                     };
@@ -594,11 +614,11 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                         firstName: clean(firstName),
                         lastName: clean(lastName),
                         middleName: clean(dep.middleName),
-                        birthDate: clean(dep.dateOfBirth),
+                        birthDate: cleanDate(dep.dateOfBirth),
                         sin: clean(dep.sin),
                         relationship: clean(dep.relationship),
                         statusInCanada: clean(dep.statusInCanada),
-                        dateBecameResident: clean(dep.dateBecameResident),
+                        dateBecameResident: cleanDate(dep.dateBecameResident),
                         earnsIncome: clean(dep.earnsIncome)
                     };
                 }) : [];
@@ -652,7 +672,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     make: clean(ve.make),
                     model: clean(ve.model),
                     year: clean(ve.year),
-                    purchaseDate: clean(ve.purchaseDate),
+                    purchaseDate: cleanDate(ve.purchaseDate),
                     purchaseCost: clean(ve.purchaseCost),
                     totalKmDriven: clean(ve.totalKmDriven),
                     kmDrivenThisYear: clean(ve.kmDrivenThisYear),
@@ -678,7 +698,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     hasCapitalAssets: yesNoToBool(se.hasCapitalAssets),
                     capitalAssets: Array.isArray(se.capitalAssets) ? se.capitalAssets.map((ca: any) => ({
                         assetName: clean(ca.assetName),
-                        purchaseDate: clean(ca.purchaseDate),
+                        purchaseDate: cleanDate(ca.purchaseDate),
                         cost: clean(ca.cost)
                     })) : []
                 } : null;
@@ -688,7 +708,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     propertyAddress: clean(ri.propertyAddress),
                     propertyType: clean(ri.propertyType),
                     ownershipPercentage: clean(ri.ownershipPercentage),
-                    rentalStartDate: clean(ri.rentalStartDate),
+                    rentalStartDate: cleanDate(ri.rentalStartDate),
                     rentedFullYear: yesNoToBool(ri.rentedFullYear),
                     personalUse: yesNoToBool(ri.personalUse),
                     totalRentReceived: clean(ri.totalRentReceived),
@@ -696,14 +716,14 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     expenseCategories: ri.expenseCategories,
                     claimCCA: yesNoToBool(ri.claimCCA),
                     purchasePrice: clean(ri.purchasePrice),
-                    purchaseDate: clean(ri.purchaseDate),
+                    purchaseDate: cleanDate(ri.purchaseDate),
                     buildingValue: clean(ri.buildingValue),
                     priorCCAClaimed: clean(ri.priorCCAClaimed),
                     totalHomeSize: clean(ri.totalHomeSize),
                     rentalAreaSize: clean(ri.rentalAreaSize),
                     equipment: Array.isArray(ri.equipment) ? ri.equipment.map((eq: any) => ({
                         assetName: clean(eq.assetName),
-                        purchaseDate: clean(eq.purchaseDate),
+                        purchaseDate: cleanDate(eq.purchaseDate),
                         cost: clean(eq.cost)
                     })) : []
                 } : null;
@@ -715,8 +735,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     oldCityProvince: clean(me.oldCityProvince),
                     newAddress: clean(me.newAddress),
                     newCityProvince: clean(me.newCityProvince),
-                    moveDate: clean(me.moveDate),
-                    workStartDate: clean(me.workStartDate),
+                    moveDate: cleanDate(me.moveDate),
+                    workStartDate: cleanDate(me.workStartDate),
                     transportExpenses: me.transportExpenses,
                     travelExpenses: me.travelExpenses,
                     tempLivingExpenses: me.tempLivingExpenses,
@@ -732,7 +752,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     firstName: clean(personalData.firstName),
                     middleName: clean(personalData.middleName),
                     lastName: clean(personalData.lastName),
-                    dateOfBirth: clean(personalData.dateOfBirth),
+                    dateOfBirth: cleanDate(personalData.dateOfBirth),
                     sin: clean(personalData.sin),
 
                     // Contact
@@ -752,17 +772,18 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     previousAddress: clean(personalData.previousAddress),
                     isFirstTimeFiler: clean(personalData.isFirstTimeFiler),
                     statusInCanada: clean(personalData.statusInCanada),
-                    dateBecameResident: clean(personalData.dateBecameResident),
+                    dateBecameResident: cleanDate(personalData.dateBecameResident),
                     provinceResided: clean(data.filingData.residency?.provinceResided || personalData.provinceResided), // From root residency obj
                     livedOutsideCanada: clean(data.filingData.residency?.livedOutsideCanada || personalData.livedOutsideCanada),
                     countryOfResidence: clean(data.filingData.residency?.countryOfResidence || personalData.countryOfResidence),
                     becameResidentThisYear: clean(data.filingData.residency?.becameResidentThisYear || personalData.becameResidentThisYear),
                     worldIncome: clean(data.filingData.residency?.worldIncome || personalData.worldIncome),
+                    dateOfEntry: cleanDate(data.filingData.residency?.dateOfEntry || personalData.dateOfEntry),
 
                     // Marital Status (Fix: Handle { status: "SINGLE" })
                     maritalStatus: clean(extractValue(data.filingData, 'maritalStatus') || personalData.maritalStatus),
                     maritalStatusChanged: clean(personalData.maritalStatusChanged),
-                    maritalStatusChangeDate: clean(personalData.maritalStatusChangeDate),
+                    maritalStatusChangeDate: cleanDate(personalData.maritalStatusChangeDate),
 
                     // Spouse (Component)
                     spouse: mappedSpouse,
@@ -778,7 +799,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     employmentStatus: clean(personalData.employmentStatus),
                     employmentDetails: clean(personalData.employmentDetails),
                     movedInYear: clean(personalData.movedInYear),
-                    arrivalDateCanada: clean(personalData.arrivalDateCanada),
+                    arrivalDateCanada: cleanDate(personalData.arrivalDateCanada),
                     workedOutsideCanada: clean(personalData.workedOutsideCanada),
                     amountOutsideCanada: clean(personalData.amountOutsideCanada),
 

@@ -236,52 +236,6 @@
             }
         },
         {
-            "id": "q_spouse_first_name",
-            "type": "text",
-            "label": "Spouse's First Name",
-            "name": "filingSetup.spouseFirstName",
-            "validation": {
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "filingSetup.includeSpouse",
-                        "operator": "equals",
-                        "value": "YES"
-                    }
-                }
-            },
-            "step": "filing_setup",
-            "order": 4,
-            "conditional": {
-                "parentQuestionId": "filingSetup.includeSpouse",
-                "operator": "equals",
-                "value": "YES"
-            },
-            "helpText": "Enter your spouse's legal first name as it appears on their SIN"
-        },
-        {
-            "id": "q_spouse_last_name",
-            "type": "text",
-            "label": "Spouse's Last Name",
-            "name": "filingSetup.spouseLastName",
-            "validation": {
-                "conditionalRequired": {
-                    "when": {
-                        "parentQuestionId": "filingSetup.includeSpouse",
-                        "operator": "equals",
-                        "value": "YES"
-                    }
-                }
-            },
-            "step": "filing_setup",
-            "order": 5,
-            "conditional": {
-                "parentQuestionId": "filingSetup.includeSpouse",
-                "operator": "equals",
-                "value": "YES"
-            },
-            "helpText": "Enter your spouse's legal last name"
-        },
-        {
             "id": "q_fname",
             "type": "text",
             "label": "First Name",
