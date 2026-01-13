@@ -36,11 +36,14 @@
             "target": "api::filing-status.filing-status",
             "inversedBy": "filings"
         },
-        "payment": {
+        "payments": {
             "type": "relation",
-            "relation": "oneToOne",
+            "relation": "oneToMany",
             "target": "api::payment.payment",
             "mappedBy": "filing"
+        },
+        "latestFeeSnapshot": {
+            "type": "json"
         },
         "entityName": {
             "type": "string"

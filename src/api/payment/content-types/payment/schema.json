@@ -14,9 +14,9 @@
   "attributes": {
     "filing": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::filing.filing",
-      "inversedBy": "payment"
+      "inversedBy": "payments"
     },
     "paymentStatus": {
       "type": "enumeration",

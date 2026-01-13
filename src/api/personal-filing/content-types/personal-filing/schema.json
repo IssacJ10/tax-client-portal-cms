@@ -58,19 +58,6 @@
     "postalCode": {
       "type": "string"
     },
-    "currentAddress": {
-      "type": "text"
-    },
-    "previousAddress": {
-      "type": "text"
-    },
-    "isFirstTimeFiler": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
     "statusInCanada": {
       "type": "enumeration",
       "enum": [
@@ -148,70 +135,6 @@
         "DEPENDENTS",
         "BOTH",
         "NONE"
-      ]
-    },
-    "employmentStatus": {
-      "type": "string"
-    },
-    "employmentDetails": {
-      "type": "text"
-    },
-    "movedInYear": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "arrivalDateCanada": {
-      "type": "date"
-    },
-    "workedOutsideCanada": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "amountOutsideCanada": {
-      "type": "decimal"
-    },
-    "directDeposit": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "directDepositInfo": {
-      "type": "text"
-    },
-    "medicalExpenses": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "donations": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "rrsp": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
-      ]
-    },
-    "workFromHome": {
-      "type": "enumeration",
-      "enum": [
-        "Yes",
-        "No"
       ]
     },
     "incomeSources": {

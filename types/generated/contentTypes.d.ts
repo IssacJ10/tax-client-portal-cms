@@ -430,139 +430,6 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiAboutAbout extends Struct.SingleTypeSchema {
-  collectionName: 'abouts';
-  info: {
-    description: 'Write about yourself and the content you create';
-    displayName: 'About';
-    pluralName: 'abouts';
-    singularName: 'about';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::about.about'> &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
-  collectionName: 'articles';
-  info: {
-    description: 'Create your blog content';
-    displayName: 'Article';
-    pluralName: 'articles';
-    singularName: 'article';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
-    cover: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 80;
-      }>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::article.article'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'>;
-    title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
-  collectionName: 'authors';
-  info: {
-    description: 'Create authors for your content';
-    displayName: 'Author';
-    pluralName: 'authors';
-    singularName: 'author';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
-    avatar: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::author.author'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
-  collectionName: 'categories';
-  info: {
-    description: 'Organize your content into categories';
-    displayName: 'Category';
-    pluralName: 'categories';
-    singularName: 'category';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::category.category'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiConsentConsent extends Struct.SingleTypeSchema {
   collectionName: 'consents';
   info: {
@@ -901,35 +768,27 @@ export interface ApiPersonalFilingPersonalFiling
   };
   attributes: {
     additionalDocs: Schema.Attribute.JSON;
-    amountOutsideCanada: Schema.Attribute.Decimal;
     apartmentNumber: Schema.Attribute.String;
-    arrivalDateCanada: Schema.Attribute.Date;
     becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
     city: Schema.Attribute.String;
     countryOfResidence: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    currentAddress: Schema.Attribute.Text;
     dateBecameResident: Schema.Attribute.Date;
     dateOfBirth: Schema.Attribute.Date;
     deductionSources: Schema.Attribute.JSON;
     dependents: Schema.Attribute.Component<'filing.dependent-info', true>;
     dependentsCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    directDeposit: Schema.Attribute.Enumeration<['Yes', 'No']>;
-    directDepositInfo: Schema.Attribute.Text;
     disabilityCredit: Schema.Attribute.Component<
       'filing.disability-credit',
       false
     >;
-    donations: Schema.Attribute.Enumeration<['Yes', 'No']>;
     electionsCanada: Schema.Attribute.Component<
       'filing.elections-canada',
       false
     >;
     email: Schema.Attribute.Email;
-    employmentDetails: Schema.Attribute.Text;
-    employmentStatus: Schema.Attribute.String;
     filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
     firstName: Schema.Attribute.String;
     formData: Schema.Attribute.JSON;
@@ -938,7 +797,6 @@ export interface ApiPersonalFilingPersonalFiling
     >;
     homeOffice: Schema.Attribute.Component<'filing.home-office', false>;
     incomeSources: Schema.Attribute.JSON;
-    isFirstTimeFiler: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
     livedOutsideCanada: Schema.Attribute.Enumeration<['YES', 'NO']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -952,19 +810,15 @@ export interface ApiPersonalFilingPersonalFiling
     >;
     maritalStatusChanged: Schema.Attribute.Enumeration<['Yes', 'No']>;
     maritalStatusChangeDate: Schema.Attribute.Date;
-    medicalExpenses: Schema.Attribute.Enumeration<['Yes', 'No']>;
     middleName: Schema.Attribute.String;
-    movedInYear: Schema.Attribute.Enumeration<['Yes', 'No']>;
     movingExpenses: Schema.Attribute.Component<'filing.moving-expenses', false>;
     phoneNumber: Schema.Attribute.String;
     postalCode: Schema.Attribute.String;
-    previousAddress: Schema.Attribute.Text;
     propertyAssets: Schema.Attribute.Component<'filing.property-assets', false>;
     province: Schema.Attribute.String;
     provinceResided: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     rentalIncome: Schema.Attribute.Component<'filing.rental-income', false>;
-    rrsp: Schema.Attribute.Enumeration<['Yes', 'No']>;
     selfEmployment: Schema.Attribute.Component<'filing.self-employment', false>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     spouse: Schema.Attribute.Component<'filing.spouse-info', false>;
@@ -986,9 +840,7 @@ export interface ApiPersonalFilingPersonalFiling
       'filing.vehicle-expenses',
       false
     >;
-    workedOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
     workExpenses: Schema.Attribute.Component<'filing.work-expenses', false>;
-    workFromHome: Schema.Attribute.Enumeration<['Yes', 'No']>;
     worldIncome: Schema.Attribute.Decimal;
   };
 }
@@ -1647,10 +1499,6 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::about.about': ApiAboutAbout;
-      'api::article.article': ApiArticleArticle;
-      'api::author.author': ApiAuthorAuthor;
-      'api::category.category': ApiCategoryCategory;
       'api::consent.consent': ApiConsentConsent;
       'api::corporate-filing.corporate-filing': ApiCorporateFilingCorporateFiling;
       'api::filing-status.filing-status': ApiFilingStatusFilingStatus;

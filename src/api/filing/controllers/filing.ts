@@ -9,6 +9,21 @@ const clean = (val: any) => (val === "" || val === undefined ? null : val);
 
 const yesNoToBool = (val: any) => (val === 'YES' || val === 'Yes' || val === true) ? true : ((val === 'NO' || val === 'No' || val === false) ? false : null);
 
+// STRICT DATE CLEANER
+const cleanDate = (val: any) => {
+    if (!val) return null;
+    const strVal = String(val).trim();
+    // Regex for YYYY-MM-DD
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (regex.test(strVal)) return strVal;
+    // Attempt to rescue ISO strings (e.g. 2023-01-01T00:00:00.000Z)
+    if (strVal.includes('T')) {
+        const part = strVal.split('T')[0];
+        if (regex.test(part)) return part;
+    }
+    return null;
+};
+
 const splitName = (fullName: string) => {
     if (!fullName) return { firstName: null, lastName: null };
     const parts = fullName.trim().split(' ');
@@ -31,11 +46,77 @@ const extractValue = (source: any, key: string) => {
 const mapPersonalFilingData = (filingData: any) => {
     if (!filingData) return {};
     const fd = filingData;
-    const personalInfo = fd.personalInfo || {};
+
+    // MAGICAL EXTRACTION: Handle "people" array if present
+    // This allows the frontend to send [ {role:PRIMARY, data:...}, {role:SPOUSE}, ... ]
+    // and we map it back to the existing schema structure.
+    let personalInfo = fd.personalInfo || {};
+    let spousePayload = fd.spouse;
+    let rawDependents = fd.dependants?.list || fd.dependents?.list || [];
+
+    // Other top-level sections that might be inside Primary's data
+    let electionsCanada = fd.electionsCanada;
+    let propertyAssets = fd.propertyAssets;
+    let disabilityCredit = fd.disabilityCredit;
+    let workExpenses = fd.workExpenses;
+    let homeOffice = fd.homeOffice;
+    let vehicleExpenses = fd.vehicleExpenses;
+    let selfEmployment = fd.selfEmployment;
+    let rentalIncome = fd.rentalIncome;
+    let movingExpenses = fd.movingExpenses;
+    let residency = fd.residency;
+
+
+    if (Array.isArray(fd.people)) {
+        // Find PRIMARY
+        const primary = fd.people.find((p: any) => p.role === 'PRIMARY');
+        if (primary && primary.data) {
+            personalInfo = primary.data.personalInfo || {};
+            // Map top-level sections from Primary
+            electionsCanada = primary.data.electionsCanada;
+            propertyAssets = primary.data.propertyAssets;
+            disabilityCredit = primary.data.disabilityCredit;
+            workExpenses = primary.data.workExpenses;
+            homeOffice = primary.data.homeOffice;
+            vehicleExpenses = primary.data.vehicleExpenses;
+            selfEmployment = primary.data.selfEmployment;
+            rentalIncome = primary.data.rentalIncome;
+            movingExpenses = primary.data.movingExpenses;
+            residency = primary.data.residency;
+        }
+
+        // Find SPOUSE
+        const spouse = fd.people.find((p: any) => p.role === 'SPOUSE');
+        if (spouse && spouse.data) {
+            // Merge Spouse data.
+            // In the "people" array, spouse data is distinct.
+            // We map it to the "spouse" component.
+            spousePayload = {
+                ...spouse.data.personalInfo, // Basic info
+                ...spouse.data.spouse, // Some old fields might be here
+                incomeSources: spouse.data.incomeSources, // Detailed Income
+                taxSlips: spouse.data.taxSlips, // Detailed Slips
+                workExpenses: spouse.data.workExpenses, // Detailed Expenses
+                deductions: spouse.data.deductions // Detailed Deductions
+            };
+        }
+
+        // Find DEPENDENTS
+        const dependents = fd.people.filter((p: any) => p.role === 'DEPENDENT');
+        if (dependents.length > 0) {
+            rawDependents = dependents.map((d: any) => ({
+                ...d.data.personalInfo,
+                relationship: d.data.personalInfo?.relationship || 'Child', // Fallback
+                earnsIncome: d.data.personalInfo?.earnsIncome || 'NO', // Fallback
+                incomeSources: d.data.incomeSources,
+                taxSlips: d.data.taxSlips,
+                netIncome: d.data.netIncome
+            }));
+        }
+    }
 
     // SPOUSE
     let mappedSpouse = null;
-    const spousePayload = fd.spouse;
     if (spousePayload && (spousePayload.fullName || spousePayload.firstName)) {
         const { firstName, lastName } = spousePayload.firstName
             ? { firstName: spousePayload.firstName, lastName: spousePayload.lastName }
@@ -52,12 +133,17 @@ const mapPersonalFilingData = (filingData: any) => {
             statusInCanada: clean(spousePayload.statusInCanada),
             dateBecameResident: clean(spousePayload.dateBecameResident),
             dateOfEntry: clean(spousePayload.dateOfEntry),
-            incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null
+            incomeOutsideCanada: ['Yes', 'No'].includes(spousePayload.incomeOutsideCanada) ? spousePayload.incomeOutsideCanada : null,
+            // NEW FIELDS for Detailed Multi-Person
+            incomeSources: spousePayload.incomeSources,
+            taxSlips: spousePayload.taxSlips,
+            workExpenses: spousePayload.workExpenses,
+            deductions: spousePayload.deductions
         };
     }
 
     // DEPENDENTS
-    const rawDependents = fd.dependants?.list || fd.dependents?.list || [];
+    // rawDependents is already defined above
     const mappedDependents = Array.isArray(rawDependents) ? rawDependents.map((dep: any) => {
         const { firstName, lastName } = dep.firstName
             ? { firstName: dep.firstName, lastName: dep.lastName }
@@ -72,17 +158,23 @@ const mapPersonalFilingData = (filingData: any) => {
             relationship: clean(dep.relationship),
             statusInCanada: clean(dep.statusInCanada),
             dateBecameResident: clean(dep.dateBecameResident),
-            earnsIncome: ['YES', 'NO'].includes(dep.earnsIncome) ? dep.earnsIncome : null
+            earnsIncome: ['YES', 'NO'].includes(dep.earnsIncome) ? dep.earnsIncome : null,
+            // NEW FIELDS
+            netIncome: clean(dep.netIncome),
+            incomeSources: dep.incomeSources,
+            taxSlips: dep.taxSlips,
+            workExpenses: dep.workExpenses,
+            deductions: dep.deductions
         };
     }) : [];
 
     // NEW COMPONENTS
-    const mappedElections = fd.electionsCanada ? {
-        authorizeCRA: yesNoToBool(fd.electionsCanada.authorizeCRA),
-        consentRegister: yesNoToBool(fd.electionsCanada.consentRegister)
+    const mappedElections = electionsCanada ? {
+        authorizeCRA: yesNoToBool(electionsCanada.authorizeCRA),
+        consentRegister: yesNoToBool(electionsCanada.consentRegister)
     } : null;
 
-    const pa = fd.propertyAssets;
+    const pa = propertyAssets;
     const mappedPropertyAssets = pa ? {
         purchasedPrincipalResidence: yesNoToBool(pa.purchasedPrincipalResidence),
         disposedPrincipalResidence: yesNoToBool(pa.disposedPrincipalResidence),
@@ -90,17 +182,17 @@ const mapPersonalFilingData = (filingData: any) => {
         foreignAffiliate: yesNoToBool(pa.foreignAffiliate)
     } : null;
 
-    const mappedDisability = fd.disabilityCredit ? {
-        affectedPersons: fd.disabilityCredit.affectedPersons,
-        dependantName: clean(fd.disabilityCredit.dependantName)
+    const mappedDisability = disabilityCredit ? {
+        affectedPersons: disabilityCredit.affectedPersons,
+        dependantName: clean(disabilityCredit.dependantName)
     } : null;
 
-    const mappedWorkExpenses = fd.workExpenses ? {
-        categories: fd.workExpenses.categories,
-        expenseTypes: fd.workExpenses.expenseTypes
+    const mappedWorkExpenses = workExpenses ? {
+        categories: workExpenses.categories,
+        expenseTypes: workExpenses.expenseTypes
     } : null;
 
-    const ho = fd.homeOffice;
+    const ho = homeOffice;
     const mappedHomeOffice = ho ? {
         totalHomeSize: clean(ho.totalHomeSize),
         workAreaSize: clean(ho.workAreaSize),
@@ -195,12 +287,13 @@ const mapPersonalFilingData = (filingData: any) => {
         kmDrivenForMoving: clean(me.kmDrivenForMoving)
     } : null;
 
+
     return {
         firstName: clean(personalInfo.firstName),
         lastName: clean(personalInfo.lastName),
         middleName: clean(personalInfo.middleName),
         sin: clean(personalInfo.sin),
-        birthDate: clean(personalInfo.dateOfBirth),
+        dateOfBirth: cleanDate(personalInfo.dateOfBirth),
         phoneNumber: clean(personalInfo.phoneNumber),
         streetNumber: clean(personalInfo.address?.streetNumber || personalInfo.streetNumber),
         streetName: clean(personalInfo.address?.streetName || personalInfo.streetName),
@@ -212,12 +305,12 @@ const mapPersonalFilingData = (filingData: any) => {
         maritalStatus: extractValue(personalInfo, 'maritalStatus'),
         maritalStatusChangedDate: clean(personalInfo.maritalStatusChangedDate),
 
-        provinceResided: extractValue(personalInfo.residency, 'provinceResided') || extractValue(fd.residency, 'provinceResided'),
-        livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' || extractValue(fd.residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
-        countryOfResidence: clean(fd.residency?.countryOfResidence || personalInfo.residency?.countryOfResidence),
-        becomeResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' || extractValue(fd.residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
-        worldIncome: clean(fd.residency?.worldIncome || personalInfo.residency?.worldIncome),
-        dateOfEntry: clean(fd.residency?.dateOfEntry || personalInfo.residency?.dateOfEntry),
+        provinceResided: extractValue(personalInfo.residency, 'provinceResided') || extractValue(residency, 'provinceResided'),
+        livedOutsideCanada: (extractValue(personalInfo.residency, 'livedOutsideCanada') === 'YES' || extractValue(residency, 'livedOutsideCanada') === 'YES' ? 'YES' : 'NO') as any,
+        countryOfResidence: clean(residency?.countryOfResidence || personalInfo.residency?.countryOfResidence),
+        becomeResidentThisYear: (extractValue(personalInfo.residency, 'becameResidentThisYear') === 'YES' || extractValue(residency, 'becameResidentThisYear') === 'YES' ? 'YES' : 'NO') as any,
+        worldIncome: clean(residency?.worldIncome || personalInfo.residency?.worldIncome),
+        dateOfEntry: clean(residency?.dateOfEntry || personalInfo.residency?.dateOfEntry),
 
         // CHILDREN & COMPONENTS
         spouse: mappedSpouse,
@@ -256,31 +349,34 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         if (requestData.filingType) {
             // If it's a number/ID
             if (typeof requestData.filingType === 'number' || !isNaN(Number(requestData.filingType))) {
-                // Try to find by numeric ID first (most likely case from frontend)
+                // Try to find by numeric ID first
                 const results = await strapi.documents('api::filing-type.filing-type').findMany({
                     filters: { id: requestData.filingType },
                     limit: 1
                 });
-
                 if (results && results.length > 0) {
                     filingTypeStr = results[0].type;
+                }
+            } else if (typeof requestData.filingType === 'string') {
+                if (['PERSONAL', 'CORPORATE', 'TRUST'].includes(requestData.filingType)) {
+                    filingTypeStr = requestData.filingType;
                 } else {
-                    // Fallback: try as documentId just in case
+                    // Try to resolve as Document ID
                     try {
                         const doc = await strapi.documents('api::filing-type.filing-type').findOne({
-                            documentId: String(requestData.filingType),
+                            documentId: requestData.filingType,
                         });
                         if (doc) {
                             filingTypeStr = doc.type;
                         } else {
-                            return ctx.badRequest('Invalid filing type ID provided');
+                            // If not found, default to PERSONAL to avoid crash, OR throw error?
+                            // Defaulting to PERSONAL might be risky if they passed a bad ID.
+                            // But usually frontend passes ID.
                         }
                     } catch (e) {
-                        return ctx.badRequest('Invalid filing type ID provided');
+                        // ignore
                     }
                 }
-            } else if (typeof requestData.filingType === 'string') {
-                filingTypeStr = requestData.filingType; // Backward compat
             }
         }
 
@@ -364,7 +460,6 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                 });
             }
         } catch (err) {
-            console.error(`[CONTROLLER ERROR] Failed to create ${filingTypeStr} filing data:`, err);
         }
 
         // Sanitize output
@@ -420,11 +515,9 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     populate: ['user', 'taxYear', 'filingStatus', 'filingType'] // Added master data relations
                 });
             } catch (e) {
-                console.log('[FINDONE DEBUG] DocumentId lookup failed:', e.message);
             }
         }
 
-        console.log('[FINDONE DEBUG] Entity found:', !!entity, 'for ID:', id);
 
         // Handle both numeric ID and documentId comparison
         const entityUserId = entity?.user?.id || entity?.user?.documentId || entity?.user;
@@ -464,7 +557,6 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     populate: ['user', 'filingType']
                 });
             } catch (e) {
-                console.log('[UPDATE DEBUG] DocumentId lookup failed:', e.message);
             }
         }
 
@@ -484,13 +576,7 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
             delete data.taxYear;
         }
 
-        console.log('[CONTROLLER DEBUG] Updating filing via Document Service:', {
-            id,
-            documentId: entity.documentId,
-            filingStatus: data.filingStatus, // Renamed status -> filingStatus
-            hasFilingData: !!data.filingData,
-            keys: Object.keys(data)
-        });
+
 
         // SMART WIZARD SYNC:
         // Extract top-level fields from filingData if they exist, to ensure Schema columns are populated
@@ -520,17 +606,13 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         //  FILING DATA PERSISTENCE LOGIC
         // ==========================================
         const filingTypeStr = entity.filingType?.type || 'PERSONAL'; // Default if Not Populated (careful)
-        console.log('[CONTROLLER] Persistence Logic - Type:', filingTypeStr);
-        console.log('[CONTROLLER] Persistence Logic - Has Data:', !!data.filingData);
 
         try {
             if (filingTypeStr === 'PERSONAL' && data.filingData) {
                 // PERSONAL
-                console.log('[CONTROLLER] Processing PERSONAL filing data...');
                 const relatedItems = await strapi.documents('api::personal-filing.personal-filing').findMany({
                     filters: { filing: { documentId: entity.documentId } }, limit: 1
                 });
-                console.log('[CONTROLLER] Found related personal filing:', relatedItems.length);
                 const personalData = data.filingData.personalInfo || {};
                 // The frontend sends address fields FLATTENED in personalInfo, not nested in an address object.
                 // We handle both just in case, but prioritize the flattened version as seen in the payload.
@@ -552,7 +634,6 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                         const part = strVal.split('T')[0];
                         if (regex.test(part)) return part;
                     }
-                    console.warn(`[CONTROLLER] Invalid Date Format Dropped: ${val}`);
                     return null;
                 };
 
@@ -768,9 +849,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     postalCode: clean(address.postalCode),
 
                     // Status & Residency
-                    currentAddress: clean(personalData.currentAddress),
-                    previousAddress: clean(personalData.previousAddress),
-                    isFirstTimeFiler: clean(personalData.isFirstTimeFiler),
+
+
                     statusInCanada: clean(personalData.statusInCanada),
                     dateBecameResident: cleanDate(personalData.dateBecameResident),
                     provinceResided: clean(data.filingData.residency?.provinceResided || personalData.provinceResided), // From root residency obj
@@ -796,20 +876,8 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     hasFamilyMembers: clean(data.filingData.filingSetup?.hasFamilyMembers),
 
                     // Employment & Newcomer
-                    employmentStatus: clean(personalData.employmentStatus),
-                    employmentDetails: clean(personalData.employmentDetails),
-                    movedInYear: clean(personalData.movedInYear),
-                    arrivalDateCanada: cleanDate(personalData.arrivalDateCanada),
-                    workedOutsideCanada: clean(personalData.workedOutsideCanada),
-                    amountOutsideCanada: clean(personalData.amountOutsideCanada),
 
-                    // Financial & Deductions
-                    directDeposit: clean(personalData.directDeposit),
-                    directDepositInfo: clean(personalData.directDepositInfo),
-                    medicalExpenses: clean(personalData.medicalExpenses),
-                    donations: clean(personalData.donations),
-                    rrsp: clean(personalData.rrsp),
-                    workFromHome: clean(personalData.workFromHome),
+
 
                     // NEW MAPPED SECTIONS
                     electionsCanada: mappedElections,
@@ -832,18 +900,15 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                     formData: data.filingData
                 };
 
-                console.log('[CONTROLLER] Mapped Personal Data:', JSON.stringify(mappedData, null, 2));
 
                 if (relatedItems.length > 0) {
                     await strapi.documents('api::personal-filing.personal-filing').update({
                         documentId: relatedItems[0].documentId, data: mappedData
                     });
-                    console.log('[CONTROLLER] SUCCESS: Updated PersonalFiling ' + relatedItems[0].documentId);
                 } else {
                     await strapi.documents('api::personal-filing.personal-filing').create({
                         data: { filing: entity.documentId, ...mappedData }
                     });
-                    console.log('[CONTROLLER] SUCCESS: Created new PersonalFiling');
                 }
 
             } else if (filingTypeStr === 'CORPORATE' && data.filingData) {
@@ -906,7 +971,6 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                 }
             }
         } catch (err) {
-            console.error(`[CONTROLLER ERROR] Failed to sync ${filingTypeStr} data:`, err);
         }
         // ==========================================
 

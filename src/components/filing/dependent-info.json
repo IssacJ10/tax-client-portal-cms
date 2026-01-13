@@ -44,6 +44,21 @@
                 "YES",
                 "NO"
             ]
+        },
+        "netIncome": {
+            "type": "decimal"
+        },
+        "incomeSources": {
+            "type": "json"
+        },
+        "taxSlips": {
+            "type": "json"
+        },
+        "workExpenses": {
+            "type": "json"
+        },
+        "deductions": {
+            "type": "json"
         }
     }
 }

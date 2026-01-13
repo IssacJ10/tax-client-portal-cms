@@ -182,11 +182,9 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
     dateBecameResident: Schema.Attribute.Date;
     dateOfEntry: Schema.Attribute.Date;
     firstName: Schema.Attribute.String;
-    incomeOutsideCanada: Schema.Attribute.Enumeration<['Yes', 'No']>;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
-    phoneNumber: Schema.Attribute.String;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     statusInCanada: Schema.Attribute.Enumeration<
       [

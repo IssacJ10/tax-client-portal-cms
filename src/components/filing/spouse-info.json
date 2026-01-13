@@ -32,12 +32,17 @@
         "dateOfEntry": {
             "type": "date"
         },
-        "incomeOutsideCanada": {
-            "type": "enumeration",
-            "enum": [
-                "Yes",
-                "No"
-            ]
+        "incomeSources": {
+            "type": "json"
+        },
+        "taxSlips": {
+            "type": "json"
+        },
+        "workExpenses": {
+            "type": "json"
+        },
+        "deductions": {
+            "type": "json"
         },
         "statusInCanada": {
             "type": "enumeration",
@@ -47,9 +52,6 @@
                 "TEMPORARY_RESIDENT",
                 "PROTECTED_PERSON"
             ]
-        },
-        "phoneNumber": {
-            "type": "string"
         }
     }
 }
