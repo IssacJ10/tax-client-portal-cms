@@ -623,15 +623,16 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    latestFeeSnapshot: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::filing.filing'
     > &
       Schema.Attribute.Private;
-    payment: Schema.Attribute.Relation<'oneToOne', 'api::payment.payment'>;
-    personalFiling: Schema.Attribute.Relation<
-      'oneToOne',
+    payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
+    personalFilings: Schema.Attribute.Relation<
+      'oneToMany',
       'api::personal-filing.personal-filing'
     >;
     progress: Schema.Attribute.Integer &
@@ -715,7 +716,7 @@ export interface ApiPaymentPayment extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'CAD'>;
     dependentFee: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
-    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    filing: Schema.Attribute.Relation<'manyToOne', 'api::filing.filing'>;
     gst: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     hst: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     invoiceNumber: Schema.Attribute.String & Schema.Attribute.Unique;
@@ -784,12 +785,13 @@ export interface ApiPersonalFilingPersonalFiling
       'filing.disability-credit',
       false
     >;
+    documents: Schema.Attribute.Media<'files' | 'images', true>;
     electionsCanada: Schema.Attribute.Component<
       'filing.elections-canada',
       false
     >;
     email: Schema.Attribute.Email;
-    filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
+    filing: Schema.Attribute.Relation<'manyToOne', 'api::filing.filing'>;
     firstName: Schema.Attribute.String;
     formData: Schema.Attribute.JSON;
     hasFamilyMembers: Schema.Attribute.Enumeration<
@@ -797,6 +799,10 @@ export interface ApiPersonalFilingPersonalFiling
     >;
     homeOffice: Schema.Attribute.Component<'filing.home-office', false>;
     incomeSources: Schema.Attribute.JSON;
+    individualStatus: Schema.Attribute.Enumeration<
+      ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
+    > &
+      Schema.Attribute.DefaultTo<'DRAFT'>;
     lastName: Schema.Attribute.String;
     livedOutsideCanada: Schema.Attribute.Enumeration<['YES', 'NO']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -833,6 +839,8 @@ export interface ApiPersonalFilingPersonalFiling
     streetName: Schema.Attribute.String;
     streetNumber: Schema.Attribute.String;
     taxSlips: Schema.Attribute.JSON;
+    type: Schema.Attribute.Enumeration<['primary', 'spouse', 'dependent']> &
+      Schema.Attribute.DefaultTo<'primary'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
