@@ -14,9 +14,37 @@
   "attributes": {
     "filing": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::filing.filing",
-      "mappedBy": "personalFiling"
+      "inversedBy": "personalFilings"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "primary",
+        "spouse",
+        "dependent"
+      ],
+      "default": "primary"
+    },
+    "individualStatus": {
+      "type": "enumeration",
+      "enum": [
+        "DRAFT",
+        "COMPLETED",
+        "FLAGGED",
+        "VERIFIED"
+      ],
+      "default": "DRAFT"
+    },
+    "documents": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "files",
+        "images"
+      ]
     },
     "firstName": {
       "type": "string"

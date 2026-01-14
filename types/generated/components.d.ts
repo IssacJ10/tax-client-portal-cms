@@ -23,10 +23,13 @@ export interface FilingDependentInfo extends Struct.ComponentSchema {
   attributes: {
     birthDate: Schema.Attribute.Date;
     dateBecameResident: Schema.Attribute.Date;
+    deductions: Schema.Attribute.JSON;
     earnsIncome: Schema.Attribute.Enumeration<['YES', 'NO']>;
     firstName: Schema.Attribute.String;
+    incomeSources: Schema.Attribute.JSON;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
+    netIncome: Schema.Attribute.Decimal;
     relationship: Schema.Attribute.String;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     statusInCanada: Schema.Attribute.Enumeration<
@@ -37,6 +40,8 @@ export interface FilingDependentInfo extends Struct.ComponentSchema {
         'PROTECTED_PERSON',
       ]
     >;
+    taxSlips: Schema.Attribute.JSON;
+    workExpenses: Schema.Attribute.JSON;
   };
 }
 
@@ -181,7 +186,9 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
     birthDate: Schema.Attribute.Date;
     dateBecameResident: Schema.Attribute.Date;
     dateOfEntry: Schema.Attribute.Date;
+    deductions: Schema.Attribute.JSON;
     firstName: Schema.Attribute.String;
+    incomeSources: Schema.Attribute.JSON;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
@@ -194,6 +201,8 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
         'PROTECTED_PERSON',
       ]
     >;
+    taxSlips: Schema.Attribute.JSON;
+    workExpenses: Schema.Attribute.JSON;
   };
 }
 

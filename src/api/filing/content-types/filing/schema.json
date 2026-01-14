@@ -101,11 +101,11 @@
             "relation": "manyToOne",
             "target": "plugin::users-permissions.user"
         },
-        "personalFiling": {
+        "personalFilings": {
             "type": "relation",
-            "relation": "oneToOne",
+            "relation": "oneToMany",
             "target": "api::personal-filing.personal-filing",
-            "inversedBy": "filing"
+            "mappedBy": "filing"
         },
         "corporateFiling": {
             "type": "relation",

@@ -102,18 +102,19 @@ export default {
                     'taxYear',
                     'filingStatus',
                     'filingType',
-                    'personalFiling',
-                    'personalFiling.spouse',
-                    'personalFiling.dependents',
-                    'personalFiling.electionsCanada',
-                    'personalFiling.propertyAssets',
-                    'personalFiling.disabilityCredit',
-                    'personalFiling.workExpenses',
-                    'personalFiling.homeOffice',
-                    'personalFiling.vehicleExpenses',
-                    'personalFiling.selfEmployment',
-                    'personalFiling.rentalIncome',
-                    'personalFiling.movingExpenses',
+                    'personalFilings',
+                    'personalFilings.documents',
+                    'personalFilings.spouse',
+                    'personalFilings.dependents',
+                    'personalFilings.electionsCanada',
+                    'personalFilings.propertyAssets',
+                    'personalFilings.disabilityCredit',
+                    'personalFilings.workExpenses',
+                    'personalFilings.homeOffice',
+                    'personalFilings.vehicleExpenses',
+                    'personalFilings.selfEmployment',
+                    'personalFilings.rentalIncome',
+                    'personalFilings.movingExpenses',
                     'corporateFiling',
                     'trustFiling'
                 ]
@@ -125,41 +126,6 @@ export default {
 
             console.log(`[Dashboard findOne] Checking: ${id}, type: ${filing.filingType?.type}`);
 
-            // AUTO-FIX: If sub-record is missing, create a seeded one
-            const type = filing.filingType?.type;
-            if (type === 'PERSONAL' && !filing.personalFiling) {
-                console.log('[Dashboard findOne] Auto-fixing missing Personal Filing');
-                filing.personalFiling = await strapi.documents('api::personal-filing.personal-filing').create({
-                    data: {
-                        filing: filing.documentId,
-                        firstName: filing.user?.firstName || 'Auto',
-                        lastName: filing.user?.lastName || 'Generated',
-                        email: filing.user?.email || 'auto@example.com',
-                        maritalStatus: 'SINGLE',
-                        employmentStatus: 'Full-time'
-                    }
-                });
-            } else if (type === 'CORPORATE' && !filing.corporateFiling) {
-                console.log('[Dashboard findOne] Auto-fixing missing Corporate Filing');
-                filing.corporateFiling = await strapi.documents('api::corporate-filing.corporate-filing').create({
-                    data: {
-                        filing: filing.documentId,
-                        legalName: (filing.entityName || 'Auto Corp') + ' (T2)',
-                        businessNumber: 'BN-AUTO-REPAIR',
-                        incorporationDate: '2020-01-01'
-                    }
-                });
-            } else if (type === 'TRUST' && !filing.trustFiling) {
-                console.log('[Dashboard findOne] Auto-fixing missing Trust Filing');
-                filing.trustFiling = await strapi.documents('api::trust-filing.trust-filing').create({
-                    data: {
-                        filing: filing.documentId,
-                        trustName: (filing.entityName || 'Auto Trust') + ' (T3)',
-                        accountNumber: 'T-AUTO-REPAIR',
-                        creationDate: '2022-01-01'
-                    }
-                });
-            }
 
             // Check ownership (unless admin)
             const isAdmin = user.role?.type === 'admin_role' || user.role?.type === 'admin' || user.role?.name === 'Admin';
@@ -268,7 +234,7 @@ export default {
                 if (pf.filing) {
                     await strapi.documents('api::filing.filing').update({
                         documentId: pf.filing.documentId,
-                        data: { personalFiling: pf.documentId }
+                        data: { personalFilings: [pf.documentId] }
                     });
                     pCount++;
                 }
@@ -304,7 +270,11 @@ export default {
                 }
             }
 
-            ctx.body = { success: true, migrated: { personal: pCount, corporate: cCount, trust: tCount } };
+            ctx.body = {
+                success: true,
+                migrated: { personal: pCount, corporate: cCount, trust: tCount },
+                found: { personal: pFs.length, corporate: cFs.length, trust: tFs.length }
+            };
         } catch (err) {
             console.error('Migration error:', err);
             ctx.throw(500, `Migration failed: ${err.message}`);
@@ -378,6 +348,65 @@ export default {
         } catch (err) {
             console.error('[CONSENT ERROR]', err.message, err.stack);
             ctx.throw(500, `Failed to record consent: ${err.message}`);
+        }
+    },
+
+    async debugUser(ctx) {
+        try {
+            const { email, password } = ctx.query;
+            if (!email) return ctx.badRequest('Email required in query params');
+
+            console.log(`[DEBUG USER] Checking: ${email}`);
+
+            // 1. Find user
+            const user = await strapi.db.query('plugin::users-permissions.user').findOne({
+                where: { email: email.toLowerCase() },
+                populate: ['role']
+            });
+
+            if (!user) {
+                const anyUser = await strapi.db.query('plugin::users-permissions.user').findOne({
+                    select: ['email']
+                });
+                return ctx.body = { error: 'User not found', context: { searchedFor: email, foundAny: anyUser?.email } };
+            }
+
+            const { action, password: newPassword } = ctx.query;
+
+            // 2. Actions
+            if (action === 'reset' && newPassword) {
+                console.log(`[DEBUG USER] Resetting password for: ${email} using documents service`);
+                await strapi.documents('plugin::users-permissions.user').update({
+                    documentId: user.documentId || user.id.toString(),
+                    data: { password: newPassword }
+                });
+                return ctx.body = { success: true, message: `Password reset for ${email}` };
+            }
+
+            if (action === 'elevate') {
+                console.log(`[DEBUG USER] Elevating user to Admin: ${email}`);
+                await strapi.documents('plugin::users-permissions.user').update({
+                    documentId: user.documentId || user.id.toString(),
+                    data: { role: 'n9hd2mrb26v6g2ahh102irgp' } // Admin role Document ID
+                });
+                return ctx.body = { success: true, message: `User ${email} elevated to Admin` };
+            }
+
+            // 3. Status check
+            ctx.body = {
+                status: {
+                    id: user.id,
+                    documentId: user.documentId,
+                    email: user.email,
+                    confirmed: user.confirmed,
+                    blocked: user.blocked,
+                    role: user.role,
+                    hasPassword: !!user.password,
+                }
+            };
+        } catch (err) {
+            console.error('Debug user error:', err);
+            ctx.throw(500, err.message);
         }
     }
 };

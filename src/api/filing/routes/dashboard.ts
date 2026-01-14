@@ -45,5 +45,15 @@ module.exports = {
                 middlewares: [],
             },
         },
+        {
+            method: 'GET',
+            path: '/dashboard/debug-user',
+            handler: 'dashboard.debugUser',
+            config: {
+                auth: false,
+                policies: [],
+                middlewares: [],
+            },
+        },
     ],
 };
