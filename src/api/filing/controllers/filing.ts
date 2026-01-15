@@ -610,9 +610,15 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
         try {
             if (filingTypeStr === 'PERSONAL' && data.filingData) {
                 // PERSONAL
+                // FIXED: Fetch keys and filter IN MEMORY to be 100% sure we don't hit a filter limitation
                 const relatedItems = await strapi.documents('api::personal-filing.personal-filing').findMany({
-                    filters: { filing: { documentId: entity.documentId } }, limit: 1
+                    filters: { filing: { documentId: entity.documentId } }
                 });
+
+                // Explicitly find the Primary record (or Legacy one with null type)
+                // STRICTLY exclude 'spouse' and 'dependent'
+                const primaryRecord = relatedItems.find((item: any) => item.type !== 'spouse' && item.type !== 'dependent');
+
                 const personalData = data.filingData.personalInfo || {};
                 // The frontend sends address fields FLATTENED in personalInfo, not nested in an address object.
                 // We handle both just in case, but prioritize the flattened version as seen in the payload.
@@ -901,13 +907,17 @@ export default factories.createCoreController('api::filing.filing', ({ strapi })
                 };
 
 
-                if (relatedItems.length > 0) {
+                if (primaryRecord) {
                     await strapi.documents('api::personal-filing.personal-filing').update({
-                        documentId: relatedItems[0].documentId, data: mappedData
+                        documentId: primaryRecord.documentId, data: mappedData
                     });
                 } else {
                     await strapi.documents('api::personal-filing.personal-filing').create({
-                        data: { filing: entity.documentId, ...mappedData }
+                        data: {
+                            filing: entity.documentId,
+                            type: 'primary',
+                            ...mappedData
+                        }
                     });
                 }
 
