@@ -472,7 +472,7 @@ export interface ApiCorporateFilingCorporateFiling
   };
   attributes: {
     address: Schema.Attribute.Text;
-    businessNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    businessNumber: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -482,7 +482,7 @@ export interface ApiCorporateFilingCorporateFiling
     fiscalYearEnd: Schema.Attribute.Date;
     formData: Schema.Attribute.JSON;
     incorporationDate: Schema.Attribute.Date;
-    legalName: Schema.Attribute.String & Schema.Attribute.Required;
+    legalName: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -492,6 +492,10 @@ export interface ApiCorporateFilingCorporateFiling
     netIncome: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
     shareholders: Schema.Attribute.JSON;
+    status: Schema.Attribute.Enumeration<
+      ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
+    > &
+      Schema.Attribute.DefaultTo<'DRAFT'>;
     totalRevenue: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -964,7 +968,7 @@ export interface ApiTrustFilingTrustFiling extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    accountNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    accountNumber: Schema.Attribute.String;
     beneficiaries: Schema.Attribute.JSON;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -981,8 +985,12 @@ export interface ApiTrustFilingTrustFiling extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     residency: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
+    > &
+      Schema.Attribute.DefaultTo<'DRAFT'>;
     trustees: Schema.Attribute.JSON;
-    trustName: Schema.Attribute.String & Schema.Attribute.Required;
+    trustName: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

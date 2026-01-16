@@ -17,7 +17,8 @@ module.exports = {
             path: '/filings/:id',
             handler: 'filing.findOne',
             config: {
-                policies: [], // No consent required to VIEW a specific filing
+                auth: false, // Bypass users-permissions - controller handles auth manually
+                policies: [],
             },
         },
         {

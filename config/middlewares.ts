@@ -16,6 +16,7 @@ export default [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+  'global::filing-auth', // Custom Filing Auth Middleware
   'global::google-auth-fix', // Custom Google Auth Interceptor
   'global::local-auth-refresh', // Custom Local Auth Refresh
 ];

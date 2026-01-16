@@ -20,11 +20,11 @@
     },
     "trustName": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "accountNumber": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "creationDate": {
       "type": "date"
@@ -43,6 +43,16 @@
     },
     "formData": {
       "type": "json"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "DRAFT",
+        "COMPLETED",
+        "FLAGGED",
+        "VERIFIED"
+      ],
+      "default": "DRAFT"
     }
   }
 }

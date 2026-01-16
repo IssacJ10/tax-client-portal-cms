@@ -20,11 +20,11 @@
     },
     "legalName": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "businessNumber": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "address": {
       "type": "text"
@@ -52,6 +52,16 @@
     },
     "formData": {
       "type": "json"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "DRAFT",
+        "COMPLETED",
+        "FLAGGED",
+        "VERIFIED"
+      ],
+      "default": "DRAFT"
     }
   }
 }
