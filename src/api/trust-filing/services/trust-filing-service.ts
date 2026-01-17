@@ -27,6 +27,8 @@ export default () => ({
             data: {
                 filing: filingDocumentId,
                 formData: initialData.formData || {},
+                // Set initial trustFilingStatus to DRAFT (only becomes COMPLETED on submission)
+                trustFilingStatus: 'DRAFT',
                 // Optional initial fields from schema
                 trustName: initialData.trustName || 'New Trust',
                 accountNumber: initialData.accountNumber || '',
@@ -34,7 +36,11 @@ export default () => ({
                 residency: initialData.residency || null,
                 trustees: initialData.trustees || null,
                 beneficiaries: initialData.beneficiaries || null,
-                income: initialData.income || null,
+                // Individual income fields (decimal)
+                incomeInterest: initialData.incomeInterest || null,
+                incomeDividends: initialData.incomeDividends || null,
+                incomeCapitalGains: initialData.incomeCapitalGains || null,
+                incomeDistributions: initialData.incomeDistributions || null,
             }
         });
 
@@ -66,8 +72,9 @@ export default () => ({
         };
 
         // Map known fields from formData to schema fields
-        if (mergedFormData['trustInfo.trustName']) {
-            updateData.trustName = mergedFormData['trustInfo.trustName'];
+        // Note: form field is "trustInfo.name" not "trustInfo.trustName"
+        if (mergedFormData['trustInfo.name']) {
+            updateData.trustName = mergedFormData['trustInfo.name'];
         }
         if (mergedFormData['trustInfo.accountNumber']) {
             updateData.accountNumber = mergedFormData['trustInfo.accountNumber'];
@@ -84,8 +91,18 @@ export default () => ({
         if (mergedFormData['beneficiaries']) {
             updateData.beneficiaries = mergedFormData['beneficiaries'];
         }
-        if (mergedFormData['income']) {
-            updateData.income = mergedFormData['income'];
+        // Map individual income fields from formData to schema columns
+        if (mergedFormData['income.interest']) {
+            updateData.incomeInterest = mergedFormData['income.interest'];
+        }
+        if (mergedFormData['income.dividends']) {
+            updateData.incomeDividends = mergedFormData['income.dividends'];
+        }
+        if (mergedFormData['income.capitalGains']) {
+            updateData.incomeCapitalGains = mergedFormData['income.capitalGains'];
+        }
+        if (mergedFormData['income.distributions']) {
+            updateData.incomeDistributions = mergedFormData['income.distributions'];
         }
 
         // Update trust-filing
@@ -190,7 +207,7 @@ export default () => ({
         const updated = await strapi.documents('api::trust-filing.trust-filing').update({
             documentId: trustFiling.documentId,
             data: {
-                status: 'COMPLETED'
+                trustFilingStatus: 'COMPLETED'
             }
         });
 

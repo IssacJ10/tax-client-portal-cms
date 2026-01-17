@@ -473,10 +473,17 @@ export interface ApiCorporateFilingCorporateFiling
   attributes: {
     address: Schema.Attribute.Text;
     businessNumber: Schema.Attribute.String;
+    corporateFilingStatus: Schema.Attribute.Enumeration<
+      ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
+    > &
+      Schema.Attribute.DefaultTo<'DRAFT'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    expenses: Schema.Attribute.JSON;
+    expensesOther: Schema.Attribute.Decimal;
+    expensesProfessionalFees: Schema.Attribute.Decimal;
+    expensesRent: Schema.Attribute.Decimal;
+    expensesSalaries: Schema.Attribute.Decimal;
     filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
     financialStatements: Schema.Attribute.JSON;
     fiscalYearEnd: Schema.Attribute.Date;
@@ -492,10 +499,6 @@ export interface ApiCorporateFilingCorporateFiling
     netIncome: Schema.Attribute.Decimal;
     publishedAt: Schema.Attribute.DateTime;
     shareholders: Schema.Attribute.JSON;
-    status: Schema.Attribute.Enumeration<
-      ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
-    > &
-      Schema.Attribute.DefaultTo<'DRAFT'>;
     totalRevenue: Schema.Attribute.Decimal;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -666,6 +669,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    wizardProgress: Schema.Attribute.JSON;
   };
 }
 
@@ -976,7 +980,10 @@ export interface ApiTrustFilingTrustFiling extends Struct.CollectionTypeSchema {
     creationDate: Schema.Attribute.Date;
     filing: Schema.Attribute.Relation<'oneToOne', 'api::filing.filing'>;
     formData: Schema.Attribute.JSON;
-    income: Schema.Attribute.JSON;
+    incomeCapitalGains: Schema.Attribute.Decimal;
+    incomeDistributions: Schema.Attribute.Decimal;
+    incomeDividends: Schema.Attribute.Decimal;
+    incomeInterest: Schema.Attribute.Decimal;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -985,11 +992,11 @@ export interface ApiTrustFilingTrustFiling extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     residency: Schema.Attribute.String;
-    status: Schema.Attribute.Enumeration<
+    trustees: Schema.Attribute.JSON;
+    trustFilingStatus: Schema.Attribute.Enumeration<
       ['DRAFT', 'COMPLETED', 'FLAGGED', 'VERIFIED']
     > &
       Schema.Attribute.DefaultTo<'DRAFT'>;
-    trustees: Schema.Attribute.JSON;
     trustName: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

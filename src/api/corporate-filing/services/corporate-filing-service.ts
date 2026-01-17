@@ -27,6 +27,8 @@ export default () => ({
             data: {
                 filing: filingDocumentId,
                 formData: initialData.formData || {},
+                // Set initial status to DRAFT (only becomes COMPLETED on submission)
+                corporateFilingStatus: 'DRAFT',
                 // Optional initial fields from schema
                 legalName: initialData.legalName || 'New Corporation',
                 businessNumber: initialData.businessNumber || '',
@@ -93,8 +95,17 @@ export default () => ({
         if (mergedFormData['financials.netIncome']) {
             updateData.netIncome = mergedFormData['financials.netIncome'];
         }
-        if (mergedFormData['financials.expenses']) {
-            updateData.expenses = mergedFormData['financials.expenses'];
+        if (mergedFormData['financials.expenses.salaries']) {
+            updateData.expensesSalaries = mergedFormData['financials.expenses.salaries'];
+        }
+        if (mergedFormData['financials.expenses.rent']) {
+            updateData.expensesRent = mergedFormData['financials.expenses.rent'];
+        }
+        if (mergedFormData['financials.expenses.professionalFees']) {
+            updateData.expensesProfessionalFees = mergedFormData['financials.expenses.professionalFees'];
+        }
+        if (mergedFormData['financials.expenses.other']) {
+            updateData.expensesOther = mergedFormData['financials.expenses.other'];
         }
         if (mergedFormData['documents.financialStatements']) {
             updateData.financialStatements = mergedFormData['documents.financialStatements'];
@@ -202,7 +213,7 @@ export default () => ({
         const updated = await strapi.documents('api::corporate-filing.corporate-filing').update({
             documentId: corporateFiling.documentId,
             data: {
-                status: 'COMPLETED'
+                corporateFilingStatus: 'COMPLETED'
             }
         });
 

@@ -38,13 +38,22 @@
     "beneficiaries": {
       "type": "json"
     },
-    "income": {
-      "type": "json"
+    "incomeInterest": {
+      "type": "decimal"
+    },
+    "incomeDividends": {
+      "type": "decimal"
+    },
+    "incomeCapitalGains": {
+      "type": "decimal"
+    },
+    "incomeDistributions": {
+      "type": "decimal"
     },
     "formData": {
       "type": "json"
     },
-    "status": {
+    "trustFilingStatus": {
       "type": "enumeration",
       "enum": [
         "DRAFT",

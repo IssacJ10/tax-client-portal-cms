@@ -44,8 +44,17 @@
     "netIncome": {
       "type": "decimal"
     },
-    "expenses": {
-      "type": "json"
+    "expensesSalaries": {
+      "type": "decimal"
+    },
+    "expensesRent": {
+      "type": "decimal"
+    },
+    "expensesProfessionalFees": {
+      "type": "decimal"
+    },
+    "expensesOther": {
+      "type": "decimal"
     },
     "financialStatements": {
       "type": "json"
@@ -53,7 +62,7 @@
     "formData": {
       "type": "json"
     },
-    "status": {
+    "corporateFilingStatus": {
       "type": "enumeration",
       "enum": [
         "DRAFT",

@@ -121,6 +121,10 @@
         },
         "filingData": {
             "type": "json"
+        },
+        "wizardProgress": {
+            "type": "json",
+            "description": "Stores wizard progress for resume functionality (lastPhase, lastSectionIndex, lastPersonalFilingId, lastDependentIndex)"
         }
     }
 }
