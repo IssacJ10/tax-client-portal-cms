@@ -62,6 +62,9 @@ export default {
                     },
                     filingType: {
                         fields: ['type', 'displayName']
+                    },
+                    personalFilings: {
+                        fields: ['type', 'firstName', 'lastName', 'individualStatus']
                     }
                 }
             });
