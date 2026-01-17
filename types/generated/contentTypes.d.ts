@@ -637,6 +637,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
       'api::filing.filing'
     > &
       Schema.Attribute.Private;
+    paidAmount: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     payments: Schema.Attribute.Relation<'oneToMany', 'api::payment.payment'>;
     personalFilings: Schema.Attribute.Relation<
       'oneToMany',
@@ -657,6 +658,7 @@ export interface ApiFilingFiling extends Struct.CollectionTypeSchema {
     reviewedAt: Schema.Attribute.DateTime;
     submittedAt: Schema.Attribute.DateTime;
     taxYear: Schema.Attribute.Relation<'manyToOne', 'api::tax-year.tax-year'>;
+    totalPrice: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
     trustFiling: Schema.Attribute.Relation<
       'oneToOne',
       'api::trust-filing.trust-filing'

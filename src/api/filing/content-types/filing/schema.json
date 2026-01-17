@@ -55,6 +55,16 @@
         "estimatedRefund": {
             "type": "decimal"
         },
+        "totalPrice": {
+            "type": "decimal",
+            "default": 0,
+            "description": "Calculated total price for the filing (including tax)"
+        },
+        "paidAmount": {
+            "type": "decimal",
+            "default": 0,
+            "description": "Amount already paid by user (used for amendment tracking)"
+        },
         "uploadedDocuments": {
             "type": "media",
             "multiple": true,
