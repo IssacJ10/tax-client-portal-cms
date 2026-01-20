@@ -6,8 +6,9 @@ module.exports = {
             handler: 'token.refresh',
             config: {
                 policies: [],
-                middlewares: [],
-                auth: false, // Public endpoint, validated via token signature
+                middlewares: ['global::rate-limiter'], // Apply rate limiting
+                auth: false, // Public endpoint, validated via token signature + IP-based rate limiting
+                description: 'Refresh JWT token using refresh token',
             },
         },
         {
@@ -16,7 +17,9 @@ module.exports = {
             handler: 'logout.logout',
             config: {
                 policies: [],
-                middlewares: [],
+                middlewares: ['global::rate-limiter'],
+                // SECURITY: Remove auth:false to use default authenticated behavior
+                description: 'Revoke refresh token (logout)',
             },
         },
     ],
