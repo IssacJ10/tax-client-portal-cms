@@ -76,8 +76,10 @@ export default [
   'strapi::public',
   // Security middlewares (order matters)
   'global::rate-limiter', // Rate limiting - apply early
+  'global::recaptcha-verify', // reCAPTCHA bot protection for auth endpoints
   'global::input-sanitization', // Input sanitization
   'global::security-headers', // Security headers
+  'global::audit-logger', // Audit logging for compliance
   // Custom auth middlewares
   'global::filing-auth', // Custom Filing Auth Middleware
   'global::google-auth-fix', // Custom Google Auth Interceptor

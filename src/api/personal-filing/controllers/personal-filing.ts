@@ -1,3 +1,189 @@
+/**
+ * Personal Filing Controller
+ * Handles CRUD operations for personal tax filings with comprehensive validation
+ */
 
 import { factories } from '@strapi/strapi';
-export default factories.createCoreController('api::personal-filing.personal-filing');
+import { errors } from '@strapi/utils';
+import { validatePersonalFilingData } from '../../../utils/validators';
+
+const { ValidationError, ForbiddenError } = errors;
+
+export default factories.createCoreController('api::personal-filing.personal-filing', ({ strapi }) => ({
+  /**
+   * Create a new personal filing with validation
+   */
+  async create(ctx) {
+    // Validate input data
+    const data = ctx.request.body?.data;
+
+    if (data) {
+      const validationErrors = validatePersonalFilingData(data);
+      if (validationErrors.length > 0) {
+        strapi.log.warn('[PersonalFiling] Validation failed on create:', {
+          errors: validationErrors,
+          userId: ctx.state?.user?.id,
+        });
+        throw new ValidationError(`Validation failed: ${validationErrors.join('; ')}`);
+      }
+    }
+
+    // Ensure the filing belongs to the authenticated user
+    const user = ctx.state?.user;
+    if (!user) {
+      throw new ForbiddenError('Authentication required');
+    }
+
+    // Call the default create
+    const response = await super.create(ctx);
+
+    strapi.log.info('[PersonalFiling] Created', {
+      filingId: response.data?.id,
+      userId: user.id,
+    });
+
+    return response;
+  },
+
+  /**
+   * Update a personal filing with validation
+   */
+  async update(ctx) {
+    const { id } = ctx.params;
+    const data = ctx.request.body?.data;
+
+    // Verify ownership before update
+    const user = ctx.state?.user;
+    if (!user) {
+      throw new ForbiddenError('Authentication required');
+    }
+
+    // Check if user owns this filing
+    const filing: any = await strapi.entityService.findOne(
+      'api::personal-filing.personal-filing',
+      id,
+      {
+        populate: ['filing', 'filing.user'],
+      }
+    );
+
+    if (!filing) {
+      throw new ValidationError('Filing not found');
+    }
+
+    // Check ownership through the parent filing
+    const parentFiling = filing.filing as any;
+    if (parentFiling?.user?.id !== user.id) {
+      strapi.log.warn('[PersonalFiling] Unauthorized update attempt', {
+        filingId: id,
+        attemptedBy: user.id,
+        owner: parentFiling?.user?.id,
+      });
+      throw new ForbiddenError('You do not have permission to update this filing');
+    }
+
+    // Validate input data
+    if (data) {
+      const validationErrors = validatePersonalFilingData(data);
+      if (validationErrors.length > 0) {
+        strapi.log.warn('[PersonalFiling] Validation failed on update:', {
+          filingId: id,
+          errors: validationErrors,
+          userId: user.id,
+        });
+        throw new ValidationError(`Validation failed: ${validationErrors.join('; ')}`);
+      }
+    }
+
+    // Call the default update
+    const response = await super.update(ctx);
+
+    strapi.log.info('[PersonalFiling] Updated', {
+      filingId: id,
+      userId: user.id,
+    });
+
+    return response;
+  },
+
+  /**
+   * Find personal filings - restrict to user's own filings
+   */
+  async find(ctx) {
+    const user = ctx.state?.user;
+    if (!user) {
+      throw new ForbiddenError('Authentication required');
+    }
+
+    // Modify the query to only return user's filings
+    // This is enforced at the query level for security
+    const existingQuery = ctx.query || {};
+    const existingFilters = (existingQuery as any).filters || {};
+
+    ctx.query = {
+      ...(existingQuery as object),
+      filters: {
+        ...existingFilters,
+        filing: {
+          user: {
+            id: user.id,
+          },
+        },
+      },
+    };
+
+    return super.find(ctx);
+  },
+
+  /**
+   * Find one personal filing - verify ownership
+   */
+  async findOne(ctx) {
+    const { id } = ctx.params;
+    const user = ctx.state?.user;
+
+    if (!user) {
+      throw new ForbiddenError('Authentication required');
+    }
+
+    // Fetch the filing with ownership info
+    const filing: any = await strapi.entityService.findOne(
+      'api::personal-filing.personal-filing',
+      id,
+      {
+        populate: ['filing', 'filing.user'],
+      }
+    );
+
+    if (!filing) {
+      throw new ValidationError('Filing not found');
+    }
+
+    // Check ownership
+    const parentFiling = filing.filing as any;
+    if (parentFiling?.user?.id !== user.id) {
+      strapi.log.warn('[PersonalFiling] Unauthorized access attempt', {
+        filingId: id,
+        attemptedBy: user.id,
+        owner: parentFiling?.user?.id,
+      });
+      throw new ForbiddenError('You do not have permission to access this filing');
+    }
+
+    return super.findOne(ctx);
+  },
+
+  /**
+   * Delete is disabled for personal filings
+   * Filings should be archived, not deleted
+   */
+  async delete(ctx) {
+    const user = ctx.state?.user;
+    strapi.log.warn('[PersonalFiling] Delete attempt blocked', {
+      filingId: ctx.params.id,
+      userId: user?.id,
+    });
+
+    throw new ForbiddenError('Personal filings cannot be deleted. Please contact support if you need to archive a filing.');
+  },
+}));

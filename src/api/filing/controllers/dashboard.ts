@@ -148,6 +148,10 @@ export default {
     /**
      * PUT /dashboard/filings/:id
      * Update a filing
+     *
+     * SPECIAL CASE: When admin changes status to IN_PROGRESS (reopening for amendment):
+     * - All child filings (personalFilings, corporateFiling, trustFiling) are set to DRAFT
+     * - This allows the user to edit and resubmit the filing
      */
     async update(ctx) {
         try {
@@ -159,13 +163,16 @@ export default {
             const { id } = ctx.params;
             const { data } = ctx.request.body;
 
-            // First, fetch the existing filing to check ownership (cast to any for populated relations)
+            // First, fetch the existing filing to check ownership and current status
             const existingFiling: any = await strapi.documents('api::filing.filing').findOne({
                 documentId: id,
                 populate: {
-                    user: {
-                        fields: ['id']
-                    }
+                    user: { fields: ['id'] },
+                    filingStatus: { fields: ['statusCode'] },
+                    filingType: { fields: ['type'] },
+                    personalFilings: { fields: ['id', 'documentId', 'individualStatus'] },
+                    corporateFiling: { fields: ['id', 'documentId', 'corporateFilingStatus'] },
+                    trustFiling: { fields: ['id', 'documentId', 'trustFilingStatus'] }
                 }
             });
 
@@ -185,8 +192,12 @@ export default {
             delete data.user;
             delete data.taxYear;
 
+            // Determine the new status code
+            let newStatusCode = data.filingStatus;
+
             // Handle filingStatus if it's a string (map statusCode to ID)
             if (data.filingStatus && typeof data.filingStatus === 'string') {
+                newStatusCode = data.filingStatus; // Keep the code for comparison
                 const status = await strapi.entityService.findMany('api::filing-status.filing-status', {
                     filters: { statusCode: data.filingStatus },
                     limit: 1
@@ -194,6 +205,65 @@ export default {
                 if (status && status.length > 0) {
                     data.filingStatus = status[0].id;
                 }
+            }
+
+            // ================================================================
+            // REOPEN FOR AMENDMENT LOGIC
+            // When status changes to IN_PROGRESS, reset all child filings to DRAFT
+            // This allows users to edit and resubmit the filing
+            // ================================================================
+            const currentStatusCode = existingFiling.filingStatus?.statusCode;
+            const isReopeningForAmendment = newStatusCode === 'IN_PROGRESS' &&
+                ['UNDER_REVIEW', 'SUBMITTED', 'APPROVED', 'COMPLETED'].includes(currentStatusCode);
+
+            if (isReopeningForAmendment && isAdmin) {
+                const filingType = existingFiling.filingType?.type || 'PERSONAL';
+                console.log(`[Dashboard Update] Admin reopening ${filingType} filing ${id} for amendment (${currentStatusCode} -> IN_PROGRESS)`);
+
+                // Reset child filings based on filing type (they are mutually exclusive)
+                switch (filingType) {
+                    case 'PERSONAL':
+                    case 'INDIVIDUAL':
+                        // Personal/Individual filings have personalFilings (primary, spouse, dependents)
+                        if (existingFiling.personalFilings?.length > 0) {
+                            for (const pf of existingFiling.personalFilings) {
+                                const pfDocId = pf.documentId || pf.id;
+                                console.log(`[Dashboard Update] Resetting personal filing ${pfDocId} to DRAFT`);
+                                await strapi.documents('api::personal-filing.personal-filing').update({
+                                    documentId: pfDocId,
+                                    data: { individualStatus: 'DRAFT' }
+                                });
+                            }
+                            console.log(`[Dashboard Update] Reset ${existingFiling.personalFilings.length} personal filings to DRAFT`);
+                        }
+                        break;
+
+                    case 'CORPORATE':
+                        // Corporate filings have a single corporateFiling
+                        if (existingFiling.corporateFiling) {
+                            const cfDocId = existingFiling.corporateFiling.documentId || existingFiling.corporateFiling.id;
+                            console.log(`[Dashboard Update] Resetting corporate filing ${cfDocId} to DRAFT`);
+                            await strapi.documents('api::corporate-filing.corporate-filing').update({
+                                documentId: cfDocId,
+                                data: { corporateFilingStatus: 'DRAFT' }
+                            });
+                        }
+                        break;
+
+                    case 'TRUST':
+                        // Trust filings have a single trustFiling
+                        if (existingFiling.trustFiling) {
+                            const tfDocId = existingFiling.trustFiling.documentId || existingFiling.trustFiling.id;
+                            console.log(`[Dashboard Update] Resetting trust filing ${tfDocId} to DRAFT`);
+                            await strapi.documents('api::trust-filing.trust-filing').update({
+                                documentId: tfDocId,
+                                data: { trustFilingStatus: 'DRAFT' }
+                            });
+                        }
+                        break;
+                }
+
+                console.log(`[Dashboard Update] Filing ${id} reopened for amendment successfully`);
             }
 
             // Update the filing

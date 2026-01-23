@@ -779,6 +779,7 @@ export interface ApiPersonalFilingPersonalFiling
   };
   attributes: {
     additionalDocs: Schema.Attribute.JSON;
+    additionalNotes: Schema.Attribute.Text;
     apartmentNumber: Schema.Attribute.String;
     becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
     city: Schema.Attribute.String;

@@ -6,6 +6,10 @@
     },
     "options": {},
     "attributes": {
+        "notApplicable": {
+            "type": "boolean",
+            "default": false
+        },
         "make": {
             "type": "string"
         },

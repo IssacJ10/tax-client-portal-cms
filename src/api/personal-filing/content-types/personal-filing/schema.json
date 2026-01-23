@@ -224,6 +224,9 @@
     },
     "formData": {
       "type": "json"
+    },
+    "additionalNotes": {
+      "type": "text"
     }
   }
 }

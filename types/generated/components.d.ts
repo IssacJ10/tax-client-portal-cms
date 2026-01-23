@@ -226,6 +226,7 @@ export interface FilingVehicleExpenses extends Struct.ComponentSchema {
     monthlyOther: Schema.Attribute.Decimal;
     monthlyParking: Schema.Attribute.Decimal;
     monthlyRides: Schema.Attribute.Decimal;
+    notApplicable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     purchaseCost: Schema.Attribute.Decimal;
     purchaseDate: Schema.Attribute.Date;
     totalKmDriven: Schema.Attribute.Decimal;
