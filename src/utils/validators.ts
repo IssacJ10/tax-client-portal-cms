@@ -4,9 +4,7 @@
  * This is the LAST LINE OF DEFENSE - never trust client-side validation alone
  */
 
-import { errors } from '@strapi/utils';
-
-const { ApplicationError, ValidationError } = errors;
+// Note: errors import removed - validation functions return error arrays instead of throwing
 
 // ============================================
 // REGEX PATTERNS
@@ -340,6 +338,207 @@ export function validateArray(
 }
 
 // ============================================
+// BUSINESS RULE VALIDATION
+// ============================================
+
+/**
+ * Business rules that define when conditional sections are allowed
+ * These mirror the frontend wizard conditional logic
+ */
+const BUSINESS_RULES = {
+  // Vehicle expenses require TRAVEL_FOR_WORK in workExpenses.categories
+  vehicleExpenses: {
+    triggerField: 'workExpenses.categories',
+    triggerValue: 'TRAVEL_FOR_WORK',
+    operator: 'contains',
+    errorMessage: 'Vehicle expenses can only be submitted if you indicated travel for work',
+  },
+  // Home office requires WORKED_FROM_HOME in workExpenses.categories
+  homeOffice: {
+    triggerField: 'workExpenses.categories',
+    triggerValue: 'WORKED_FROM_HOME',
+    operator: 'contains',
+    errorMessage: 'Home office expenses can only be submitted if you indicated working from home',
+  },
+  // Rental income requires RENTAL_INCOME in incomeSources
+  rentalIncome: {
+    triggerField: 'incomeSources',
+    triggerValue: 'RENTAL_INCOME',
+    operator: 'contains',
+    errorMessage: 'Rental income details can only be submitted if you indicated rental income',
+  },
+  // Self-employment requires SELF_EMPLOYMENT in incomeSources
+  selfEmployment: {
+    triggerField: 'incomeSources',
+    triggerValue: 'SELF_EMPLOYMENT',
+    operator: 'contains',
+    errorMessage: 'Self-employment details can only be submitted if you indicated self-employment income',
+  },
+  // Spouse requires MARRIED or COMMON_LAW marital status
+  spouse: {
+    triggerField: 'maritalStatus',
+    triggerValue: ['MARRIED', 'COMMON_LAW'],
+    operator: 'in',
+    errorMessage: 'Spouse details can only be submitted if marital status is Married or Common-Law',
+  },
+  // Moving expenses require MOVING_EXPENSES in deductionSources
+  movingExpenses: {
+    triggerField: 'deductionSources',
+    triggerValue: 'MOVING_EXPENSES',
+    operator: 'contains',
+    errorMessage: 'Moving expenses can only be submitted if you indicated moving expenses deduction',
+  },
+};
+
+/**
+ * Helper to get nested field value from data object
+ * Supports dot notation like 'workExpenses.categories'
+ */
+function getNestedValue(data: Record<string, any>, path: string): any {
+  const parts = path.split('.');
+  let value = data;
+  for (const part of parts) {
+    if (value === null || value === undefined) return undefined;
+    value = value[part];
+  }
+  return value;
+}
+
+/**
+ * Check if a conditional section is allowed based on business rules
+ */
+function isSectionAllowed(
+  sectionName: string,
+  data: Record<string, any>
+): { allowed: boolean; error?: string } {
+  const rule = BUSINESS_RULES[sectionName as keyof typeof BUSINESS_RULES];
+  if (!rule) {
+    return { allowed: true }; // No rule means always allowed
+  }
+
+  const triggerValue = getNestedValue(data, rule.triggerField);
+
+  switch (rule.operator) {
+    case 'contains':
+      // Check if array contains the trigger value
+      if (Array.isArray(triggerValue)) {
+        if (triggerValue.includes(rule.triggerValue as string)) {
+          return { allowed: true };
+        }
+      }
+      return { allowed: false, error: rule.errorMessage };
+
+    case 'in':
+      // Check if value is one of the allowed values
+      const allowedValues = rule.triggerValue as string[];
+      if (allowedValues.includes(triggerValue)) {
+        return { allowed: true };
+      }
+      return { allowed: false, error: rule.errorMessage };
+
+    case 'equals':
+      if (triggerValue === rule.triggerValue) {
+        return { allowed: true };
+      }
+      return { allowed: false, error: rule.errorMessage };
+
+    default:
+      return { allowed: true };
+  }
+}
+
+/**
+ * Check if conditional section data is present without meeting conditions
+ * Returns true if data should be rejected
+ */
+function hasUnauthorizedConditionalData(
+  sectionName: string,
+  sectionData: any,
+  fullData: Record<string, any>
+): { unauthorized: boolean; error?: string } {
+  // If section data is empty/null/undefined, it's fine
+  if (sectionData === null || sectionData === undefined) {
+    return { unauthorized: false };
+  }
+
+  // If it's an object, check if it has any meaningful data
+  if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
+    const hasData = Object.values(sectionData).some(v =>
+      v !== null && v !== undefined && v !== '' && v !== false
+    );
+    if (!hasData) {
+      return { unauthorized: false };
+    }
+  }
+
+  // Check if the section is allowed
+  const { allowed, error } = isSectionAllowed(sectionName, fullData);
+  if (!allowed) {
+    return { unauthorized: true, error };
+  }
+
+  return { unauthorized: false };
+}
+
+/**
+ * Validate business rules for conditional sections
+ * Returns array of validation errors for unauthorized data
+ */
+export function validateBusinessRules(data: Record<string, any>): string[] {
+  const errors: string[] = [];
+
+  // Check each conditional section
+  const conditionalSections = [
+    'vehicleExpenses',
+    'homeOffice',
+    'rentalIncome',
+    'selfEmployment',
+    'spouse',
+    'movingExpenses',
+  ];
+
+  for (const section of conditionalSections) {
+    const sectionData = data[section];
+    const result = hasUnauthorizedConditionalData(section, sectionData, data);
+    if (result.unauthorized && result.error) {
+      errors.push(result.error);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Strip unauthorized conditional data from the payload
+ * Use this to sanitize data before saving (alternative to rejecting)
+ */
+export function stripUnauthorizedConditionalData(data: Record<string, any>): Record<string, any> {
+  const sanitized = { ...data };
+
+  const conditionalSections = [
+    'vehicleExpenses',
+    'homeOffice',
+    'rentalIncome',
+    'selfEmployment',
+    'spouse',
+    'movingExpenses',
+  ];
+
+  for (const section of conditionalSections) {
+    if (sanitized[section]) {
+      const { allowed } = isSectionAllowed(section, data);
+      if (!allowed) {
+        // Remove unauthorized section data
+        delete sanitized[section];
+        console.log(`[BusinessRules] Stripped unauthorized ${section} data`);
+      }
+    }
+  }
+
+  return sanitized;
+}
+
+// ============================================
 // PERSONAL FILING VALIDATION
 // ============================================
 
@@ -356,6 +555,12 @@ export function validatePersonalFilingData(data: Record<string, any>): string[] 
       errors.push(result.error);
     }
   };
+
+  // ============================================
+  // BUSINESS RULE VALIDATION (Conditional Sections)
+  // ============================================
+  const businessRuleErrors = validateBusinessRules(data);
+  errors.push(...businessRuleErrors);
 
   // Personal Info
   check(validateField('firstName', data.firstName));
@@ -577,10 +782,13 @@ export default {
   validateDate,
   validateArray,
   validatePersonalFilingData,
+  validateBusinessRules,
+  stripUnauthorizedConditionalData,
   validateVehicleExpenses,
   validateSelfEmployment,
   validateSpouseInfo,
   validateDependentInfo,
   PATTERNS,
   FIELD_RULES,
+  BUSINESS_RULES,
 };

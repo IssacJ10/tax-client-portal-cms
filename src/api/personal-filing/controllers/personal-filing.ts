@@ -49,7 +49,7 @@ export default factories.createCoreController('api::personal-filing.personal-fil
    * Update a personal filing with validation
    */
   async update(ctx) {
-    const { id } = ctx.params;
+    const { id } = ctx.params; // This is the documentId in Strapi v5
     const data = ctx.request.body?.data;
 
     // Verify ownership before update
@@ -58,14 +58,15 @@ export default factories.createCoreController('api::personal-filing.personal-fil
       throw new ForbiddenError('Authentication required');
     }
 
-    // Check if user owns this filing
-    const filing: any = await strapi.entityService.findOne(
-      'api::personal-filing.personal-filing',
-      id,
-      {
-        populate: ['filing', 'filing.user'],
-      }
-    );
+    // Check if user owns this filing using documents API (for documentId)
+    const filing: any = await strapi.documents('api::personal-filing.personal-filing').findOne({
+      documentId: id,
+      populate: {
+        filing: {
+          populate: ['user'],
+        },
+      },
+    });
 
     if (!filing) {
       throw new ValidationError('Filing not found');
@@ -82,8 +83,9 @@ export default factories.createCoreController('api::personal-filing.personal-fil
       throw new ForbiddenError('You do not have permission to update this filing');
     }
 
-    // Validate input data
-    if (data) {
+    // Validate input data (skip validation for simple status updates)
+    const isStatusOnlyUpdate = data && Object.keys(data).length === 1 && data.individualStatus;
+    if (data && !isStatusOnlyUpdate) {
       const validationErrors = validatePersonalFilingData(data);
       if (validationErrors.length > 0) {
         strapi.log.warn('[PersonalFiling] Validation failed on update:', {
@@ -95,15 +97,22 @@ export default factories.createCoreController('api::personal-filing.personal-fil
       }
     }
 
-    // Call the default update
-    const response = await super.update(ctx);
+    // Use Document Service directly to avoid issues with super.update() in Strapi v5
+    const updatedFiling = await strapi.documents('api::personal-filing.personal-filing').update({
+      documentId: id,
+      data: data,
+    });
 
     strapi.log.info('[PersonalFiling] Updated', {
       filingId: id,
       userId: user.id,
+      changes: Object.keys(data || {}),
     });
 
-    return response;
+    // Return in Strapi API format
+    return {
+      data: updatedFiling,
+    };
   },
 
   /**
@@ -139,21 +148,22 @@ export default factories.createCoreController('api::personal-filing.personal-fil
    * Find one personal filing - verify ownership
    */
   async findOne(ctx) {
-    const { id } = ctx.params;
+    const { id } = ctx.params; // This is the documentId in Strapi v5
     const user = ctx.state?.user;
 
     if (!user) {
       throw new ForbiddenError('Authentication required');
     }
 
-    // Fetch the filing with ownership info
-    const filing: any = await strapi.entityService.findOne(
-      'api::personal-filing.personal-filing',
-      id,
-      {
-        populate: ['filing', 'filing.user'],
-      }
-    );
+    // Fetch the filing with ownership info using documents API (for documentId)
+    const filing: any = await strapi.documents('api::personal-filing.personal-filing').findOne({
+      documentId: id,
+      populate: {
+        filing: {
+          populate: ['user'],
+        },
+      },
+    });
 
     if (!filing) {
       throw new ValidationError('Filing not found');
@@ -170,7 +180,11 @@ export default factories.createCoreController('api::personal-filing.personal-fil
       throw new ForbiddenError('You do not have permission to access this filing');
     }
 
-    return super.findOne(ctx);
+    // Return the already-fetched filing data (with full populate)
+    // This avoids issues with super.findOne() in Strapi v5
+    return {
+      data: filing,
+    };
   },
 
   /**
