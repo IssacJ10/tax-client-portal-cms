@@ -32,6 +32,7 @@ const AUDIT_PATHS = [
   '/api/corporate-filings/',
   '/api/trust-filings/',
   '/api/payments/',
+  '/api/documents/',
   '/upload',
 ];
 
@@ -182,6 +183,14 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
       logEntry.eventType = 'TOKEN_REFRESH';
     } else if (path.includes('/token/revoke') || path.includes('logout')) {
       logEntry.eventType = 'USER_LOGOUT';
+    } else if (path.includes('/documents/upload')) {
+      logEntry.eventType = 'SECURE_FILE_UPLOAD';
+    } else if (path.includes('/documents/') && path.includes('/admin-download')) {
+      logEntry.eventType = 'ADMIN_FILE_DOWNLOAD';
+    } else if (path.includes('/documents/') && path.includes('/download')) {
+      logEntry.eventType = 'SECURE_FILE_DOWNLOAD';
+    } else if (path.includes('/documents/') && method === 'DELETE') {
+      logEntry.eventType = 'SECURE_FILE_DELETE';
     } else if (path.includes('/upload')) {
       logEntry.eventType = 'FILE_UPLOAD';
     } else if (path.includes('/personal-filing')) {

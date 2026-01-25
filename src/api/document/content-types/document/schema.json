@@ -1,0 +1,80 @@
+{
+    "kind": "collectionType",
+    "collectionName": "documents",
+    "info": {
+        "singularName": "document",
+        "pluralName": "documents",
+        "displayName": "Secure Document",
+        "description": "Encrypted document metadata stored in Strapi, actual files in GCS (Canada region)"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "filing": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::filing.filing"
+        },
+        "personalFiling": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "api::personal-filing.personal-filing"
+        },
+        "gcsPath": {
+            "type": "string",
+            "required": true,
+            "private": true
+        },
+        "gcsBucket": {
+            "type": "string",
+            "required": true,
+            "private": true
+        },
+        "originalFilename": {
+            "type": "string",
+            "required": true,
+            "maxLength": 255
+        },
+        "mimeType": {
+            "type": "string",
+            "required": true,
+            "maxLength": 100
+        },
+        "fileSize": {
+            "type": "integer",
+            "required": true,
+            "min": 1
+        },
+        "documentType": {
+            "type": "enumeration",
+            "enum": [
+                "tax_slip",
+                "supporting_doc",
+                "id_document",
+                "business_doc",
+                "other"
+            ],
+            "default": "other"
+        },
+        "checksum": {
+            "type": "string",
+            "private": true,
+            "maxLength": 64
+        },
+        "uploadedBy": {
+            "type": "relation",
+            "relation": "manyToOne",
+            "target": "plugin::users-permissions.user"
+        },
+        "questionId": {
+            "type": "string",
+            "maxLength": 100
+        },
+        "fieldName": {
+            "type": "string",
+            "maxLength": 100
+        }
+    }
+}

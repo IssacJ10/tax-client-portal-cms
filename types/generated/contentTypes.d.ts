@@ -506,6 +506,84 @@ export interface ApiCorporateFilingCorporateFiling
   };
 }
 
+export interface ApiDocumentDocument extends Struct.CollectionTypeSchema {
+  collectionName: 'documents';
+  info: {
+    description: 'Encrypted document metadata stored in Strapi, actual files in GCS (Canada region)';
+    displayName: 'Secure Document';
+    pluralName: 'documents';
+    singularName: 'document';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    checksum: Schema.Attribute.String &
+      Schema.Attribute.Private &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 64;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    documentType: Schema.Attribute.Enumeration<
+      ['tax_slip', 'supporting_doc', 'id_document', 'business_doc', 'other']
+    > &
+      Schema.Attribute.DefaultTo<'other'>;
+    fieldName: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    fileSize: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    filing: Schema.Attribute.Relation<'manyToOne', 'api::filing.filing'>;
+    gcsBucket: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Private;
+    gcsPath: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::document.document'
+    > &
+      Schema.Attribute.Private;
+    mimeType: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    originalFilename: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    personalFiling: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::personal-filing.personal-filing'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    questionId: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    uploadedBy: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiFilingStatusFilingStatus
   extends Struct.CollectionTypeSchema {
   collectionName: 'filing_statuses';
@@ -1527,6 +1605,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::consent.consent': ApiConsentConsent;
       'api::corporate-filing.corporate-filing': ApiCorporateFilingCorporateFiling;
+      'api::document.document': ApiDocumentDocument;
       'api::filing-status.filing-status': ApiFilingStatusFilingStatus;
       'api::filing-type.filing-type': ApiFilingTypeFilingType;
       'api::filing.filing': ApiFilingFiling;
