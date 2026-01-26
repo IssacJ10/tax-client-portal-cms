@@ -2,7 +2,7 @@
   "name": "jjelevate-admin",
   "version": "0.1.0",
   "private": true,
-  "description": "A Strapi application",
+  "description": "JJElevate Tax Filing Admin Portal",
   "scripts": {
     "build": "strapi build",
     "console": "strapi console",

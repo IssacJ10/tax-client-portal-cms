@@ -45,7 +45,7 @@ const ADMIN_URL_EXPIRATION_MINUTES = 30;
 async function verifyFilingAccess(strapi: any, filingId: string, user: any, isAdmin: boolean): Promise<any | null> {
     const filing = await strapi.documents('api::filing.filing').findOne({
         documentId: filingId,
-        populate: ['user'],
+        populate: ['user', 'taxYear'],
     });
 
     if (!filing) {
@@ -226,8 +226,8 @@ export default factories.createCoreController('api::document.document', ({ strap
             // Get GCS service
             const gcsService = getGCSStorageService();
 
-            // Generate GCS path
-            const taxYear = (filing as any).taxYear || new Date().getFullYear();
+            // Generate GCS path using the filing's tax year (from the taxYear relation)
+            const taxYear = (filing as any).taxYear?.year || new Date().getFullYear();
             const originalFilename = file.originalFilename || 'document';
             const gcsPath = gcsService.generateGCSPath(
                 filingId,

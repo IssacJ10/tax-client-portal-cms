@@ -14,7 +14,9 @@ export default ({ env }) => ({
     encryptionKey: env('ENCRYPTION_KEY'),
   },
   flags: {
-    nps: env.bool('FLAG_NPS', true),
-    promoteEE: env.bool('FLAG_PROMOTE_EE', true),
+    // Disable Strapi NPS survey prompts
+    nps: false,
+    // Disable Strapi Enterprise Edition promotion
+    promoteEE: false,
   },
 });

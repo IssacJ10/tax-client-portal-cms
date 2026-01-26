@@ -1,4 +1,8 @@
 export default () => ({
+    // Disable Strapi Cloud plugin
+    cloud: {
+        enabled: false,
+    },
     'users-permissions': {
         config: {
             register: {
@@ -15,13 +19,17 @@ export default () => ({
                 config: {
                     provider: 'nodemailer',
                     providerOptions: {
-                        host: process.env.SMTP_HOST || 'localhost',
-                        port: parseInt(process.env.SMTP_PORT || '1025'),
-                        ignoreTLS: true,
+                        host: process.env.SMTP_HOST || 'smtp.sendgrid.net',
+                        port: parseInt(process.env.SMTP_PORT || '587'),
+                        secure: false,
+                        auth: {
+                            user: process.env.SMTP_USER || 'apikey',
+                            pass: process.env.SENDGRID_API_KEY || process.env.SMTP_PASS,
+                        },
                     },
                     settings: {
-                        defaultFrom: 'no-reply@jjelevatetest.com',
-                        defaultReplyTo: 'contact@jjelevatetest.com',
+                        defaultFrom: process.env.SMTP_FROM || 'noreply@jjelevate.com',
+                        defaultReplyTo: process.env.SMTP_REPLY_TO || 'support@jjelevate.com',
                     },
                 },
             },
@@ -49,17 +57,17 @@ export default () => ({
         config: {
             provider: 'nodemailer',
             providerOptions: {
-                host: process.env.SMTP_HOST || 'smtp.example.com',
-                port: process.env.SMTP_PORT || 587,
+                host: process.env.SMTP_HOST || 'smtp.sendgrid.net',
+                port: parseInt(process.env.SMTP_PORT || '587'),
+                secure: false, // true for 465, false for other ports
                 auth: {
-                    user: process.env.SMTP_USER || 'user@example.com',
-                    pass: process.env.SMTP_PASS || 'password',
+                    user: process.env.SMTP_USER || 'apikey', // SendGrid uses 'apikey' as username
+                    pass: process.env.SENDGRID_API_KEY || process.env.SMTP_PASS,
                 },
-                // ... any other options
             },
             settings: {
-                defaultFrom: process.env.SMTP_FROM || 'hello@example.com',
-                defaultReplyTo: process.env.SMTP_REPLY_TO || 'hello@example.com',
+                defaultFrom: process.env.SMTP_FROM || 'noreply@jjelevate.com',
+                defaultReplyTo: process.env.SMTP_REPLY_TO || 'support@jjelevate.com',
             },
         },
     },

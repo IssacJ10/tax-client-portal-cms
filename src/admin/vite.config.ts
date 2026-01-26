@@ -1,4 +1,28 @@
 import { mergeConfig, type UserConfig, type Plugin } from 'vite';
+import path from 'path';
+
+// Custom plugin to handle SVG imports for Strapi admin branding
+function svgPlugin(): Plugin {
+  return {
+    name: 'svg-loader',
+    enforce: 'pre',
+    load(id) {
+      if (id.endsWith('.svg')) {
+        const fs = require('fs');
+        try {
+          const content = fs.readFileSync(id, 'utf-8');
+          // Return as a data URL for use in img src
+          const base64 = Buffer.from(content).toString('base64');
+          return `export default "data:image/svg+xml;base64,${base64}"`;
+        } catch (e) {
+          console.warn(`Could not read SVG file: ${id}`);
+          return 'export default ""';
+        }
+      }
+      return null;
+    },
+  };
+}
 
 // Custom plugin to handle CSS raw imports
 function cssRawPlugin(): Plugin {
@@ -34,10 +58,11 @@ function cssRawPlugin(): Plugin {
 export default (config: UserConfig) => {
   // Important: always return the modified config
   return mergeConfig(config, {
-    plugins: [cssRawPlugin()],
+    plugins: [svgPlugin(), cssRawPlugin()],
     resolve: {
       alias: {
         '@': '/src',
+        './extensions': path.resolve(__dirname, 'extensions'),
       },
     },
     optimizeDeps: {
