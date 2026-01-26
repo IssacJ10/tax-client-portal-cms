@@ -34,10 +34,10 @@ export default {
             // Fetch the current filing to get old status
             const currentFiling = await strapi.entityService.findOne('api::filing.filing', filingId, {
                 populate: ['filingStatus'],
-            });
+            }) as any;
 
             if (currentFiling?.filingStatus) {
-                const oldStatus = currentFiling.filingStatus as any;
+                const oldStatus = currentFiling.filingStatus;
                 statusChangeTracker.set(filingId, {
                     oldStatusId: oldStatus.id,
                     oldStatusDisplay: oldStatus.displayName || oldStatus.statusCode,
@@ -64,14 +64,14 @@ export default {
             // Fetch the full filing with relations
             const filing = await strapi.entityService.findOne('api::filing.filing', result.id, {
                 populate: ['user', 'filingStatus', 'filingType', 'taxYear'],
-            });
+            }) as any;
 
             if (!filing || !filing.user || !filing.filingStatus) {
                 return;
             }
 
-            const user = filing.user as any;
-            const newStatusObj = filing.filingStatus as any;
+            const user = filing.user;
+            const newStatusObj = filing.filingStatus;
             const newStatusCode = newStatusObj?.statusCode;
             const newStatusDisplay = newStatusObj?.displayName || newStatusCode;
 
@@ -95,8 +95,8 @@ export default {
                 lastName: user.lastName,
             };
 
-            const filingType = (filing.filingType as any)?.displayName || 'Tax Filing';
-            const taxYear = (filing.taxYear as any)?.year || 'Unknown';
+            const filingType = filing.filingType?.displayName || 'Tax Filing';
+            const taxYear = filing.taxYear?.year || 'Unknown';
 
             // Check if this is a submission (transition to SUBMITTED or UNDER_REVIEW)
             const isSubmission = SUBMITTED_STATUSES.includes(newStatusCode) && filing.submittedAt;

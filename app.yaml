@@ -1,0 +1,43 @@
+# CMS Backend - App Engine Configuration
+runtime: nodejs20
+service: cms-dev
+
+# Instance configuration
+instance_class: F2  # 256MB RAM, 600MHz CPU
+
+# Environment variables
+env_variables:
+  NODE_ENV: "production"
+  HOST: "0.0.0.0"
+  PORT: "8080"
+  DATABASE_CLIENT: "postgres"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "jjelevate"
+  DATABASE_USERNAME: "jjelevate_app"
+  DATABASE_SSL: "false"
+  # Secrets are set via gcloud app deploy --set-env-vars or Secret Manager
+
+# Auto-scaling configuration
+automatic_scaling:
+  min_instances: 0        # Scale to zero when no traffic
+  max_instances: 3        # Max instances for dev
+  min_idle_instances: 0   # No idle instances (cost saving)
+  max_idle_instances: 1
+  target_cpu_utilization: 0.65
+  target_throughput_utilization: 0.65
+
+# Health check
+liveness_check:
+  path: "/_health"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 4
+  success_threshold: 2
+
+# Cloud SQL connection (Toronto, Canada - northamerica-northeast2)
+beta_settings:
+  cloud_sql_instances: "secret-rope-485200-h6:northamerica-northeast2:jjelevate-dev-db"
+
+# Build configuration
+build_env_variables:
+  NODE_ENV: "production"

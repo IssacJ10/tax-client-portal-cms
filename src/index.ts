@@ -1,6 +1,7 @@
 import { errors } from '@strapi/utils';
+import nodeCrypto from 'node:crypto';
 
-const { ApplicationError } = errors;
+const { ApplicationError, ValidationError } = errors;
 
 const NAME_REGEX = /^[a-zA-Z \-']+$/;
 
@@ -10,6 +11,79 @@ const validateName = (value: string, fieldName: string) => {
   }
 };
 
+// Branded password reset email template
+const getPasswordResetEmailHtml = (firstName: string, resetUrl: string) => `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="background-color: #07477a; padding: 30px 40px; border-radius: 12px 12px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">JJ Elevate Accounting Solutions Inc.</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="color: #1a1a1a; margin: 0 0 20px 0; font-size: 20px;">Reset Your Password</h2>
+                            <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                                Hi ${firstName || 'there'},
+                            </p>
+                            <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                                We received a request to reset your password. Click the button below to create a new password:
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${resetUrl}" style="display: inline-block; background-color: #07477a; color: #ffffff; padding: 14px 40px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 8px;">Reset Password</a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="color: #718096; font-size: 14px; line-height: 1.6; margin: 0 0 20px 0;">
+                                This link will expire in 1 hour. If you didn't request a password reset, you can safely ignore this email.
+                            </p>
+                            <p style="color: #718096; font-size: 12px; line-height: 1.6; margin: 0; padding: 15px; background-color: #f8fafc; border-radius: 6px;">
+                                If the button doesn't work, copy and paste this link into your browser:<br>
+                                <a href="${resetUrl}" style="color: #07477a; word-break: break-all;">${resetUrl}</a>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 25px 40px; border-radius: 0 0 12px 12px; border-top: 1px solid #e2e8f0;">
+                            <p style="color: #718096; font-size: 12px; margin: 0; text-align: center;">
+                                This is an automated message from JJ Elevate Accounting Solutions Inc. Please do not reply directly to this email.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+`;
+
+const getPasswordResetEmailText = (firstName: string, resetUrl: string) => `
+Reset Your Password
+
+Hi ${firstName || 'there'},
+
+We received a request to reset your password. Click the link below to create a new password:
+
+${resetUrl}
+
+This link will expire in 1 hour. If you didn't request a password reset, you can safely ignore this email.
+
+- JJ Elevate Accounting Solutions Inc.
+`;
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -17,7 +91,66 @@ export default {
    *
    * This gives you an opportunity to extend code.
    */
-  register(/* { strapi }: { strapi: Core.Strapi } */) { },
+  register({ strapi }) {
+    console.log('[[REGISTER]] Overriding forgotPassword controller...');
+
+    // Override forgotPassword controller to block Google OAuth users
+    const originalForgotPassword = strapi.plugin('users-permissions').controller('auth').forgotPassword;
+
+    strapi.plugin('users-permissions').controller('auth').forgotPassword = async (ctx) => {
+      console.log('[CUSTOM forgotPassword] Called with body:', ctx.request.body);
+      const { email } = ctx.request.body;
+
+      if (!email) {
+        throw new ValidationError('Please provide your email');
+      }
+
+      // Find user by email FIRST to check provider
+      const user = await strapi.query('plugin::users-permissions.user').findOne({
+        where: { email: email.toLowerCase() },
+      });
+
+      // Always return success to prevent email enumeration (if no user found)
+      if (!user || user.blocked) {
+        ctx.send({ ok: true });
+        return;
+      }
+
+      // BLOCK Google OAuth users from password reset
+      if (user.provider && user.provider !== 'local') {
+        strapi.log.info(`[forgotPassword] BLOCKED password reset for OAuth user: ${user.email} (provider: ${user.provider})`);
+        throw new ApplicationError('This account uses Google Sign-In. Please use the "Sign in with Google" button to access your account.');
+      }
+
+      // For local users, generate custom branded email
+      const resetPasswordToken = nodeCrypto.randomBytes(64).toString('hex');
+
+      await strapi.query('plugin::users-permissions.user').update({
+        where: { id: user.id },
+        data: { resetPasswordToken },
+      });
+
+      const clientUrl = process.env.CLIENT_PORTAL_URL || 'http://localhost:3000';
+      const resetUrl = `${clientUrl}/reset-password?code=${resetPasswordToken}`;
+
+      try {
+        await strapi.plugin('email').service('email').send({
+          to: user.email,
+          subject: 'Reset Your Password - JJ Elevate Accounting Solutions Inc.',
+          html: getPasswordResetEmailHtml(user.firstName, resetUrl),
+          text: getPasswordResetEmailText(user.firstName, resetUrl),
+        });
+        strapi.log.info(`Password reset email sent to ${user.email}`);
+      } catch (err) {
+        strapi.log.error('Failed to send password reset email:', err);
+        throw new ApplicationError('Error sending password reset email');
+      }
+
+      ctx.send({ ok: true });
+    };
+
+    console.log('[[REGISTER]] forgotPassword override complete!');
+  },
 
   /**
    * An asynchronous bootstrap function that runs before
@@ -38,9 +171,14 @@ export default {
         validateName(data.lastName, 'Last name');
       },
       async beforeUpdate(event) {
-        const { data } = event.params;
+        const { data, where } = event.params;
         validateName(data.firstName, 'First name');
         validateName(data.lastName, 'Last name');
+
+        // PASSWORD RESET: Log when password is being reset (provider change removed - handled in custom callback)
+        if (data.password && data.resetPasswordToken === null) {
+          strapi.log.info(`[PASSWORD_RESET] Password updated for user`);
+        }
       },
       async afterCreate(event) {
         const { result } = event;
@@ -65,15 +203,22 @@ export default {
 
     const settings = await pluginStore.get({ key: 'advanced' });
 
-    if (settings.email_confirmation) {
+    // Set reset password URL to client portal (Strapi appends ?code= automatically)
+    const clientPortalUrl = process.env.CLIENT_PORTAL_URL || 'http://localhost:3000';
+    const resetPasswordUrl = `${clientPortalUrl}/reset-password`;
+
+    const needsUpdate = settings.email_confirmation || settings.email_reset_password !== resetPasswordUrl;
+
+    if (needsUpdate) {
       await pluginStore.set({
         key: 'advanced',
         value: {
           ...settings,
           email_confirmation: false,
+          email_reset_password: resetPasswordUrl,
         },
       });
-      strapi.log.info('Email confirmation disabled via bootstrap (using Welcome Email instead).');
+      strapi.log.info(`Email settings updated: confirmation=false, reset_url=${resetPasswordUrl}`);
     }
 
     // 3. GRANT PERMISSIONS

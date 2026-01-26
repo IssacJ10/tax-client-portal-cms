@@ -1,6 +1,6 @@
-const { errors } = require('@strapi/utils');
+import { errors } from '@strapi/utils';
 const { ApplicationError, ValidationError } = errors;
-const crypto = require('crypto');
+import nodeCrypto from 'node:crypto';
 
 const NAME_REGEX = /^[a-zA-Z \-']+$/;
 
@@ -84,7 +84,9 @@ This link will expire in 1 hour. If you didn't request a password reset, you can
 - JJ Elevate Accounting Solutions Inc.
 `;
 
-module.exports = (plugin) => {
+export default (plugin) => {
+    console.log('[users-permissions extension] Loading custom extension...');
+
     // --- 1. Custom Callback for Refresh Tokens ---
     const originalCallback = plugin.controllers.auth.callback;
 
@@ -92,26 +94,24 @@ module.exports = (plugin) => {
         // Run original login
         await originalCallback(ctx);
 
-        // If successful and is local auth, inject Custom Refresh Token
-        if (ctx.params.provider === 'local' && ctx.response.status === 200 && ctx.body.jwt) {
+        // If successful, inject refresh token
+        if (ctx.response.status === 200 && ctx.body?.jwt) {
             try {
                 const user = ctx.body.user;
                 const jwtService = strapi.plugin('users-permissions').service('jwt');
 
-                // Issue Refresh Token with Version
                 const refreshToken = jwtService.issue({
                     id: user.id,
                     type: 'refresh',
                     version: user.tokenVersion || 1
                 }, { expiresIn: '7d' });
 
-                // Append to response
                 ctx.body = {
                     ...ctx.body,
                     refreshToken
                 };
             } catch (e) {
-                strapi.log.error('Failed to issue refresh token for local auth', e);
+                strapi.log.error('Failed to issue refresh token', e);
             }
         }
     };
@@ -171,12 +171,50 @@ module.exports = (plugin) => {
         },
     });
 
-    // --- 3. Custom Forgot Password with Branded Email ---
+    // --- 3. Custom Forgot Password with Branded Email + reCAPTCHA ---
+    console.log('[users-permissions extension] Overriding forgotPassword controller');
     plugin.controllers.auth.forgotPassword = async (ctx) => {
-        const { email } = ctx.request.body;
+        console.log('[CUSTOM forgotPassword] Called with body:', ctx.request.body);
+        const { email, recaptchaToken } = ctx.request.body;
 
         if (!email) {
             throw new ValidationError('Please provide your email');
+        }
+
+        // Validate reCAPTCHA - REQUIRED for forgot password to prevent email spam attacks
+        const recaptchaSecret = process.env.JJ_PORTAL_CAPTCHA_SECRET;
+        if (recaptchaSecret) {
+            if (!recaptchaToken) {
+                strapi.log.warn(`[forgotPassword] Missing reCAPTCHA token for email: ${email}`);
+                throw new ApplicationError('Security verification required. Please try again.');
+            }
+
+            try {
+                const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
+                });
+                const recaptchaResult = await recaptchaResponse.json() as { success: boolean; score?: number; action?: string };
+
+                strapi.log.info(`[forgotPassword] reCAPTCHA result: success=${recaptchaResult.success}, score=${recaptchaResult.score}, action=${recaptchaResult.action}`);
+
+                if (!recaptchaResult.success) {
+                    strapi.log.warn(`[forgotPassword] reCAPTCHA failed for email: ${email}`);
+                    throw new ApplicationError('Security verification failed. Please try again.');
+                }
+
+                // Check score (0.0 = bot, 1.0 = human) - reject if below 0.5
+                if (recaptchaResult.score !== undefined && recaptchaResult.score < 0.5) {
+                    strapi.log.warn(`[forgotPassword] reCAPTCHA low score (${recaptchaResult.score}) for email: ${email}`);
+                    throw new ApplicationError('Security verification failed. Please try again.');
+                }
+            } catch (err: any) {
+                if (err instanceof ApplicationError) throw err;
+                strapi.log.error('[forgotPassword] reCAPTCHA verification error:', err);
+                // In case of network error, allow the request but log it
+                strapi.log.warn('[forgotPassword] reCAPTCHA verification skipped due to error');
+            }
         }
 
         const pluginStore = strapi.store({ type: 'plugin', name: 'users-permissions' });
@@ -194,8 +232,14 @@ module.exports = (plugin) => {
             return;
         }
 
+        // Don't allow password reset for OAuth users (Google, etc.)
+        if (user.provider && user.provider !== 'local') {
+            strapi.log.info(`[forgotPassword] Blocked password reset for OAuth user: ${user.email} (provider: ${user.provider})`);
+            throw new ApplicationError('This account uses Google Sign-In. Please use the "Sign in with Google" button to access your account.');
+        }
+
         // Generate reset token
-        const resetPasswordToken = crypto.randomBytes(64).toString('hex');
+        const resetPasswordToken = nodeCrypto.randomBytes(64).toString('hex');
 
         // Save token to user
         await strapi.query('plugin::users-permissions.user').update({
@@ -224,6 +268,115 @@ module.exports = (plugin) => {
 
         ctx.send({ ok: true });
     };
+
+    // --- 4. Custom Reset Password (accepts recaptchaToken) ---
+    console.log('[users-permissions extension] Overriding resetPassword controller');
+    plugin.controllers.auth.resetPassword = async (ctx) => {
+        console.log('[CUSTOM resetPassword] Called');
+        const { code, password, passwordConfirmation, recaptchaToken } = ctx.request.body;
+
+        if (!code || !password || !passwordConfirmation) {
+            throw new ValidationError('Please provide code, password, and password confirmation');
+        }
+
+        if (password !== passwordConfirmation) {
+            throw new ValidationError('Passwords do not match');
+        }
+
+        // Validate reCAPTCHA if token provided and secret is configured
+        const recaptchaSecret = process.env.JJ_PORTAL_CAPTCHA_SECRET;
+        if (recaptchaToken && recaptchaSecret) {
+            try {
+                const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `secret=${recaptchaSecret}&response=${recaptchaToken}`,
+                });
+                const recaptchaResult = await recaptchaResponse.json() as { success: boolean; score?: number };
+
+                if (!recaptchaResult.success || (recaptchaResult.score && recaptchaResult.score < 0.5)) {
+                    strapi.log.warn(`reCAPTCHA failed for password reset: score=${recaptchaResult.score}`);
+                    throw new ApplicationError('Security verification failed. Please try again.');
+                }
+            } catch (err: any) {
+                if (err instanceof ApplicationError) throw err;
+                strapi.log.error('reCAPTCHA verification error:', err);
+                // Continue without reCAPTCHA if verification service fails
+            }
+        }
+
+        // Find user by reset token
+        const user = await strapi.query('plugin::users-permissions.user').findOne({
+            where: { resetPasswordToken: code },
+        });
+
+        if (!user) {
+            throw new ValidationError('Invalid or expired reset code');
+        }
+
+        // Update password and clear reset token
+        // Note: We do NOT change the provider - our custom local login allows password auth for any provider
+        const hashedPassword = await strapi.plugin('users-permissions').service('user').hashPassword(password);
+
+        await strapi.query('plugin::users-permissions.user').update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetPasswordToken: null,
+            },
+        });
+
+        strapi.log.info(`Password reset successful for user ${user.email}`);
+
+        // Return user and JWT for auto-login
+        const jwtService = strapi.plugin('users-permissions').service('jwt');
+        ctx.send({
+            jwt: jwtService.issue({ id: user.id }),
+            user: await strapi.plugin('users-permissions').service('user').sanitizeOutput(user, ctx),
+        });
+    };
+
+    // --- 5. Consent Confirmation ---
+    plugin.controllers.user.confirmConsent = async (ctx) => {
+        const user = ctx.state.user;
+
+        if (!user) {
+            return ctx.unauthorized('You must be logged in to confirm consent.');
+        }
+
+        try {
+            const updatedUser = await strapi.entityService.update(
+                'plugin::users-permissions.user',
+                user.id,
+                {
+                    data: {
+                        hasConsentedToTerms: true,
+                        consentDate: new Date().toISOString(),
+                    },
+                }
+            );
+
+            const sanitizedUser = await strapi
+                .plugin('users-permissions')
+                .service('user')
+                .sanitizeOutput(updatedUser, ctx);
+
+            return sanitizedUser;
+        } catch (err: any) {
+            return ctx.badRequest(err.message);
+        }
+    };
+
+    // Register consent route
+    plugin.routes['content-api'].routes.push({
+        method: 'POST',
+        path: '/user/consent',
+        handler: 'user.confirmConsent',
+        config: {
+            policies: [],
+            middlewares: [],
+        },
+    });
 
     return plugin;
 };

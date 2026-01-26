@@ -5,8 +5,8 @@
  * This middleware intercepts requests to auth endpoints and verifies the reCAPTCHA token.
  *
  * Configuration:
- * - Set RECAPTCHA_SECRET_KEY in your .env file
- * - Set RECAPTCHA_MIN_SCORE (optional, defaults to 0.5)
+ * - Set JJ_PORTAL_CAPTCHA_SECRET in your .env file
+ * - Set JJ_PORTAL_CAPTCHA_MIN_SCORE (optional, defaults to 0.5)
  *
  * Protected endpoints:
  * - POST /api/auth/local (login)
@@ -99,7 +99,7 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
     }
 
     // Get secret key from environment
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const secretKey = process.env.JJ_PORTAL_CAPTCHA_SECRET;
 
     // If no secret key is configured, skip verification (development mode)
     if (!secretKey) {
@@ -147,7 +147,7 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
     }
 
     // Check score threshold (reCAPTCHA v3 returns a score from 0.0 to 1.0)
-    const minScore = parseFloat(process.env.RECAPTCHA_MIN_SCORE || '0.5');
+    const minScore = parseFloat(process.env.JJ_PORTAL_CAPTCHA_MIN_SCORE || '0.5');
     if (result.score !== undefined && result.score < minScore) {
       strapi.log.warn('[reCAPTCHA] Low score detected:', {
         path,

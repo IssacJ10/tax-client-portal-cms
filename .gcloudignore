@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (will be installed during build)
+node_modules
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+.cache
+.tmp
+build
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (not needed for App Engine)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Test files
+coverage
+__tests__
+*.test.*
+*.spec.*
