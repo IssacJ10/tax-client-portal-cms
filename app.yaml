@@ -1,6 +1,6 @@
 # CMS Backend - App Engine Configuration
 runtime: nodejs20
-service: cms-dev
+service: default
 
 # Instance configuration
 instance_class: F2  # 256MB RAM, 600MHz CPU
@@ -15,7 +15,23 @@ env_variables:
   DATABASE_NAME: "jjelevate"
   DATABASE_USERNAME: "jjelevate_app"
   DATABASE_SSL: "false"
-  # Secrets are set via gcloud app deploy --set-env-vars or Secret Manager
+  DATABASE_HOST: "/cloudsql/secret-rope-485200-h6:northamerica-northeast2:jjelevate-dev-db"
+  DATABASE_PASSWORD: "UPDATE_WITH_YOUR_DB_PASSWORD"
+  JWT_SECRET: "UPDATE_WITH_YOUR_JWT_SECRET"
+  ADMIN_JWT_SECRET: "UPDATE_WITH_YOUR_ADMIN_JWT_SECRET"
+  APP_KEYS: "UPDATE_WITH_YOUR_APP_KEYS"
+  API_TOKEN_SALT: "UPDATE_WITH_YOUR_API_TOKEN_SALT"
+  TRANSFER_TOKEN_SALT: "UPDATE_WITH_YOUR_TRANSFER_TOKEN_SALT"
+  GOOGLE_CLIENT_ID: "UPDATE_WITH_YOUR_GOOGLE_CLIENT_ID"
+  GOOGLE_CLIENT_SECRET: "UPDATE_WITH_YOUR_GOOGLE_CLIENT_SECRET"
+  PUBLIC_URL: "https://cms-dev-dot-secret-rope-485200-h6.nn.r.appspot.com"
+  CLIENT_PORTAL_URL: "https://portal.jjelevate.com"
+  JJ_PORTAL_CAPTCHA_SECRET: "UPDATE_WITH_YOUR_CAPTCHA_SECRET"
+  EMAIL_PROVIDER: "google"
+  GOOGLE_SMTP_USER: "noreply@jjelevateas.com"
+  GOOGLE_APP_PASSWORD: "UPDATE_WITH_YOUR_GOOGLE_APP_PASSWORD"
+  SMTP_FROM: "noreply@jjelevateas.com"
+  SMTP_REPLY_TO: "admin@citysoftsolutions.com"
 
 # Auto-scaling configuration
 automatic_scaling:
