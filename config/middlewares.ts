@@ -40,9 +40,10 @@ export default [
       origin: [
         'http://localhost:3000',
         'http://localhost:3001',
-        // Add production frontend URL here
-        // process.env.FRONTEND_URL,
-      ].filter(Boolean),
+        'https://portal-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
+        'https://admin-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
+        'https://secret-rope-485200-h6.nn.r.appspot.com',
+      ],
       // Specific allowed headers
       headers: [
         'Content-Type',
