@@ -1,9 +1,11 @@
 /**
  * Filing Lifecycle Hooks
  * Handles email notifications for filing submissions and status changes
+ * Also handles SERVER-SIDE VALIDATION before submission
  */
 
 import emailNotificationService from '../../../../services/email-notification';
+import filingValidationService from '../../services/filing-validation';
 
 // Status codes that trigger "Filing Submitted" email
 const SUBMITTED_STATUSES = ['SUBMITTED', 'UNDER_REVIEW'];
@@ -17,34 +19,111 @@ const statusChangeTracker = new Map<number, { oldStatusId: number; oldStatusDisp
 export default {
     /**
      * Before update lifecycle hook
-     * Captures the current status before update for comparison
+     * 1. Captures the current status before update for comparison
+     * 2. VALIDATES all required fields when submitting (status -> UNDER_REVIEW)
      */
     async beforeUpdate(event: any) {
         const { params } = event;
 
-        // Only track if filingStatus is being updated
+        // Only process if filingStatus is being updated
         if (!params?.data?.filingStatus) {
             return;
         }
 
         try {
             const filingId = params.where?.id;
-            if (!filingId) return;
+            const documentId = params.where?.documentId;
 
-            // Fetch the current filing to get old status
-            const currentFiling = await strapi.entityService.findOne('api::filing.filing', filingId, {
-                populate: ['filingStatus'],
-            }) as any;
+            if (!filingId && !documentId) return;
 
+            // Fetch the current filing to get old status and filing data
+            let currentFiling: any;
+
+            if (filingId) {
+                currentFiling = await strapi.entityService.findOne('api::filing.filing', filingId, {
+                    populate: ['filingStatus', 'filingType', 'personalFilings', 'corporateFiling', 'trustFiling'],
+                });
+            } else if (documentId) {
+                // For Strapi v5 document API
+                const results = await strapi.documents('api::filing.filing').findMany({
+                    filters: { documentId },
+                    populate: ['filingStatus', 'filingType', 'personalFilings', 'corporateFiling', 'trustFiling'],
+                });
+                currentFiling = results?.[0];
+            }
+
+            if (!currentFiling) return;
+
+            // Track old status for email notifications
             if (currentFiling?.filingStatus) {
                 const oldStatus = currentFiling.filingStatus;
-                statusChangeTracker.set(filingId, {
+                const trackingId = filingId || currentFiling.id;
+                statusChangeTracker.set(trackingId, {
                     oldStatusId: oldStatus.id,
                     oldStatusDisplay: oldStatus.displayName || oldStatus.statusCode,
                 });
             }
-        } catch (error) {
-            strapi.log.error('Failed to capture old status in beforeUpdate:', error);
+
+            // ============================================================
+            // SERVER-SIDE VALIDATION: Check if submitting (status -> UNDER_REVIEW)
+            // ============================================================
+            const newStatusId = params.data.filingStatus;
+
+            // Fetch the new status to check if it's UNDER_REVIEW
+            let newStatus: any;
+            try {
+                // newStatusId could be numeric ID or documentId
+                if (typeof newStatusId === 'number') {
+                    newStatus = await strapi.entityService.findOne('api::filing-status.filing-status', newStatusId);
+                } else {
+                    // Try to find by documentId
+                    const statuses = await strapi.documents('api::filing-status.filing-status').findMany({
+                        filters: { documentId: newStatusId },
+                    });
+                    newStatus = statuses?.[0];
+                }
+            } catch (e) {
+                strapi.log.warn('Could not fetch new status for validation:', e);
+            }
+
+            const isSubmitting = newStatus?.statusCode === 'UNDER_REVIEW' || newStatus?.statusCode === 'SUBMITTED';
+            const wasAlreadySubmitted = SUBMITTED_STATUSES.includes(currentFiling.filingStatus?.statusCode);
+
+            // Only validate on NEW submissions (not re-submissions or status changes after submission)
+            if (isSubmitting && !wasAlreadySubmitted) {
+                strapi.log.info(`[Filing Validation] Validating filing ${filingId || documentId} before submission...`);
+
+                // Determine filing type
+                const filingTypeStr = currentFiling.filingType?.type || 'PERSONAL';
+                const filingType = filingTypeStr === 'PERSONAL' ? 'PERSONAL' :
+                                   filingTypeStr === 'CORPORATE' ? 'CORPORATE' :
+                                   filingTypeStr === 'TRUST' ? 'TRUST' : 'PERSONAL';
+
+                // Validate
+                const validationResult = await filingValidationService.validateForSubmission(currentFiling, filingType);
+
+                if (!validationResult.isValid) {
+                    strapi.log.warn(`[Filing Validation] BLOCKED: Filing ${filingId || documentId} failed validation. Missing ${validationResult.totalMissingFields} required fields.`);
+
+                    // Throw error to prevent the update
+                    const error: any = new Error(validationResult.errorMessage || 'Filing validation failed. Please complete all required fields before submitting.');
+                    error.name = 'ValidationError';
+                    error.details = {
+                        errors: validationResult.errors,
+                        totalMissingFields: validationResult.totalMissingFields
+                    };
+                    throw error;
+                }
+
+                strapi.log.info(`[Filing Validation] PASSED: Filing ${filingId || documentId} validated successfully.`);
+            }
+
+        } catch (error: any) {
+            // Re-throw validation errors to block the update
+            if (error.name === 'ValidationError') {
+                throw error;
+            }
+            strapi.log.error('Failed in beforeUpdate lifecycle:', error);
         }
     },
 
