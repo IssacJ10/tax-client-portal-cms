@@ -12,6 +12,9 @@
         "expenseCategories": {
             "type": "json"
         },
+        "expenseAmounts": {
+            "type": "json"
+        },
         "gstRegistered": {
             "type": "boolean"
         },

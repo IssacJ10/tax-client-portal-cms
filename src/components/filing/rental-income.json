@@ -33,6 +33,9 @@
         "expenseCategories": {
             "type": "json"
         },
+        "expenseAmounts": {
+            "type": "json"
+        },
         "claimCCA": {
             "type": "boolean"
         },
