@@ -584,6 +584,54 @@ export interface ApiDocumentDocument extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiErrorLogErrorLog extends Struct.CollectionTypeSchema {
+  collectionName: 'error_logs';
+  info: {
+    description: 'Logs errors from client portal for debugging';
+    displayName: 'Error Log';
+    pluralName: 'error-logs';
+    singularName: 'error-log';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    errorMessage: Schema.Attribute.Text & Schema.Attribute.Required;
+    errorStack: Schema.Attribute.Text;
+    errorType: Schema.Attribute.Enumeration<
+      ['VALIDATION', 'SAVE', 'NETWORK', 'AUTH', 'UNKNOWN']
+    > &
+      Schema.Attribute.DefaultTo<'UNKNOWN'>;
+    filingId: Schema.Attribute.String;
+    filingType: Schema.Attribute.Enumeration<
+      ['INDIVIDUAL', 'CORPORATE', 'TRUST', 'UNKNOWN']
+    > &
+      Schema.Attribute.DefaultTo<'UNKNOWN'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::error-log.error-log'
+    > &
+      Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON;
+    phase: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    questionId: Schema.Attribute.String;
+    resolutionNotes: Schema.Attribute.Text;
+    resolved: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    section: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+    userAgent: Schema.Attribute.Text;
+    userId: Schema.Attribute.String;
+  };
+}
+
 export interface ApiFilingStatusFilingStatus
   extends Struct.CollectionTypeSchema {
   collectionName: 'filing_statuses';
@@ -1606,6 +1654,7 @@ declare module '@strapi/strapi' {
       'api::consent.consent': ApiConsentConsent;
       'api::corporate-filing.corporate-filing': ApiCorporateFilingCorporateFiling;
       'api::document.document': ApiDocumentDocument;
+      'api::error-log.error-log': ApiErrorLogErrorLog;
       'api::filing-status.filing-status': ApiFilingStatusFilingStatus;
       'api::filing-type.filing-type': ApiFilingTypeFilingType;
       'api::filing.filing': ApiFilingFiling;

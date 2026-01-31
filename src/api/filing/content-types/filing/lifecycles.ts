@@ -185,7 +185,7 @@ export default {
             const wasAlreadySubmitted = oldStatusInfo && SUBMITTED_STATUSES.includes(oldStatusInfo.oldStatusDisplay?.toUpperCase()?.replace(' ', '_'));
 
             if (isSubmission && !wasAlreadySubmitted) {
-                // Send filing submitted email
+                // Send filing submitted email to client
                 await emailNotificationService.sendFilingSubmittedEmail(recipient, {
                     confirmationNumber: filing.confirmationNumber || 'N/A',
                     filingType,
@@ -195,6 +195,18 @@ export default {
                 });
 
                 strapi.log.info(`Filing submitted email sent for filing ${filing.id} (${filing.confirmationNumber})`);
+
+                // Send admin notification email
+                await emailNotificationService.sendAdminFilingNotification({
+                    confirmationNumber: filing.confirmationNumber || 'N/A',
+                    filingType,
+                    taxYear: String(taxYear),
+                    entityName: filing.entityName || undefined,
+                    clientName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
+                    clientEmail: user.email || 'N/A',
+                });
+
+                strapi.log.info(`Admin notification sent for filing ${filing.id} (${filing.confirmationNumber})`);
             } else if (!isSubmission || wasAlreadySubmitted) {
                 // Send status change email for other status transitions
                 await emailNotificationService.sendStatusChangeEmail(recipient, {

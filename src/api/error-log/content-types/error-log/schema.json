@@ -1,0 +1,78 @@
+{
+    "kind": "collectionType",
+    "collectionName": "error_logs",
+    "info": {
+        "singularName": "error-log",
+        "pluralName": "error-logs",
+        "displayName": "Error Log",
+        "description": "Logs errors from client portal for debugging"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "filingId": {
+            "type": "string",
+            "description": "Document ID of the filing (if available)"
+        },
+        "filingType": {
+            "type": "enumeration",
+            "enum": ["INDIVIDUAL", "CORPORATE", "TRUST", "UNKNOWN"],
+            "default": "UNKNOWN",
+            "description": "Type of filing: personal, corporate, or trust"
+        },
+        "phase": {
+            "type": "string",
+            "description": "Current wizard phase when error occurred"
+        },
+        "section": {
+            "type": "string",
+            "description": "Current section/step name when error occurred"
+        },
+        "questionId": {
+            "type": "string",
+            "description": "Question ID if error is field-specific"
+        },
+        "errorType": {
+            "type": "enumeration",
+            "enum": ["VALIDATION", "SAVE", "NETWORK", "AUTH", "UNKNOWN"],
+            "default": "UNKNOWN",
+            "description": "Category of error"
+        },
+        "errorMessage": {
+            "type": "text",
+            "required": true,
+            "description": "The actual error message"
+        },
+        "errorStack": {
+            "type": "text",
+            "description": "Stack trace if available"
+        },
+        "userAgent": {
+            "type": "text",
+            "description": "Browser user agent for debugging"
+        },
+        "url": {
+            "type": "string",
+            "description": "Page URL where error occurred"
+        },
+        "userId": {
+            "type": "string",
+            "description": "User ID if authenticated"
+        },
+        "metadata": {
+            "type": "json",
+            "description": "Additional context data"
+        },
+        "resolved": {
+            "type": "boolean",
+            "default": false,
+            "description": "Mark as resolved after investigating"
+        },
+        "resolutionNotes": {
+            "type": "text",
+            "description": "Notes about how the error was resolved"
+        }
+    }
+}

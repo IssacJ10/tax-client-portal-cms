@@ -142,6 +142,7 @@ export interface FilingRentalIncome extends Struct.ComponentSchema {
     buildingValue: Schema.Attribute.Decimal;
     claimCCA: Schema.Attribute.Boolean;
     equipment: Schema.Attribute.Component<'filing.capital-asset', true>;
+    expenseAmounts: Schema.Attribute.JSON;
     expenseCategories: Schema.Attribute.JSON;
     otherRentalIncome: Schema.Attribute.Decimal;
     ownershipPercentage: Schema.Attribute.Decimal;
@@ -167,6 +168,7 @@ export interface FilingSelfEmployment extends Struct.ComponentSchema {
   };
   attributes: {
     capitalAssets: Schema.Attribute.Component<'filing.capital-asset', true>;
+    expenseAmounts: Schema.Attribute.JSON;
     expenseCategories: Schema.Attribute.JSON;
     gstNumber: Schema.Attribute.String;
     gstRegistered: Schema.Attribute.Boolean;
