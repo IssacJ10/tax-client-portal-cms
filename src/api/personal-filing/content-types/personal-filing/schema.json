@@ -152,6 +152,11 @@
       "component": "filing.dependent-info",
       "repeatable": true
     },
+    "rentOrPropertyTax": {
+      "type": "component",
+      "component": "filing.rent-or-property-tax",
+      "repeatable": true
+    },
     "dependentsCount": {
       "type": "integer",
       "default": 0

@@ -1,0 +1,30 @@
+{
+    "collectionName": "components_filing_rent_or_property_taxes",
+    "info": {
+        "displayName": "Rent or Property Tax",
+        "icon": "home",
+        "description": "Rent or property tax payment details"
+    },
+    "options": {},
+    "attributes": {
+        "residencyType": {
+            "type": "enumeration",
+            "enum": [
+                "RENT",
+                "OWNED"
+            ]
+        },
+        "startDate": {
+            "type": "date"
+        },
+        "endDate": {
+            "type": "date"
+        },
+        "fullAddress": {
+            "type": "string"
+        },
+        "amount": {
+            "type": "decimal"
+        }
+    }
+}
