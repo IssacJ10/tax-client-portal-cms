@@ -36,6 +36,9 @@
         "monthlyInternet": {
             "type": "decimal"
         },
+        "otherUtilitiesDescription": {
+            "type": "string"
+        },
         "monthlyOtherUtilities": {
             "type": "decimal"
         },
@@ -46,6 +49,12 @@
             "type": "decimal"
         },
         "monthlyOtherMaintenance": {
+            "type": "decimal"
+        },
+        "otherExpensesDescription": {
+            "type": "string"
+        },
+        "otherExpensesAmount": {
             "type": "decimal"
         }
     }

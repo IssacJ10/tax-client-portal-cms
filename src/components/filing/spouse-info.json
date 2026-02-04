@@ -26,10 +26,14 @@
         "netIncome": {
             "type": "decimal"
         },
-        "dateBecameResident": {
-            "type": "date"
+        "becameResidentThisYear": {
+            "type": "enumeration",
+            "enum": [
+                "YES",
+                "NO"
+            ]
         },
-        "dateOfEntry": {
+        "dateBecameResident": {
             "type": "date"
         },
         "incomeSources": {
@@ -52,6 +56,52 @@
                 "TEMPORARY_RESIDENT",
                 "PROTECTED_PERSON"
             ]
+        },
+        "email": {
+            "type": "email"
+        },
+        "phoneNumber": {
+            "type": "string"
+        },
+        "sameAddress": {
+            "type": "enumeration",
+            "enum": [
+                "YES",
+                "NO"
+            ]
+        },
+        "streetNumber": {
+            "type": "string"
+        },
+        "streetName": {
+            "type": "string"
+        },
+        "apartmentNumber": {
+            "type": "string"
+        },
+        "city": {
+            "type": "string"
+        },
+        "province": {
+            "type": "enumeration",
+            "enum": [
+                "AB",
+                "BC",
+                "MB",
+                "NB",
+                "NL",
+                "NS",
+                "NT",
+                "NU",
+                "ON",
+                "PE",
+                "QC",
+                "SK",
+                "YT"
+            ]
+        },
+        "postalCode": {
+            "type": "string"
         }
     }
 }

@@ -21,6 +21,7 @@ export interface FilingDependentInfo extends Struct.ComponentSchema {
     icon: 'users';
   };
   attributes: {
+    becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
     birthDate: Schema.Attribute.Date;
     dateBecameResident: Schema.Attribute.Date;
     deductions: Schema.Attribute.JSON;
@@ -88,6 +89,9 @@ export interface FilingHomeOffice extends Struct.ComponentSchema {
     monthlyPropertyTax: Schema.Attribute.Decimal;
     monthlyRent: Schema.Attribute.Decimal;
     monthlyWater: Schema.Attribute.Decimal;
+    otherExpensesAmount: Schema.Attribute.Decimal;
+    otherExpensesDescription: Schema.Attribute.String;
+    otherUtilitiesDescription: Schema.Attribute.String;
     totalHomeSize: Schema.Attribute.Decimal;
     workAreaSize: Schema.Attribute.Decimal;
   };
@@ -132,6 +136,22 @@ export interface FilingPropertyAssets extends Struct.ComponentSchema {
   };
 }
 
+export interface FilingRentOrPropertyTax extends Struct.ComponentSchema {
+  collectionName: 'components_filing_rent_or_property_taxes';
+  info: {
+    description: 'Rent or property tax payment details';
+    displayName: 'Rent or Property Tax';
+    icon: 'home';
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal;
+    endDate: Schema.Attribute.Date;
+    fullAddress: Schema.Attribute.String;
+    residencyType: Schema.Attribute.Enumeration<['RENT', 'OWNED']>;
+    startDate: Schema.Attribute.Date;
+  };
+}
+
 export interface FilingRentalIncome extends Struct.ComponentSchema {
   collectionName: 'components_filing_rental_incomes';
   info: {
@@ -173,7 +193,11 @@ export interface FilingSelfEmployment extends Struct.ComponentSchema {
     gstNumber: Schema.Attribute.String;
     gstRegistered: Schema.Attribute.Boolean;
     hasCapitalAssets: Schema.Attribute.Boolean;
+    hasHomeOffice: Schema.Attribute.Boolean;
+    homeOfficeExpenses: Schema.Attribute.JSON;
     needsBookkeeping: Schema.Attribute.String;
+    usesVehicleForBusiness: Schema.Attribute.Boolean;
+    vehicleForBusiness: Schema.Attribute.JSON;
   };
 }
 
@@ -185,15 +209,38 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
     icon: 'user';
   };
   attributes: {
+    apartmentNumber: Schema.Attribute.String;
+    becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
     birthDate: Schema.Attribute.Date;
+    city: Schema.Attribute.String;
     dateBecameResident: Schema.Attribute.Date;
-    dateOfEntry: Schema.Attribute.Date;
     deductions: Schema.Attribute.JSON;
+    email: Schema.Attribute.Email;
     firstName: Schema.Attribute.String;
     incomeSources: Schema.Attribute.JSON;
     lastName: Schema.Attribute.String;
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
+    phoneNumber: Schema.Attribute.String;
+    postalCode: Schema.Attribute.String;
+    province: Schema.Attribute.Enumeration<
+      [
+        'AB',
+        'BC',
+        'MB',
+        'NB',
+        'NL',
+        'NS',
+        'NT',
+        'NU',
+        'ON',
+        'PE',
+        'QC',
+        'SK',
+        'YT',
+      ]
+    >;
+    sameAddress: Schema.Attribute.Enumeration<['YES', 'NO']>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     statusInCanada: Schema.Attribute.Enumeration<
       [
@@ -203,6 +250,8 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
         'PROTECTED_PERSON',
       ]
     >;
+    streetName: Schema.Attribute.String;
+    streetNumber: Schema.Attribute.String;
     taxSlips: Schema.Attribute.JSON;
     workExpenses: Schema.Attribute.JSON;
   };
@@ -215,19 +264,19 @@ export interface FilingVehicleExpenses extends Struct.ComponentSchema {
     displayName: 'Vehicle Expenses';
   };
   attributes: {
+    annualFuel: Schema.Attribute.Decimal;
+    annualInsurance: Schema.Attribute.Decimal;
+    annualLease: Schema.Attribute.Decimal;
+    annualLicense: Schema.Attribute.Decimal;
+    annualLoanInterest: Schema.Attribute.Decimal;
+    annualMaintenance: Schema.Attribute.Decimal;
+    annualOther: Schema.Attribute.Decimal;
+    annualParking: Schema.Attribute.Decimal;
+    annualRides: Schema.Attribute.Decimal;
     kmDrivenForWork: Schema.Attribute.Decimal;
     kmDrivenThisYear: Schema.Attribute.Decimal;
     make: Schema.Attribute.String;
     model: Schema.Attribute.String;
-    monthlyFuel: Schema.Attribute.Decimal;
-    monthlyInsurance: Schema.Attribute.Decimal;
-    monthlyLease: Schema.Attribute.Decimal;
-    monthlyLicense: Schema.Attribute.Decimal;
-    monthlyLoanInterest: Schema.Attribute.Decimal;
-    monthlyMaintenance: Schema.Attribute.Decimal;
-    monthlyOther: Schema.Attribute.Decimal;
-    monthlyParking: Schema.Attribute.Decimal;
-    monthlyRides: Schema.Attribute.Decimal;
     notApplicable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     purchaseCost: Schema.Attribute.Decimal;
     purchaseDate: Schema.Attribute.Date;
@@ -246,6 +295,8 @@ export interface FilingWorkExpenses extends Struct.ComponentSchema {
   attributes: {
     categories: Schema.Attribute.JSON;
     expenseTypes: Schema.Attribute.JSON;
+    suppliesReceipts: Schema.Attribute.Media<'files' | 'images', true>;
+    t2200Document: Schema.Attribute.Media<'files' | 'images', true>;
   };
 }
 
@@ -321,6 +372,7 @@ declare module '@strapi/strapi' {
       'filing.home-office': FilingHomeOffice;
       'filing.moving-expenses': FilingMovingExpenses;
       'filing.property-assets': FilingPropertyAssets;
+      'filing.rent-or-property-tax': FilingRentOrPropertyTax;
       'filing.rental-income': FilingRentalIncome;
       'filing.self-employment': FilingSelfEmployment;
       'filing.spouse-info': FilingSpouseInfo;

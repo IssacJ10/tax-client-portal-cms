@@ -11,6 +11,18 @@
         },
         "expenseTypes": {
             "type": "json"
+        },
+        "suppliesReceipts": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": ["files", "images"]
+        },
+        "t2200Document": {
+            "type": "media",
+            "multiple": true,
+            "required": false,
+            "allowedTypes": ["files", "images"]
         }
     }
 }

@@ -28,6 +28,18 @@
             "type": "component",
             "repeatable": true,
             "component": "filing.capital-asset"
+        },
+        "usesVehicleForBusiness": {
+            "type": "boolean"
+        },
+        "vehicleForBusiness": {
+            "type": "json"
+        },
+        "hasHomeOffice": {
+            "type": "boolean"
+        },
+        "homeOfficeExpenses": {
+            "type": "json"
         }
     }
 }

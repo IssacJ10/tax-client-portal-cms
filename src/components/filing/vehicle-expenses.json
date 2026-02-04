@@ -37,31 +37,31 @@
         "uccStartOfYear": {
             "type": "decimal"
         },
-        "monthlyFuel": {
+        "annualFuel": {
             "type": "decimal"
         },
-        "monthlyInsurance": {
+        "annualInsurance": {
             "type": "decimal"
         },
-        "monthlyMaintenance": {
+        "annualMaintenance": {
             "type": "decimal"
         },
-        "monthlyLicense": {
+        "annualLicense": {
             "type": "decimal"
         },
-        "monthlyParking": {
+        "annualParking": {
             "type": "decimal"
         },
-        "monthlyLease": {
+        "annualLease": {
             "type": "decimal"
         },
-        "monthlyLoanInterest": {
+        "annualLoanInterest": {
             "type": "decimal"
         },
-        "monthlyRides": {
+        "annualRides": {
             "type": "decimal"
         },
-        "monthlyOther": {
+        "annualOther": {
             "type": "decimal"
         }
     }

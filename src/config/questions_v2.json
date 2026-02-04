@@ -478,7 +478,21 @@
                 "minDateRef": "personalInfo.dateOfBirth"
             },
             "step": "personal_info",
-            "order": 80
+            "order": 80,
+            "conditional": {
+                "and": [
+                    {
+                        "parentQuestionId": "residency.becameResidentThisYear",
+                        "operator": "equals",
+                        "value": "YES"
+                    },
+                    {
+                        "parentQuestionId": "personalInfo.statusInCanada",
+                        "operator": "notIn",
+                        "values": ["CANADIAN_CITIZEN"]
+                    }
+                ]
+            }
         },
         {
             "id": "q_province_resided",
@@ -548,7 +562,7 @@
         {
             "id": "q_lived_outside_canada",
             "type": "radio",
-            "label": "Did you live outside Canada on December 31?",
+            "label": "Have you lived outside of Canada in the selected tax year for more than 6 months?",
             "name": "residency.livedOutsideCanada",
             "options": [
                 {
@@ -600,8 +614,13 @@
             "validation": {
                 "required": true
             },
-            "step": "residency",
-            "order": 30
+            "step": "personal_info",
+            "order": 78,
+            "conditional": {
+                "parentQuestionId": "personalInfo.statusInCanada",
+                "operator": "notIn",
+                "values": ["CANADIAN_CITIZEN"]
+            }
         },
         {
             "id": "q_world_income",
@@ -791,23 +810,42 @@
             }
         },
         {
-            "id": "q_spouse_entry_date",
-            "type": "date",
-            "label": "Spouse/Partner Date of Entry into Canada",
-            "name": "spouse.dateOfEntry",
+            "id": "q_spouse_became_resident_year",
+            "type": "radio",
+            "label": "Did your spouse/partner become a resident of Canada in the selected tax year?",
+            "name": "spouse.becameResidentThisYear",
+            "options": [
+                {
+                    "value": "YES",
+                    "label": "Yes"
+                },
+                {
+                    "value": "NO",
+                    "label": "No"
+                }
+            ],
             "validation": {
-                "required": false,
-                "maxDate": "today",
-                "minDateRef": "spouse.dateOfBirth"
+                "required": true
             },
             "step": "spouse_info",
-            "order": 30,
+            "order": 28,
             "conditional": {
-                "parentQuestionId": "maritalStatus.status",
-                "operator": "in",
-                "values": [
-                    "MARRIED",
-                    "COMMON_LAW"
+                "and": [
+                    {
+                        "parentQuestionId": "maritalStatus.status",
+                        "operator": "in",
+                        "values": [
+                            "MARRIED",
+                            "COMMON_LAW"
+                        ]
+                    },
+                    {
+                        "parentQuestionId": "spouse.statusInCanada",
+                        "operator": "notIn",
+                        "values": [
+                            "CANADIAN_CITIZEN"
+                        ]
+                    }
                 ]
             }
         },
@@ -824,11 +862,27 @@
             "step": "spouse_info",
             "order": 35,
             "conditional": {
-                "parentQuestionId": "maritalStatus.status",
-                "operator": "in",
-                "values": [
-                    "MARRIED",
-                    "COMMON_LAW"
+                "and": [
+                    {
+                        "parentQuestionId": "maritalStatus.status",
+                        "operator": "in",
+                        "values": [
+                            "MARRIED",
+                            "COMMON_LAW"
+                        ]
+                    },
+                    {
+                        "parentQuestionId": "spouse.statusInCanada",
+                        "operator": "notIn",
+                        "values": [
+                            "CANADIAN_CITIZEN"
+                        ]
+                    },
+                    {
+                        "parentQuestionId": "spouse.becameResidentThisYear",
+                        "operator": "equals",
+                        "value": "YES"
+                    }
                 ]
             }
         },
@@ -925,12 +979,53 @@
                     }
                 },
                 {
+                    "type": "radio",
+                    "name": "becameResidentThisYear",
+                    "label": "Did this dependent become a resident of Canada in the selected tax year?",
+                    "options": [
+                        {
+                            "value": "YES",
+                            "label": "Yes"
+                        },
+                        {
+                            "value": "NO",
+                            "label": "No"
+                        }
+                    ],
+                    "validation": {
+                        "required": true
+                    },
+                    "conditional": {
+                        "field": "statusInCanada",
+                        "operator": "notIn",
+                        "values": [
+                            "CANADIAN_CITIZEN"
+                        ]
+                    }
+                },
+                {
                     "type": "date",
                     "name": "dateBecameResident",
                     "label": "Date Became Resident of Canada",
                     "validation": {
                         "required": false,
                         "maxDate": "today"
+                    },
+                    "conditional": {
+                        "and": [
+                            {
+                                "field": "statusInCanada",
+                                "operator": "notIn",
+                                "values": [
+                                    "CANADIAN_CITIZEN"
+                                ]
+                            },
+                            {
+                                "field": "becameResidentThisYear",
+                                "operator": "equals",
+                                "value": "YES"
+                            }
+                        ]
                     }
                 },
                 {

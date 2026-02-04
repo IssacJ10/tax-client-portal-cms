@@ -962,6 +962,10 @@ export interface ApiPersonalFilingPersonalFiling
     provinceResided: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     rentalIncome: Schema.Attribute.Component<'filing.rental-income', false>;
+    rentOrPropertyTax: Schema.Attribute.Component<
+      'filing.rent-or-property-tax',
+      true
+    >;
     selfEmployment: Schema.Attribute.Component<'filing.self-employment', false>;
     sin: Schema.Attribute.String & Schema.Attribute.Private;
     spouse: Schema.Attribute.Component<'filing.spouse-info', false>;

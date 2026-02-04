@@ -35,6 +35,13 @@
                 "PROTECTED_PERSON"
             ]
         },
+        "becameResidentThisYear": {
+            "type": "enumeration",
+            "enum": [
+                "YES",
+                "NO"
+            ]
+        },
         "dateBecameResident": {
             "type": "date"
         },
