@@ -102,6 +102,16 @@
         },
         "postalCode": {
             "type": "string"
+        },
+        "livedOutsideCanada": {
+            "type": "enumeration",
+            "enum": [
+                "YES",
+                "NO"
+            ]
+        },
+        "countryOfResidence": {
+            "type": "string"
         }
     }
 }
