@@ -1,6 +1,6 @@
 # CMS Backend - App Engine Configuration
 runtime: nodejs20
-service: default
+service: cms-dev
 
 # Instance configuration
 instance_class: F2  # 256MB RAM, 600MHz CPU
@@ -8,6 +8,7 @@ instance_class: F2  # 256MB RAM, 600MHz CPU
 # Environment variables
 env_variables:
   NODE_ENV: "production"
+  APP_ENVIRONMENT: "development"
   HOST: "0.0.0.0"
   PORT: "8080"
   DATABASE_CLIENT: "postgres"
@@ -32,6 +33,8 @@ env_variables:
   GOOGLE_APP_PASSWORD: "UPDATE_WITH_YOUR_GOOGLE_APP_PASSWORD"
   SMTP_FROM: "noreply@jjelevateas.com"
   SMTP_REPLY_TO: "admin@citysoftsolutions.com"
+  GCP_PROJECT_ID: "secret-rope-485200-h6"
+  GCS_BUCKET_NAME: "jjelevate-development-documents"
 
 # Auto-scaling configuration
 automatic_scaling:
