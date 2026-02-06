@@ -213,12 +213,14 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
     becameResidentThisYear: Schema.Attribute.Enumeration<['YES', 'NO']>;
     birthDate: Schema.Attribute.Date;
     city: Schema.Attribute.String;
+    countryOfResidence: Schema.Attribute.String;
     dateBecameResident: Schema.Attribute.Date;
     deductions: Schema.Attribute.JSON;
     email: Schema.Attribute.Email;
     firstName: Schema.Attribute.String;
     incomeSources: Schema.Attribute.JSON;
     lastName: Schema.Attribute.String;
+    livedOutsideCanada: Schema.Attribute.Enumeration<['YES', 'NO']>;
     middleName: Schema.Attribute.String;
     netIncome: Schema.Attribute.Decimal;
     phoneNumber: Schema.Attribute.String;
