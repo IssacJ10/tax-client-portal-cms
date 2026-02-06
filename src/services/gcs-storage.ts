@@ -144,6 +144,10 @@ export class GCSStorageService {
      * Generate the GCS path for a document
      *
      * Structure: {env}/{tax_year}/{filing_documentId}/{document_type}/{timestamp}_{sanitized_filename}
+     *
+     * NOTE: Uses APP_ENVIRONMENT (not NODE_ENV) to determine the folder.
+     * NODE_ENV is typically "production" even in dev deployments for performance,
+     * but APP_ENVIRONMENT reflects the actual deployment environment.
      */
     generateGCSPath(
         filingDocumentId: string,
@@ -151,7 +155,9 @@ export class GCSStorageService {
         documentType: DocumentType,
         originalFilename: string
     ): string {
-        const env = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+        // Use APP_ENVIRONMENT to determine folder, fall back to NODE_ENV for backwards compatibility
+        const appEnv = process.env.APP_ENVIRONMENT || process.env.NODE_ENV;
+        const env = appEnv === 'production' ? 'production' : 'development';
         const timestamp = Date.now();
         const sanitizedFilename = this.sanitizeFilename(originalFilename);
 
