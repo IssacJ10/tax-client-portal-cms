@@ -1,6 +1,7 @@
 import { errors } from '@strapi/utils';
 const { ApplicationError, ValidationError } = errors;
 import nodeCrypto from 'node:crypto';
+import { setAuthCookies, clearAuthCookies } from '../../utils/cookie-config';
 
 const NAME_REGEX = /^[a-zA-Z \-']+$/;
 
@@ -87,31 +88,41 @@ This link will expire in 1 hour. If you didn't request a password reset, you can
 export default (plugin) => {
     console.log('[users-permissions extension] Loading custom extension...');
 
-    // --- 1. Custom Callback for Refresh Tokens ---
+    // --- 1. Custom Callback for Refresh Tokens (HttpOnly Cookie Auth) ---
     const originalCallback = plugin.controllers.auth.callback;
 
     plugin.controllers.auth.callback = async (ctx) => {
         // Run original login
         await originalCallback(ctx);
 
-        // If successful, inject refresh token
+        // If successful, set httpOnly cookies instead of returning tokens in body
         if (ctx.response.status === 200 && ctx.body?.jwt) {
             try {
                 const user = ctx.body.user;
+                const jwt = ctx.body.jwt;
                 const jwtService = strapi.plugin('users-permissions').service('jwt');
 
+                // Generate refresh token
                 const refreshToken = jwtService.issue({
                     id: user.id,
                     type: 'refresh',
                     version: user.tokenVersion || 1
                 }, { expiresIn: '7d' });
 
+                // Set tokens as httpOnly cookies
+                setAuthCookies(ctx, jwt, refreshToken);
+
+                // Return user only (tokens are in cookies, not body)
+                // Also return jwt in body for backwards compatibility during migration
                 ctx.body = {
-                    ...ctx.body,
-                    refreshToken
+                    jwt, // Keep for backwards compatibility - frontend will stop using this
+                    user,
+                    message: 'Login successful. Tokens set in httpOnly cookies.'
                 };
+
+                strapi.log.info(`[Auth] User ${user.email} logged in with httpOnly cookies`);
             } catch (e) {
-                strapi.log.error('Failed to issue refresh token', e);
+                strapi.log.error('Failed to set auth cookies', e);
             }
         }
     };
@@ -328,11 +339,24 @@ export default (plugin) => {
 
         strapi.log.info(`Password reset successful for user ${user.email}`);
 
-        // Return user and JWT for auto-login
+        // Auto-login: Set httpOnly cookies
         const jwtService = strapi.plugin('users-permissions').service('jwt');
+        const jwt = jwtService.issue({ id: user.id });
+        const refreshToken = jwtService.issue({
+            id: user.id,
+            type: 'refresh',
+            version: user.tokenVersion || 1
+        }, { expiresIn: '7d' });
+
+        // Set tokens as httpOnly cookies
+        setAuthCookies(ctx, jwt, refreshToken);
+
+        const sanitizedUser = await strapi.plugin('users-permissions').service('user').sanitizeOutput(user, ctx);
+
         ctx.send({
-            jwt: jwtService.issue({ id: user.id }),
-            user: await strapi.plugin('users-permissions').service('user').sanitizeOutput(user, ctx),
+            jwt, // Keep for backwards compatibility
+            user: sanitizedUser,
+            message: 'Password reset successful. You are now logged in.'
         });
     };
 

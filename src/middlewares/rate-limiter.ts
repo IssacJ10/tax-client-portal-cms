@@ -1,14 +1,12 @@
 /**
  * Rate Limiting Middleware
- * Protects against DoS attacks and brute force attempts
+ *
+ * Protects against DoS attacks and brute force attempts.
+ * Uses Redis (Cloud Memorystore) for distributed rate limiting across multiple instances.
+ * Falls back to in-memory storage for local development or if Redis is unavailable.
  */
 
-interface GlobalRateLimitEntry {
-  count: number;
-  windowStart: number;
-  blocked: boolean;
-  blockExpiry?: number;
-}
+import { checkRateLimit, isRedisAvailable } from '../services/redis-client';
 
 interface GlobalRateLimitConfig {
   windowMs: number;
@@ -81,14 +79,6 @@ const GLOBAL_RATE_LIMIT_CONFIGS: Record<string, GlobalRateLimitConfig> = {
   },
 };
 
-// In-memory storage for rate limiting
-// In production, consider using Redis for distributed rate limiting
-const globalRateLimitStore = new Map<string, GlobalRateLimitEntry>();
-
-// Cleanup interval (clean expired entries every 5 minutes)
-const GLOBAL_CLEANUP_INTERVAL = 5 * 60 * 1000;
-let globalLastCleanup = Date.now();
-
 /**
  * Get the client identifier (IP address)
  */
@@ -158,80 +148,6 @@ function getGlobalRateLimitCategory(path: string, method: string): string {
   return 'read';
 }
 
-/**
- * Clean up expired entries from the store
- */
-function cleanupGlobalExpiredEntries(): void {
-  const now = Date.now();
-
-  for (const [key, entry] of globalRateLimitStore.entries()) {
-    // Remove entries that are:
-    // 1. No longer blocked and outside the window
-    // 2. Block has expired
-    const config = GLOBAL_RATE_LIMIT_CONFIGS[key.split(':')[1]] || GLOBAL_RATE_LIMIT_CONFIGS.read;
-    const windowExpired = now - entry.windowStart > config.windowMs;
-    const blockExpired = entry.blockExpiry && now > entry.blockExpiry;
-
-    if ((windowExpired && !entry.blocked) || blockExpired) {
-      globalRateLimitStore.delete(key);
-    }
-  }
-}
-
-/**
- * Check and update rate limit for a client
- */
-function checkGlobalRateLimit(clientId: string, category: string): { allowed: boolean; remaining: number; retryAfter?: number } {
-  const now = Date.now();
-  const config = GLOBAL_RATE_LIMIT_CONFIGS[category] || GLOBAL_RATE_LIMIT_CONFIGS.read;
-  const key = `${clientId}:${category}`;
-
-  // Periodic cleanup
-  if (now - globalLastCleanup > GLOBAL_CLEANUP_INTERVAL) {
-    cleanupGlobalExpiredEntries();
-    globalLastCleanup = now;
-  }
-
-  let entry = globalRateLimitStore.get(key);
-
-  // Check if client is currently blocked
-  if (entry?.blocked && entry.blockExpiry) {
-    if (now < entry.blockExpiry) {
-      const retryAfter = Math.ceil((entry.blockExpiry - now) / 1000);
-      return { allowed: false, remaining: 0, retryAfter };
-    }
-    // Block has expired, reset entry
-    entry = undefined;
-  }
-
-  // Initialize or reset entry if window has passed
-  if (!entry || now - entry.windowStart > config.windowMs) {
-    entry = {
-      count: 1,
-      windowStart: now,
-      blocked: false,
-    };
-    globalRateLimitStore.set(key, entry);
-    return { allowed: true, remaining: config.maxRequests - 1 };
-  }
-
-  // Increment count
-  entry.count++;
-
-  // Check if limit exceeded
-  if (entry.count > config.maxRequests) {
-    entry.blocked = true;
-    entry.blockExpiry = now + (config.blockDurationMs || 60000);
-    globalRateLimitStore.set(key, entry);
-
-    const retryAfter = Math.ceil((entry.blockExpiry - now) / 1000);
-    return { allowed: false, remaining: 0, retryAfter };
-  }
-
-  globalRateLimitStore.set(key, entry);
-  return { allowed: true, remaining: config.maxRequests - entry.count };
-}
-
 // Paths that should be excluded from rate limiting
 const GLOBAL_RATE_LIMIT_EXCLUDED_PATHS = [
   '/admin/init',
@@ -242,10 +158,26 @@ const GLOBAL_RATE_LIMIT_EXCLUDED_PATHS = [
   '/api/connect', // OAuth flows - handled by OAuth provider's own rate limiting
 ];
 
+// Log Redis status once on startup
+let hasLoggedRedisStatus = false;
+
 module.exports = (config: any, { strapi }: { strapi: any }) => {
   return async (ctx: any, next: () => Promise<void>) => {
     const path = ctx.request.path;
     const method = ctx.request.method;
+
+    // Log Redis status once
+    if (!hasLoggedRedisStatus) {
+      hasLoggedRedisStatus = true;
+      // Delay check to allow Redis to connect
+      setTimeout(() => {
+        if (isRedisAvailable()) {
+          strapi.log.info('[RateLimit] Using Redis (Cloud Memorystore) for distributed rate limiting');
+        } else {
+          strapi.log.warn('[RateLimit] Redis not available, using in-memory fallback (not suitable for multi-instance)');
+        }
+      }, 2000);
+    }
 
     // Skip rate limiting for excluded paths
     if (GLOBAL_RATE_LIMIT_EXCLUDED_PATHS.some((excluded) => path === excluded || path.startsWith(excluded))) {
@@ -259,14 +191,22 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
 
     const clientId = getGlobalClientId(ctx);
     const category = getGlobalRateLimitCategory(path, method);
+    const configInfo = GLOBAL_RATE_LIMIT_CONFIGS[category] || GLOBAL_RATE_LIMIT_CONFIGS.read;
 
-    const result = checkGlobalRateLimit(clientId, category);
+    // Build the rate limit key (IP + category for granular limits)
+    const rateLimitKey = `${clientId}:${category}`;
+
+    // Check rate limit using Redis or fallback
+    const result = await checkRateLimit(
+      rateLimitKey,
+      configInfo.maxRequests,
+      configInfo.windowMs
+    );
 
     // Set rate limit headers
-    const config_info = GLOBAL_RATE_LIMIT_CONFIGS[category] || GLOBAL_RATE_LIMIT_CONFIGS.read;
-    ctx.set('X-RateLimit-Limit', String(config_info.maxRequests));
+    ctx.set('X-RateLimit-Limit', String(configInfo.maxRequests));
     ctx.set('X-RateLimit-Remaining', String(Math.max(0, result.remaining)));
-    ctx.set('X-RateLimit-Reset', String(Math.ceil(Date.now() / 1000) + Math.ceil(config_info.windowMs / 1000)));
+    ctx.set('X-RateLimit-Reset', String(Math.ceil(Date.now() / 1000) + Math.ceil(configInfo.windowMs / 1000)));
 
     if (!result.allowed) {
       strapi.log.warn(`[RateLimit] Blocked request from ${clientId}`, {
@@ -274,6 +214,7 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
         path,
         method,
         retryAfter: result.retryAfter,
+        usingRedis: isRedisAvailable(),
       });
 
       ctx.set('Retry-After', String(result.retryAfter));
@@ -293,6 +234,6 @@ module.exports = (config: any, { strapi }: { strapi: any }) => {
 };
 
 // Export for testing
-module.exports.checkRateLimit = checkGlobalRateLimit;
-module.exports.rateLimitStore = globalRateLimitStore;
 module.exports.RATE_LIMIT_CONFIGS = GLOBAL_RATE_LIMIT_CONFIGS;
+module.exports.getClientId = getGlobalClientId;
+module.exports.getCategory = getGlobalRateLimitCategory;

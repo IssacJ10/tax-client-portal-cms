@@ -3,6 +3,8 @@
  * Handles Google OAuth callback and token exchange
  */
 
+import { AUTH_COOKIE_CONFIG } from '../utils/cookie-config';
+
 export default (config, { strapi }) => {
   return async (ctx, next) => {
     // Check if this is the Google callback URL
@@ -18,13 +20,20 @@ export default (config, { strapi }) => {
           throw new Error('Invalid code format');
         }
 
+        // Build redirect_uri dynamically from environment or request
+        // IMPORTANT: This MUST match exactly what's configured in Google Cloud Console
+        const strapiUrl = process.env.STRAPI_URL || process.env.PUBLIC_URL || 'http://localhost:1337';
+        const redirectUri = `${strapiUrl}/api/connect/google/callback`;
+
+        strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Using redirect_uri: ${redirectUri}`);
+
         // 1. Manually Exchange Code for Access Token
         // This avoids Strapi's internal redirect_uri mismatch issues
         const params = new URLSearchParams();
         params.append('code', code as string);
         params.append('client_id', process.env.GOOGLE_CLIENT_ID || '');
         params.append('client_secret', process.env.GOOGLE_CLIENT_SECRET || '');
-        params.append('redirect_uri', 'http://localhost:1337/api/connect/google/callback');
+        params.append('redirect_uri', redirectUri);
         params.append('grant_type', 'authorization_code');
 
         const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -92,23 +101,34 @@ export default (config, { strapi }) => {
           { expiresIn: '7d' }
         );
 
-        strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Redirecting to frontend with JWT & Refresh Token.`);
+        strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Setting httpOnly cookies and redirecting to frontend.`);
 
-        // 7. Force Redirect to Frontend
-        // Note: Tokens in URL is acceptable here since it's a same-origin redirect
-        // and the tokens are immediately consumed and cleared from browser history
+        // 7. Set httpOnly cookies for secure authentication (using shared config with sameSite: 'none' for cross-origin)
+        ctx.cookies.set('jwt', jwt, AUTH_COOKIE_CONFIG.jwt);
+        ctx.cookies.set('refreshToken', refreshToken, AUTH_COOKIE_CONFIG.refresh);
+
+        // 8. Redirect to Frontend (cookies are set, no tokens in URL needed)
+        // Keep JWT in URL for backwards compatibility during migration
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         ctx.status = 302;
         ctx.redirect(`${frontendUrl}/connect/google/redirect?jwt=${jwt}&refresh=${refreshToken}`);
 
         return;
-      } catch (error) {
+      } catch (error: any) {
         strapi.log.error('[[GOOGLE_MIDDLEWARE]] Error:', error);
+        strapi.log.error('[[GOOGLE_MIDDLEWARE]] Error message:', error?.message);
+        strapi.log.error('[[GOOGLE_MIDDLEWARE]] Error stack:', error?.stack);
+
+        // In development, show more details for debugging
+        const isDev = process.env.NODE_ENV !== 'production';
+        const errorMessage = isDev && error?.message
+          ? `Authentication failed: ${error.message.substring(0, 100)}`
+          : 'Authentication failed. Please try again.';
 
         // Redirect with error (sanitized message)
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         ctx.status = 302;
-        ctx.redirect(`${frontendUrl}/connect/google/redirect?error=${encodeURIComponent('Authentication failed. Please try again.')}`);
+        ctx.redirect(`${frontendUrl}/connect/google/redirect?error=${encodeURIComponent(errorMessage)}`);
         return;
       }
     }

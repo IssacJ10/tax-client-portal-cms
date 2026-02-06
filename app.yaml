@@ -35,6 +35,14 @@ env_variables:
   SMTP_REPLY_TO: "admin@citysoftsolutions.com"
   GCP_PROJECT_ID: "secret-rope-485200-h6"
   GCS_BUCKET_NAME: "jjelevate-development-documents"
+  # Redis configuration (update REDIS_HOST after creating Memorystore instance)
+  REDIS_HOST: "UPDATE_WITH_REDIS_IP"
+  REDIS_PORT: "6379"
+
+# VPC Connector for Redis access (create with: gcloud compute networks vpc-access connectors create)
+vpc_access_connector:
+  name: "projects/secret-rope-485200-h6/locations/northamerica-northeast2/connectors/jjelevate-connector"
+  egress_setting: private-ranges-only
 
 # Auto-scaling configuration
 automatic_scaling:

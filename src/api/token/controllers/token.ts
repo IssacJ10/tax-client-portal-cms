@@ -2,8 +2,10 @@
 
 /**
  * A set of functions called "actions" for `token`
- * Security-hardened token refresh controller
+ * Security-hardened token refresh controller with httpOnly cookie support
  */
+
+import { AUTH_COOKIE_CONFIG } from '../../../utils/cookie-config';
 
 // Track failed refresh attempts per IP for security monitoring
 const failedAttempts = new Map<string, { count: number; lastAttempt: number }>();
@@ -97,7 +99,8 @@ module.exports = {
       });
     }
 
-    const { refreshToken } = ctx.request.body;
+    // Try to get refresh token from httpOnly cookie first, then fall back to body (backwards compatibility)
+    const refreshToken = ctx.cookies.get('refreshToken') || ctx.request.body?.refreshToken;
 
     // Validate refresh token is provided
     if (!refreshToken) {
@@ -176,11 +179,17 @@ module.exports = {
         { expiresIn: '7d' }
       );
 
-      strapi.log.debug(`[Auth] Token refreshed for user ${user.email}`);
+      // Set new tokens as httpOnly cookies
+      ctx.cookies.set('jwt', newAccessToken, AUTH_COOKIE_CONFIG.jwt);
+      ctx.cookies.set('refreshToken', newRefreshToken, AUTH_COOKIE_CONFIG.refresh);
 
+      strapi.log.debug(`[Auth] Token refreshed for user ${user.email} (httpOnly cookies)`);
+
+      // Return tokens in body for backwards compatibility
       return ctx.send({
         jwt: newAccessToken,
         refreshToken: newRefreshToken,
+        message: 'Token refreshed. New tokens set in httpOnly cookies.'
       });
     } catch (err) {
       recordFailedAttempt(clientIp);

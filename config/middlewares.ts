@@ -32,17 +32,19 @@ export default [
       },
     },
   },
-  // CORS - Restrictive configuration
+  // CORS - Restrictive configuration with credentials for httpOnly cookies
   {
     name: 'strapi::cors',
     config: {
-      // Only allow specific origins (add production domains as needed)
+      // Only allow specific origins (required for credentials: true)
       origin: [
         'http://localhost:3000',
         'http://localhost:3001',
         'https://portal-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
         'https://admin-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
         'https://secret-rope-485200-h6.nn.r.appspot.com',
+        'https://portal.jjelevate.com', // Production portal
+        'https://www.portal.jjelevate.com', // Production portal with www
       ],
       // Specific allowed headers
       headers: [
@@ -54,6 +56,7 @@ export default [
         'Origin',
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      // IMPORTANT: credentials must be true for httpOnly cookies to work cross-origin
       credentials: true,
       maxAge: 86400, // 24 hours
     },
