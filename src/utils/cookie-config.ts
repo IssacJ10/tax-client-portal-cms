@@ -1,33 +1,44 @@
 /**
  * Shared Cookie Configuration for httpOnly Auth Tokens
  *
- * Cookie policy depends on environment:
- * - Production (HTTPS): secure=true, sameSite='none' for cross-origin
- * - Development (HTTP): secure=false, sameSite='lax' for localhost
+ * Dual-mode authentication:
+ * - Production (jjelevateas.com domain): httpOnly cookies with shared parent domain
+ *   - domain=.jjelevateas.com allows cookies to be shared across subdomains
+ *   - portal.jjelevateas.com and cms.jjelevateas.com share the same cookies
+ * - Development (App Engine dev, localhost): Cookies set but not relied upon
+ *   - Frontend uses localStorage + Bearer token for auth
+ *   - Third-party cookies are blocked by browsers in cross-origin scenarios
  *
  * Note: sameSite='none' REQUIRES secure=true (HTTPS).
- * In development on HTTP, we use sameSite='lax' which allows cookies
- * on top-level navigations (redirects) but not on cross-origin fetch.
- * The frontend falls back to JWT from URL params for development.
  */
 
-const isProduction = process.env.NODE_ENV === 'production';
+// Check if we're in real production (jjelevateas.com domain)
+// APP_ENVIRONMENT is set in app.yaml - "development" for dev, "production" for prod
+const isRealProduction = process.env.APP_ENVIRONMENT === 'production';
+const isHttps = process.env.NODE_ENV === 'production'; // Always true on App Engine
+
+// Production domain for shared cookies
+const PRODUCTION_DOMAIN = '.jjelevateas.com';
 
 // Cookie settings based on environment
 export const AUTH_COOKIE_CONFIG = {
   jwt: {
     httpOnly: true,
-    secure: isProduction, // true for HTTPS in production, false for HTTP in development
-    sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+    secure: isHttps, // true for HTTPS (all App Engine), false for local HTTP
+    sameSite: (isHttps ? 'none' : 'lax') as 'none' | 'lax',
     maxAge: 60 * 60 * 1000, // 1 hour (matches JWT expiry)
     path: '/',
+    // Only set domain in production - allows cookies to be shared across subdomains
+    ...(isRealProduction && { domain: PRODUCTION_DOMAIN }),
   },
   refresh: {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+    secure: isHttps,
+    sameSite: (isHttps ? 'none' : 'lax') as 'none' | 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/',
+    // Only set domain in production
+    ...(isRealProduction && { domain: PRODUCTION_DOMAIN }),
   },
 };
 

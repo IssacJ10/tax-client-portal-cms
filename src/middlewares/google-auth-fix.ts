@@ -7,6 +7,29 @@ import { AUTH_COOKIE_CONFIG } from '../utils/cookie-config';
 
 export default (config, { strapi }) => {
   return async (ctx, next) => {
+    // Intercept the initial Google OAuth redirect to ensure correct scopes are sent
+    // Strapi's grant library only sends 'email' scope by default (stored in DB, not configurable via admin UI)
+    // We need 'openid email profile' to get given_name and family_name from Google
+    if (ctx.method === 'GET' && ctx.path === '/api/connect/google') {
+      const strapiUrl = process.env.STRAPI_URL || process.env.PUBLIC_URL || 'http://localhost:1337';
+      const clientId = process.env.GOOGLE_CLIENT_ID || '';
+      const redirectUri = `${strapiUrl}/api/connect/google/callback`;
+
+      const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: 'openid email profile',
+        access_type: 'online',
+        prompt: 'select_account',
+      });
+
+      strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Redirecting to Google with scopes: openid email profile`);
+      ctx.status = 302;
+      ctx.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+      return;
+    }
+
     // Check if this is the Google callback URL
     if (ctx.method === 'GET' && ctx.path === '/api/connect/google/callback') {
       strapi.log.info('[[GOOGLE_MIDDLEWARE]] Intercepting Google Callback');
@@ -101,14 +124,17 @@ export default (config, { strapi }) => {
           { expiresIn: '7d' }
         );
 
-        strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Setting httpOnly cookies and redirecting to frontend.`);
+        strapi.log.info(`[[GOOGLE_MIDDLEWARE]] Success! Redirecting to frontend.`);
 
-        // 7. Set httpOnly cookies for secure authentication (using shared config with sameSite: 'none' for cross-origin)
-        ctx.cookies.set('jwt', jwt, AUTH_COOKIE_CONFIG.jwt);
-        ctx.cookies.set('refreshToken', refreshToken, AUTH_COOKIE_CONFIG.refresh);
+        // 7. Set httpOnly cookies only in production (shared parent domain: .jjelevateas.com)
+        // In development, frontend uses localStorage + Bearer token (different origins can't share cookies)
+        const isProduction = process.env.APP_ENVIRONMENT === 'production';
+        if (isProduction) {
+          ctx.cookies.set('jwt', jwt, AUTH_COOKIE_CONFIG.jwt);
+          ctx.cookies.set('refreshToken', refreshToken, AUTH_COOKIE_CONFIG.refresh);
+        }
 
-        // 8. Redirect to Frontend (cookies are set, no tokens in URL needed)
-        // Keep JWT in URL for backwards compatibility during migration
+        // 8. Redirect to Frontend with JWT in URL (dev uses this, prod has cookies as primary)
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         ctx.status = 302;
         ctx.redirect(`${frontendUrl}/connect/google/redirect?jwt=${jwt}&refresh=${refreshToken}`);
@@ -119,10 +145,10 @@ export default (config, { strapi }) => {
         strapi.log.error('[[GOOGLE_MIDDLEWARE]] Error message:', error?.message);
         strapi.log.error('[[GOOGLE_MIDDLEWARE]] Error stack:', error?.stack);
 
-        // In development, show more details for debugging
-        const isDev = process.env.NODE_ENV !== 'production';
+        // Show error details in development (APP_ENVIRONMENT, not NODE_ENV which is always 'production' on App Engine)
+        const isDev = process.env.APP_ENVIRONMENT !== 'production';
         const errorMessage = isDev && error?.message
-          ? `Authentication failed: ${error.message.substring(0, 100)}`
+          ? `Authentication failed: ${error.message.substring(0, 200)}`
           : 'Authentication failed. Please try again.';
 
         // Redirect with error (sanitized message)

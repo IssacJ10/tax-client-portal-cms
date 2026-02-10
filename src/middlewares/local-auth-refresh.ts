@@ -1,5 +1,18 @@
 'use strict';
 
+const { setAuthCookies } = require('../utils/cookie-config');
+
+/**
+ * Local Auth Middleware
+ *
+ * Handles login responses to:
+ * 1. Issue refresh tokens for session persistence
+ * 2. Set httpOnly cookies for production (jjelevateas.com domain)
+ *
+ * Dual-mode authentication:
+ * - Production: httpOnly cookies work across subdomains (shared parent domain)
+ * - Development: Cookies are set but frontend uses localStorage + Bearer token
+ */
 module.exports = (config, { strapi }) => {
     return async (ctx, next) => {
         // 1. Execute the default logic (Login)
@@ -15,7 +28,7 @@ module.exports = (config, { strapi }) => {
             ctx.body.user
         ) {
             try {
-                strapi.log.info('[[LOCAL_AUTH_MIDDLEWARE]] Injecting Refresh Token...');
+                strapi.log.info('[[LOCAL_AUTH_MIDDLEWARE]] Injecting refresh token and setting cookies...');
                 const user = ctx.body.user;
                 const jwtService = strapi.plugin('users-permissions').service('jwt');
 
@@ -26,7 +39,12 @@ module.exports = (config, { strapi }) => {
                     version: user.tokenVersion || 1
                 }, { expiresIn: '7d' });
 
-                // Append to response
+                // Set httpOnly cookies for auth
+                // In production (jjelevateas.com): These cookies are shared across subdomains
+                // In development: Set but not relied upon (frontend uses localStorage)
+                setAuthCookies(ctx, ctx.body.jwt, refreshToken);
+
+                // Append refresh token to response body
                 ctx.body = {
                     ...ctx.body,
                     refreshToken

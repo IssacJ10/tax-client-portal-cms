@@ -75,7 +75,16 @@ export default [
       },
     },
   },
-  'strapi::session',
+  {
+    name: 'strapi::session',
+    config: {
+      // App Engine terminates HTTPS at load balancer, so secure=false is safe
+      // The actual connection to App Engine is always HTTPS (enforced by Google)
+      secure: false,
+      httpOnly: true,
+      sameSite: 'lax',
+    },
+  },
   'strapi::favicon',
   'strapi::public',
   // Security middlewares (order matters)
