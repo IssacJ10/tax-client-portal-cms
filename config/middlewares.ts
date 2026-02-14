@@ -13,7 +13,7 @@ export default [
           'style-src': ["'self'", "'unsafe-inline'"],
           'img-src': ["'self'", 'data:', 'blob:', 'https:'],
           'font-src': ["'self'", 'data:'],
-          'connect-src': ["'self'", 'http://localhost:3000', 'http://localhost:3001'],
+          'connect-src': ["'self'", 'http://localhost:3000', 'http://localhost:3001', 'https://jjelevateas.com', 'https://admin.jjelevateas.com'],
           'frame-ancestors': ["'self'"],
           'object-src': ["'none'"],
           upgradeInsecureRequests: null, // Disabled for local development
@@ -43,8 +43,9 @@ export default [
         'https://portal-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
         'https://admin-dev-dot-secret-rope-485200-h6.nn.r.appspot.com',
         'https://secret-rope-485200-h6.nn.r.appspot.com',
-        'https://portal.jjelevate.com', // Production portal
-        'https://www.portal.jjelevate.com', // Production portal with www
+        'https://jjelevateas.com',
+        'https://www.jjelevateas.com',
+        'https://admin.jjelevateas.com',
       ],
       // Specific allowed headers
       headers: [

@@ -130,8 +130,19 @@ export default (config, { strapi }) => {
         // In development, frontend uses localStorage + Bearer token (different origins can't share cookies)
         const isProduction = process.env.APP_ENVIRONMENT === 'production';
         if (isProduction) {
-          ctx.cookies.set('jwt', jwt, AUTH_COOKIE_CONFIG.jwt);
-          ctx.cookies.set('refreshToken', refreshToken, AUTH_COOKIE_CONFIG.refresh);
+          try {
+            // App Engine terminates HTTPS at the load balancer, so Koa may not see the
+            // connection as secure. Ensure ctx.secure reflects the original protocol.
+            if (ctx.request.header['x-forwarded-proto'] === 'https') {
+              ctx.request.protocol = 'https';
+            }
+            ctx.cookies.set('jwt', jwt, AUTH_COOKIE_CONFIG.jwt);
+            ctx.cookies.set('refreshToken', refreshToken, AUTH_COOKIE_CONFIG.refresh);
+          } catch (cookieError: any) {
+            // Cookie setting can fail behind reverse proxies. Log but don't block auth flow.
+            // JWT is also passed via URL params as fallback.
+            strapi.log.warn(`[[GOOGLE_MIDDLEWARE]] Cookie set failed (non-blocking): ${cookieError.message}`);
+          }
         }
 
         // 8. Redirect to Frontend with JWT in URL (dev uses this, prod has cookies as primary)
