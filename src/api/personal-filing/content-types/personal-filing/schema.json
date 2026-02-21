@@ -92,7 +92,8 @@
         "CANADIAN_CITIZEN",
         "PERMANENT_RESIDENT",
         "TEMPORARY_RESIDENT",
-        "PROTECTED_PERSON"
+        "PROTECTED_PERSON",
+        "NON_RESIDENT"
       ]
     },
     "dateBecameResident": {
