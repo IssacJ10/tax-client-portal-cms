@@ -131,7 +131,7 @@ const FIELD_RULES: Record<string, {
 
   // Status & Residency
   statusInCanada: {
-    enum: ['CANADIAN_CITIZEN', 'PERMANENT_RESIDENT', 'TEMPORARY_RESIDENT', 'PROTECTED_PERSON'],
+    enum: ['CANADIAN_CITIZEN', 'PERMANENT_RESIDENT', 'TEMPORARY_RESIDENT', 'PROTECTED_PERSON', 'NON_RESIDENT'],
     message: 'Invalid status in Canada',
   },
   maritalStatus: {
