@@ -39,6 +39,7 @@ export interface FilingDependentInfo extends Struct.ComponentSchema {
         'PERMANENT_RESIDENT',
         'TEMPORARY_RESIDENT',
         'PROTECTED_PERSON',
+        'NON_RESIDENT',
       ]
     >;
     taxSlips: Schema.Attribute.JSON;
@@ -250,6 +251,7 @@ export interface FilingSpouseInfo extends Struct.ComponentSchema {
         'PERMANENT_RESIDENT',
         'TEMPORARY_RESIDENT',
         'PROTECTED_PERSON',
+        'NON_RESIDENT',
       ]
     >;
     streetName: Schema.Attribute.String;

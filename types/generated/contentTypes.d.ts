@@ -975,6 +975,7 @@ export interface ApiPersonalFilingPersonalFiling
         'PERMANENT_RESIDENT',
         'TEMPORARY_RESIDENT',
         'PROTECTED_PERSON',
+        'NON_RESIDENT',
       ]
     >;
     streetName: Schema.Attribute.String;
