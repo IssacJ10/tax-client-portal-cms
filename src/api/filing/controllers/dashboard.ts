@@ -49,7 +49,8 @@ export default {
                     ...(isAdmin ? {} : { user: { id: user.id } })
                 },
                 sort: ctx.query.sort || { updatedAt: 'desc' },
-                pagination: { page, pageSize },
+                page,
+                pageSize,
                 populate: {
                     user: {
                         fields: ['firstName', 'lastName', 'email']
