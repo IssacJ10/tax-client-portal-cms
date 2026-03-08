@@ -38,19 +38,18 @@ export default {
                 completed: allFilingsForStats.filter(f => ['APPROVED', 'COMPLETED'].includes(f.filingStatus?.statusCode)).length
             };
 
-            // 2. Fetch FILTERED and PAGINATED results for the table
+            // 2. Fetch FILTERED results (all records) for custom sorting
             const paginationParams = (ctx.query.pagination as any) || {};
             const page = parseInt(paginationParams.page) || 1;
             const pageSize = parseInt(paginationParams.pageSize) || parseInt(paginationParams.limit) || 10;
 
-            const { results: filings, pagination } = await strapi.entityService.findPage('api::filing.filing', {
+            // Fetch all filtered results without pagination for custom sorting
+            const allFilteredFilings = await strapi.entityService.findMany('api::filing.filing', {
                 filters: {
                     ...(ctx.query.filters as any || {}),
                     ...(isAdmin ? {} : { user: { id: user.id } })
                 },
-                sort: ctx.query.sort || { updatedAt: 'desc' },
-                page,
-                pageSize,
+                fields: ['id', 'entityName', 'confirmationNumber', 'progress', 'totalPrice', 'paidAmount', 'latestFeeSnapshot', 'submittedAt', 'completedAt', 'reviewedAt', 'createdAt', 'updatedAt'],
                 populate: {
                     user: {
                         fields: ['firstName', 'lastName', 'email']
@@ -67,8 +66,53 @@ export default {
                     personalFilings: {
                         fields: ['type', 'firstName', 'lastName', 'individualStatus']
                     }
-                }
+                },
+                limit: -1 // Get all records
+            }) as any[];
+
+            // Custom sort: Not submitted first, then by status-specific date descending
+            // For approved: sort by completedAt (first approved = last page)
+            // For submitted/under_review: sort by submittedAt (first submitted = last page)
+            const sortedFilings = allFilteredFilings.sort((a, b) => {
+                // Determine sort date based on status
+                const getStatusDate = (filing: any) => {
+                    const status = filing.filingStatus?.statusCode;
+                    if (['APPROVED', 'COMPLETED'].includes(status)) {
+                        // completedAt (new), fallback to lastStatusChangeAt, then updatedAt for existing records
+                        return filing.completedAt || filing.lastStatusChangeAt || filing.updatedAt;
+                    } else if (['SUBMITTED', 'UNDER_REVIEW'].includes(status)) {
+                        return filing.submittedAt || filing.latestFeeSnapshot?.submittedAt;
+                    }
+                    return null;
+                };
+
+                const aDate = getStatusDate(a);
+                const bDate = getStatusDate(b);
+
+                // If neither has a status date, maintain original order
+                if (!aDate && !bDate) return 0;
+
+                // Not submitted (no status date) should come first
+                if (!aDate) return -1;
+                if (!bDate) return 1;
+
+                // Both have dates: sort descending (newest first, oldest last)
+                return new Date(bDate).getTime() - new Date(aDate).getTime();
             });
+
+            // Manual pagination
+            const totalCount = sortedFilings.length;
+            const totalPages = Math.ceil(totalCount / pageSize);
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const filings = sortedFilings.slice(startIndex, endIndex);
+
+            const pagination = {
+                page,
+                pageSize,
+                pageCount: totalPages,
+                total: totalCount
+            };
 
             ctx.body = {
                 data: {
@@ -265,6 +309,34 @@ export default {
                 }
 
                 console.log(`[Dashboard Update] Filing ${id} reopened for amendment successfully`);
+            }
+
+            // Auto-set status timestamp fields based on the new status
+            const now = new Date().toISOString();
+
+            // Always update lastStatusChangeAt on any status change
+            if (newStatusCode !== currentStatusCode) {
+                data.lastStatusChangeAt = now;
+                console.log(`[Dashboard Update] Setting lastStatusChangeAt for filing ${id} (${currentStatusCode} -> ${newStatusCode})`);
+            }
+
+            if (newStatusCode === 'APPROVED' || newStatusCode === 'COMPLETED') {
+                data.completedAt = now;
+                console.log(`[Dashboard Update] Setting completedAt for filing ${id}`);
+            } else if (newStatusCode === 'REJECTED') {
+                data.rejectedAt = now;
+                console.log(`[Dashboard Update] Setting rejectedAt for filing ${id}`);
+            } else if (newStatusCode === 'UNDER_REVIEW') {
+                data.reviewedAt = now;
+                if (!existingFiling.submittedAt) {
+                    data.submittedAt = now;
+                }
+                console.log(`[Dashboard Update] Setting reviewedAt & submittedAt for filing ${id}`);
+            } else if (newStatusCode === 'SUBMITTED') {
+                if (!existingFiling.submittedAt) {
+                    data.submittedAt = now;
+                }
+                console.log(`[Dashboard Update] Setting submittedAt for filing ${id}`);
             }
 
             // Update the filing

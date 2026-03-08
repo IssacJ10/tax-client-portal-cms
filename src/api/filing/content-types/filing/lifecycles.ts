@@ -89,6 +89,16 @@ export default {
             const isSubmitting = newStatus?.statusCode === 'UNDER_REVIEW' || newStatus?.statusCode === 'SUBMITTED';
             const wasAlreadySubmitted = SUBMITTED_STATUSES.includes(currentFiling.filingStatus?.statusCode);
 
+            // Auto-set status timestamp fields based on the new status
+            const now = new Date().toISOString();
+            if (newStatus?.statusCode === 'APPROVED' || newStatus?.statusCode === 'COMPLETED') {
+                params.data.completedAt = now;
+                strapi.log.info(`[Filing Lifecycle] Setting completedAt for filing ${filingId || documentId}`);
+            } else if (newStatus?.statusCode === 'REJECTED') {
+                params.data.rejectedAt = now;
+                strapi.log.info(`[Filing Lifecycle] Setting rejectedAt for filing ${filingId || documentId}`);
+            }
+
             // Only validate on NEW submissions (not re-submissions or status changes after submission)
             if (isSubmitting && !wasAlreadySubmitted) {
                 strapi.log.info(`[Filing Validation] Validating filing ${filingId || documentId} before submission...`);
